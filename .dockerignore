@@ -1,0 +1,12 @@
+.git
+.next
+node_modules
+.env
+.env.*
+!.env.example
+.research
+.supabase
+.temp
+coverage
+dist
+tests/screenshots

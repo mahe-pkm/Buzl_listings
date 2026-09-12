@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: https://api-listing.rclk.in
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY}
+        NEXT_PUBLIC_SITE_URL: https://listing.rclk.in
+        NEXT_PUBLIC_IS_STAGING: "true"
+    environment:
+      NEXT_PUBLIC_SUPABASE_URL: https://api-listing.rclk.in
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY}
+      NEXT_PUBLIC_SITE_URL: https://listing.rclk.in
+      NEXT_PUBLIC_IS_STAGING: "true"
+    depends_on:
+      kong:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      default: {}
+      coolify:
+        aliases:
+          - buzl-listing-app
+
+  kong:
+    networks:
+      default: {}
+      coolify:
+        aliases:
+          - buzl-listing-kong
+
+networks:
+  coolify:
+    external: true
+    name: coolify

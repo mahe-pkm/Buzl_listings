@@ -301,11 +301,17 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   - `npm run lint`: PASS (0 errors, 0 warnings)
   - `npm run build`: PASS (exit code 0, compiled in 530ms, TypeScript in 1173ms, 16 pages generated)
 
-## Current git status
+## Hostinger VPS staging deployment — ACTIVE
 
-Working tree: CLEAN
-Latest commit: `13cff2e chore(security): harden staging release workflow`
+- **Public staging app:** `https://listing.rclk.in`
+- **Public staging API/Auth:** `https://api-listing.rclk.in`
+- **Application source deployed:** `9f0f6f6 docs(architecture): lock PostgreSQL and media storage strategy`
+- **Isolation:** Buzl runs as its own Compose project, database, volumes, generated secrets, and proxy services. The pre-existing Supabase project was left running and healthy.
+- **Database:** Day 1, Day 1.5, and Day 2 migrations were applied in order to the isolated Buzl database only.
+- **Demo data:** The guarded staging seed completed with server-only, randomly generated persona credentials. Credentials are not committed or included in project documentation.
+- **Indexing safety:** The live staging app returns noindex response headers and meta tags; `robots.txt` disallows all crawling; `sitemap.xml` contains zero URLs.
+- **Validation:** The Linux production image build and Linux lint check passed. Public HTTPS app, API, directory listing, and approved location/category route checks passed.
 
 ## Next exact task
 
-Provide remote staging Supabase project credentials and hosting authorization to execute cloud deployment.
+Perform project-owner staging review using the separately provided persona credentials. Keep staging noindex until an explicit production-release task is approved.

@@ -1,0 +1,47 @@
+{
+  "http": {
+    "routers": {
+      "buzl-listing-app": {
+        "entryPoints": ["https"],
+        "rule": "Host(`listing.rclk.in`)",
+        "service": "buzl-listing-app",
+        "tls": { "certResolver": "letsencrypt" }
+      },
+      "buzl-listing-app-http": {
+        "entryPoints": ["http"],
+        "rule": "Host(`listing.rclk.in`)",
+        "service": "buzl-listing-app",
+        "middlewares": ["buzl-listing-https"]
+      },
+      "buzl-listing-api": {
+        "entryPoints": ["https"],
+        "rule": "Host(`api-listing.rclk.in`)",
+        "service": "buzl-listing-api",
+        "tls": { "certResolver": "letsencrypt" }
+      },
+      "buzl-listing-api-http": {
+        "entryPoints": ["http"],
+        "rule": "Host(`api-listing.rclk.in`)",
+        "service": "buzl-listing-api",
+        "middlewares": ["buzl-listing-https"]
+      }
+    },
+    "services": {
+      "buzl-listing-app": {
+        "loadBalancer": {
+          "servers": [{ "url": "http://buzl-listing-app:3000" }]
+        }
+      },
+      "buzl-listing-api": {
+        "loadBalancer": {
+          "servers": [{ "url": "http://buzl-listing-kong:8000" }]
+        }
+      }
+    },
+    "middlewares": {
+      "buzl-listing-https": {
+        "redirectScheme": { "scheme": "https", "permanent": true }
+      }
+    }
+  }
+}
