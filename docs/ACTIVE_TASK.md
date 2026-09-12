@@ -7,41 +7,35 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `TEST-MCP-01` |
-| Task Name | AgentRelay MCP Verification |
-| Status | **COMPLETE** |
-| Current Agent | `antigravity` |
-| Started From Commit | `bff185c882e8c647f4f0a245e2aee11fee6eb744` |
-| Latest Commit | `ee1964fdc8c05c6d40d82222b5b2a9e43a1bdb07` |
+| Task ID | `TEST-XAGENT-01` |
+| Task Name | Codex Antigravity Handoff Verification |
+| Status | **PAUSED_HANDOFF** |
+| Current Agent | `codex` |
+| Started From Commit | `da0132906e950cf5edac74b8575e66c237a7e25a` |
+| Latest Commit | `a0f2bad88ae461b3098766489b8ba02d8d8a1554` |
 | Branch | `master` |
-| Started At | 2026-09-12T10:23:31+05:30 |
-| Last Updated | 2026-09-12T10:24:08+05:30 |
+| Started At | 2026-09-12T10:37:19+05:30 |
+| Last Updated | 2026-09-12T10:37:58+05:30 |
 
 ## Objective
 
-Verify AgentRelay MCP task lifecycle, Git-state detection, ACTIVE_TASK.md synchronization, and history.
+Verify that Codex can start work through AgentRelay and hand the exact task to Antigravity.
 
 ## Allowed Files
 
-- docs/AGENTRELAY_MCP_TEST.md, docs/ACTIVE_TASK.md
+- docs/AGENTRELAY_CROSS_AGENT_TEST.md, docs/ACTIVE_TASK.md
 
 ## Completed Work
 
-- AgentRelay MCP task lifecycle verified successfully.
+- Codex created the cross-agent verification file and CODEX-HANDOFF-OK marker.
 
 ## Remaining Work
 
-- —
+- Antigravity must resume the same task, verify Codex context, and add ANTIGRAVITY-RESUME-OK.
 
 ## Checks / Tests
 
-- MCP connection works
-- registered project lookup works
-- Git state detection works
-- ACTIVE_TASK.md synchronization works
-- REVIEW transition works
-- clean Git checkpoint captured
-- COMPLETE transition works
+- Codex checkpoint committed and working tree clean.
 
 ## Known Issues
 
@@ -49,11 +43,11 @@ Verify AgentRelay MCP task lifecycle, Git-state detection, ACTIVE_TASK.md synchr
 
 ## Next Exact Action
 
-No further action — task complete.
+Antigravity resumes TEST-XAGENT-01 and adds its marker.
 
 ## Handoff Notes
 
-—
+Cross-agent MCP verification.
 
 ## Agent Handoff Rule
 
