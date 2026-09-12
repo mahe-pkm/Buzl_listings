@@ -1,12 +1,12 @@
 # Current Project State
 
-**Current phase:** Phase 1 decision lock complete → Phase 2 next  
+**Current phase:** Phase 2 started — Phase 2.1 Business Field Matrix drafted; awaiting project-owner review  
 **Application code:** Not started  
 **Database migrations:** Not started  
 **Local Supabase app stack:** Not initialized  
 **Phase 0:** Complete  
 **Phase 1:** Complete, with one deliberately deferred provider decision  
-**Phase 2:** Ready to begin after this decision-lock commit
+**Phase 2:** In progress; do not advance beyond Phase 2.1 until the Business Field Matrix is reviewed and approved
 
 ## Git checkpoints recorded by the project owner
 
@@ -85,20 +85,15 @@ No database migration should be written until Phase 2 locks:
 - map provider
 - auth UX
 
+## Phase 2.1 draft
+
+- `docs/specs/BUSINESS_FIELD_MATRIX.md` drafted.
+- Awaiting project-owner review; its proposals and open decisions are not approved or locked.
+- No application code, database schema, RLS policy, migration, provider selection, or implementation work has started.
+
 ## Next exact task
 
-Begin **Phase 2 — MVP Specification Lock**.
-
-First Phase 2 workstream:
-
-1. lock business fields and onboarding steps
-2. lock entity relationships
-3. lock database schema
-4. lock RLS/roles
-5. lock route/indexation rules
-6. lock duplicate/verification rules
-7. select/test map provider
-8. finalize implementation-ready MVP spec
+Review and approve `docs/specs/BUSINESS_FIELD_MATRIX.md`.
 
 ## Agent handoff instruction
 
