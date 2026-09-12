@@ -12,6 +12,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -54,10 +55,29 @@ function LoginForm() {
     }
   };
 
-  const fillDemoAccount = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword("");
+  const fillDemoAccount = async (account: "owner" | "member" | "admin") => {
+    setDemoLoading(account);
     setErrorMessage(null);
+
+    try {
+      const response = await fetch("/api/internal/demo-credentials", { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error("Demo credentials are unavailable.");
+      }
+
+      const { accounts } = await response.json();
+      const demoAccount = accounts?.[account];
+      if (!demoAccount?.email || !demoAccount?.password) {
+        throw new Error("Demo credentials are unavailable.");
+      }
+
+      setEmail(demoAccount.email);
+      setPassword(demoAccount.password);
+    } catch {
+      setErrorMessage("Demo credentials are unavailable. Please contact the Buzl admin.");
+    } finally {
+      setDemoLoading(null);
+    }
   };
 
   return (
@@ -128,7 +148,8 @@ function LoginForm() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <button
             type="button"
-            onClick={() => fillDemoAccount("owner@buzl.test")}
+            onClick={() => void fillDemoAccount("owner")}
+            disabled={demoLoading !== null}
             className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#004AAD] hover:bg-[#F2F5FA] transition-colors text-xs"
           >
             <div className="font-semibold text-[#2A3547]">Business Owner</div>
@@ -136,7 +157,8 @@ function LoginForm() {
           </button>
           <button
             type="button"
-            onClick={() => fillDemoAccount("member@buzl.test")}
+            onClick={() => void fillDemoAccount("member")}
+            disabled={demoLoading !== null}
             className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#6929C4] hover:bg-[#F0EBFF]/40 transition-colors text-xs"
           >
             <div className="font-semibold text-[#6929C4]">Buzl Member</div>
@@ -144,7 +166,8 @@ function LoginForm() {
           </button>
           <button
             type="button"
-            onClick={() => fillDemoAccount("admin@buzl.test")}
+            onClick={() => void fillDemoAccount("admin")}
+            disabled={demoLoading !== null}
             className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#087C3C] hover:bg-[#E3F2EA]/40 transition-colors text-xs"
           >
             <div className="font-semibold text-[#087C3C]">Platform Admin</div>
