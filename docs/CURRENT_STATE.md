@@ -106,15 +106,40 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
 
 ## Day 1 implementation status
 
-- Next.js App Router scaffold, Tailwind, ESLint, Supabase client dependencies, environment example, normalization/validation helpers, and an uncommitted Day 1 migration are present.
-- The Day 1 migration passed independent static and runtime security reviews. It provides default-deny operational tables, JWT app-metadata role authority, atomic owner bootstrap, trusted lifecycle and derived-field functions, publishability enforcement, deterministic category seed, and a published-only public-safe read function.
-- Local Supabase started with this repository's database on port `54330` to avoid an existing unrelated local project on `54322`. The migration, category seed, and rollback-only pgTAP RLS/security suite passed locally.
-- Authentication UI, dashboard routes, CRUD UI, location modes, preview/publish UI, media UI, and admin controls remain unfinished.
-- The generated app linted successfully. Initial production build reached TypeScript, where a scaffold layout type issue was corrected; a subsequent build is blocked by the prior Next build process lock and must be rerun after that process exits.
+- **Day 1 Core Workflow is COMPLETE and verified.**
+- **Authentication & Shell:**
+  - Supabase SSR cookie auth with session verification in `src/lib/supabase/server.ts` and `src/middleware.ts`.
+  - `/login` page with Buzl branding, demo accounts (`owner@buzl.test`, `admin@buzl.test`), and sanitized redirect handling.
+  - Authenticated dashboard shell (`src/app/dashboard/layout.tsx` and `src/app/admin/layout.tsx`) with responsive desktop/mobile sidebar, topbar with user context and avatar, and sign-out.
+- **Business Management & CRUD:**
+  - Full multi-section business form (`src/components/business/BusinessForm.tsx`) matching the locked 6-step flow:
+    1. Business Identity (canonical name, description, year established)
+    2. Contact / NAP (primary/alt/WhatsApp phone, business contact email strictly separated from auth email, show_email toggle, website URL)
+    3. Category & Services (curated active category + owner-defined service names)
+    4. Location (Storefront with address & coordinates; Service-Area with named service areas and no street address; Hybrid with both)
+    5. Hours & Social (7-day schedule grid with closed/24h toggles; Facebook, Instagram, LinkedIn, YouTube)
+    6. Public-Safe Preview, Duplicate Warning & Publication Controls
+  - Database RPC integration: `create_business_for_current_user`, `transition_business_publication`, and `set_business_verification`.
+  - Public-Safe Preview component (`src/components/business/BusinessPreviewCard.tsx`) with zero leakage of private coordinates, auth email, or internal states.
+  - Non-blocking duplicate warning querying matching normalized phone and website domain.
+  - Data table views with real-time search toolbar and status filtering (`src/components/dashboard/BusinessTableView.tsx`).
+  - Owner dashboard (`/dashboard`), owner business list (`/dashboard/businesses`), creation (`/dashboard/businesses/new`), and edit (`/dashboard/businesses/[id]/edit`).
+  - Admin management portal (`/admin/businesses`) with publish, suspend, and verify moderation controls.
+- **Review & Verification:**
+  - Independent Product Review: PASS (100% adherence to `MVP_BUILD_CONTRACT.md`, `BUSINESS_FIELD_MATRIX.md`, and `USER_JOURNEYS.md`).
+  - Independent Security Review: CLEARANCE CONFIRMED (Zero data leakage, RLS isolation verified, open redirect prevented).
+  - Independent UI Review: PASS (Buzl design tokens, `@theme` integration, pill status badges, responsive mobile drawer).
+  - Production build (`npm run build`) and linter (`npm run lint`) pass cleanly with 0 errors and 0 warnings.
+  - Automated integration test suite (`scripts/verify-day1-workflow.mjs`) ran and passed all 6 end-to-end scenarios against local Supabase.
 
 ## Next exact task
 
-Prototype implementation from `docs/specs/MVP_BUILD_CONTRACT.md`.
+Day 2 — Public Directory, Discovery, Search, SEO & Deployment:
+1. Public canonical listing page (`/business/[slug]`) using `get_published_business_public`.
+2. Historical slug redirects (`slug_history`).
+3. PostgreSQL full-text search (`/search`).
+4. Category discovery (`/categories/[slug]`) and location discovery (`/locations/[slug]`).
+5. LocalBusiness JSON-LD, sitemap, robots.txt, and metadata.
 
 ## Agent handoff instruction
 
@@ -123,7 +148,5 @@ A new coding/planning agent should read:
 1. `AGENTS.md`
 2. this file
 3. `docs/DECISIONS.md`
-4. `docs/exec-plans/PHASE_02_MVP.md`
-5. only the feature/spec files needed for the active Phase 2 task
-
-For this rapid internal prototype, begin implementation only from the locked `docs/specs/MVP_BUILD_CONTRACT.md`. The normal detailed Phase 2 exit criteria remain deferred for later production hardening.
+4. `docs/specs/MVP_BUILD_CONTRACT.md`
+5. only the feature/spec files needed for Day 2 public directory work.

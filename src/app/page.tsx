@@ -1,67 +1,112 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { getSessionUser } from '@/lib/supabase/server';
 
-export default function Home() {
+export default async function HomePage() {
+  const user = await getSessionUser();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-[#F2F5FA] flex flex-col font-sans">
+      {/* Navigation Header */}
+      <header className="h-16 bg-white border-b border-[#DCE2E8] px-6 md:px-12 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#004AAD] flex items-center justify-center text-white font-bold text-lg tracking-wider">
+            B
+          </div>
+          <span className="font-bold text-xl tracking-tight text-[#2A3547]">
+            Buzl <span className="text-[#004AAD] font-semibold text-sm tracking-normal">Listing</span>
+          </span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <div>
+          {user ? (
+            <Link
+              href={user.isAdmin ? '/admin/businesses' : '/dashboard'}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#004AAD] text-white text-xs font-semibold hover:bg-[#003E91] transition-colors shadow-xs"
+            >
+              Open Dashboard →
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#004AAD] text-white text-xs font-semibold hover:bg-[#003E91] transition-colors shadow-xs"
+            >
+              Sign In to Dashboard →
+            </Link>
+          )}
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ECF4FF] text-[#004AAD] border border-[#BEDBFE] text-xs font-semibold mb-6">
+          <span className="w-2 h-2 rounded-full bg-[#004AAD] animate-pulse" />
+          Day 1 Core Workflow Active
+        </div>
+
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[#2A3547] tracking-tight leading-tight">
+          Citation-First Business Listing & Management
+        </h1>
+
+        <p className="mt-4 text-sm md:text-base text-[#5D6776] leading-relaxed max-w-xl">
+          Complete end-to-end directory foundation supporting Storefront, Service-Area, and Hybrid models with independent publication and verification lifecycles.
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          {user ? (
+            <Link
+              href="/dashboard"
+              className="px-6 py-2.5 rounded-[8px] bg-[#004AAD] text-white text-sm font-semibold hover:bg-[#003E91] transition-colors shadow-xs"
+            >
+              Go to Dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="px-6 py-2.5 rounded-[8px] bg-[#004AAD] text-white text-sm font-semibold hover:bg-[#003E91] transition-colors shadow-xs"
+            >
+              Sign In with Prototype Account
+            </Link>
+          )}
+
+          <Link
+            href="/dashboard/businesses/new"
+            className="px-6 py-2.5 rounded-[8px] bg-white border border-[#DCE2E8] text-[#2A3547] text-sm font-semibold hover:bg-[#F2F5FA] transition-colors"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Create New Listing
+          </Link>
+        </div>
+
+        {/* Feature Grid */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 text-left w-full">
+          <div className="bg-white p-5 rounded-[8px] border border-[#DCE2E8] shadow-xs">
+            <div className="w-8 h-8 rounded bg-[#ECF4FF] text-[#004AAD] flex items-center justify-center font-bold text-xs mb-3">
+              1
+            </div>
+            <h2 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Multi-Mode Locations</h2>
+            <p className="text-xs text-[#5D6776] mt-1">
+              Storefront with coordinates, Pure Service-Area with named regions, or Hybrid presence.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-[8px] border border-[#DCE2E8] shadow-xs">
+            <div className="w-8 h-8 rounded bg-[#E3F2EA] text-[#087C3C] flex items-center justify-center font-bold text-xs mb-3">
+              2
+            </div>
+            <h2 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Public-Safe Preview</h2>
+            <p className="text-xs text-[#5D6776] mt-1">
+              Guaranteed isolation of private coordinates, auth credentials, and internal states.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-[8px] border border-[#DCE2E8] shadow-xs">
+            <div className="w-8 h-8 rounded bg-[#FFF6DF] text-[#D99B18] flex items-center justify-center font-bold text-xs mb-3">
+              3
+            </div>
+            <h2 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Publication Lifecycle</h2>
+            <p className="text-xs text-[#5D6776] mt-1">
+              Owner submission (`draft` → `pending`) and Admin publication and moderation controls.
+            </p>
+          </div>
         </div>
       </main>
     </div>
