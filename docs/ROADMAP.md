@@ -83,7 +83,100 @@ Authentication provider identity does **not** determine Buzl authorization. Role
 
 Local deployment preparation is complete enough to proceed. Remote infrastructure provisioning is **Not started** and depends on operator infrastructure setup and credentials.
 
-### 2.4 Production hardening
+### 2.4 Tracking & Measurement Foundation
+
+**Status:** Planned
+
+Buzl Listing needs a consistent measurement foundation before production traffic begins. The purpose is to measure public-directory discovery, business-profile engagement, contact/lead actions, owner onboarding, Buzl Member onboarding/import activity, the submission/publication funnel, marketing attribution, and UX/session behavior.
+
+#### Planned tracking stack
+
+| Platform | Role |
+| --- | --- |
+| Google Tag Manager (GTM) | Central tag orchestration and delivery layer. |
+| Google Analytics 4 (GA4) | Primary web and product analytics for traffic, navigation, listing engagement, funnels, and conversion events. |
+| Meta Pixel | Meta advertising and browser-attribution measurement. |
+| Microsoft Clarity | Qualitative UX insight through heatmaps, session recordings, and usability patterns. |
+
+GTM is not a database or the analytics source of truth. Analytics platforms do not replace Buzl application/database truth. The Buzl database and trusted server-side business events remain authoritative for users, businesses, publication state, verification state, imported listings, business ownership, and lifecycle transitions. Meta Pixel is not authoritative for Buzl business state or stored conversions, and Clarity is not the authoritative conversion source.
+
+#### Standardized event contract
+
+Implementation should use one centralized Buzl analytics/event layer rather than random component-level vendor calls.
+
+```text
+Application event
+        ↓
+Buzl analytics/event layer
+        ↓
+dataLayer
+        ↓
+GTM
+        ↓
+GA4 / Meta Pixel / other approved tags
+```
+
+Business components should not independently hardcode multiple vendor SDK calls where avoidable.
+
+#### Planned normalized events
+
+**Public directory:** `business_view`, `search`, `search_result_click`, `category_view`, `location_view`, `call_click`, `whatsapp_click`, `website_click`, `email_click`, and `share_click`.
+
+**Business management:** `login`, `business_create`, `business_edit`, `business_preview`, `business_submit`, `business_publish`, and `business_suspend`.
+
+**Buzl Member import:** `json_import_start`, `json_import_validation_failed`, `json_import_review`, `json_import_complete`, `duplicate_warning_detected`, and `category_review_required`.
+
+No analytics payload should directly include sensitive personal or business data. In particular, do not send auth email, hidden business email, phone number, private address, private coordinates, `member_id`, `source_buss_id`, `source_loc_id`, `source_place_id`, normalized phone, normalized domain, or internal moderation notes to third-party analytics providers unless explicitly approved later.
+
+#### Funnel measurement
+
+The primary public-directory funnel is:
+
+```text
+Search / Discovery
+        ↓
+Business Listing View
+        ↓
+Engagement
+        ↓
+Contact Action
+```
+
+Contact actions are call, WhatsApp, website, and email actions. This is a primary GA4 funnel.
+
+The business-onboarding funnel is:
+
+```text
+Login
+  ↓
+Create / Import Business
+  ↓
+Profile Completion
+  ↓
+Preview
+  ↓
+Submit
+  ↓
+Admin Publish
+```
+
+It should help Buzl identify incomplete or abandoned listings without exposing private event payload data.
+
+#### Environment separation, verification, and privacy
+
+Tracking configuration must distinguish local, staging, and production. Staging should use dedicated debug configuration where practical: a separate GA4 property/data stream or explicitly filtered staging traffic, Meta test events where applicable, disabled or clearly separated Clarity, and GTM Preview/Debug validation. Only production-domain traffic contributes to production reporting.
+
+Before production launch, validate the staging environment at `https://listing.rclk.in` with dataLayer inspection, GTM Preview, GA4 DebugView, Meta Pixel Helper/test events, and approved Clarity initialization. Confirm that no duplicate events fire.
+
+The implementation must prevent duplicate `page_view` and conversion events, duplicated SPA-navigation events, and repeated button events caused by hydration or rerenders. Next.js App Router behavior must be considered.
+
+**Consent status:** Planned. Production implementation must evaluate consent requirements for GA4, Meta Pixel, Microsoft Clarity, and advertising/marketing cookies before enabling marketing tracking in jurisdictions where required. A consent platform is not part of this roadmap task.
+
+**Meta Conversions API (CAPI) status:** Deferred. It requires an explicit product decision after browser-side event architecture is validated; it may later be evaluated for attribution quality, browser-tracking loss, and lead/conversion reconciliation.
+
+**Custom analytics dashboard status:** Deferred. The first implementation relies on GA4 reports, GTM debugging, Meta reporting, and Clarity rather than a custom Buzl analytics dashboard.
+
+### 2.5 Production hardening
 
 **Status:** Planned
 
@@ -94,7 +187,7 @@ Local deployment preparation is complete enough to proceed. Remote infrastructur
 
 These controls are not yet claimed as production-complete.
 
-### 2.5 Map / geocoder provider selection
+### 2.6 Map / geocoder provider selection
 
 **Status:** Requires product decision
 
@@ -143,6 +236,7 @@ The current architecture intentionally remains provider-neutral. A decision is n
 | --- | --- |
 | Radius search | Deferred |
 | Advanced analytics | Deferred |
+| Custom analytics dashboard | Deferred |
 | Advanced geospatial discovery | Deferred |
 
 ## Roadmap guardrails
@@ -160,7 +254,8 @@ The current architecture intentionally remains provider-neutral. A decision is n
 2. Google login evaluation/implementation.
 3. WhatsApp login evaluation/implementation.
 4. Remote staging provisioning and deployment.
-5. Production hardening.
-6. Map/geocoder provider decision.
+5. Tracking & Measurement Foundation: GTM, GA4, Meta Pixel, Microsoft Clarity, dataLayer/event contract, and conversion funnels.
+6. Production hardening.
+7. Map/geocoder provider decision.
 
-Staging may move earlier operationally if the required infrastructure becomes available.
+Tracking implementation should occur after a working remote staging environment exists so events can be verified against real browser navigation and HTTPS URLs before production. Staging may move earlier operationally if the required infrastructure becomes available.
