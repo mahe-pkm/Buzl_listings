@@ -23,10 +23,16 @@ The current verified baseline is commit `3a97d7a`. It includes the Day 1 busines
 | --- | --- |
 | Application | Next.js 16.3.5, App Router, React 19, TypeScript |
 | Styling | Tailwind CSS 4 and the tracked Buzl design tokens |
-| Backend | Supabase Auth, PostgreSQL, Storage, RLS |
-| Database capabilities | PostGIS, PostgreSQL FTS, `pg_trgm` |
+| Database | PostgreSQL via Supabase |
+| Geospatial | PostGIS |
+| Flexible source payloads | PostgreSQL JSONB |
+| Authentication | Supabase Auth |
+| Media/file storage | Supabase Storage |
+| Search | PostgreSQL FTS and `pg_trgm` |
 | Validation | Zod |
 | Testing | Playwright browser smoke checks, Node verification scripts, Supabase/pgTAP database tests |
+
+PostgreSQL remains the canonical system of record. Flexible imported/source payloads should use JSONB where needed. MongoDB is not currently required and may only be introduced through a future explicit architecture decision.
 
 ## Prerequisites
 

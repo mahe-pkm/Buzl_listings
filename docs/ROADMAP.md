@@ -83,7 +83,17 @@ Authentication provider identity does **not** determine Buzl authorization. Role
 
 Local deployment preparation is complete enough to proceed. Remote infrastructure provisioning is **Not started** and depends on operator infrastructure setup and credentials.
 
-### 2.4 Tracking & Measurement Foundation
+### 2.4 Listing Logo & Cover Media
+
+**Status:** Planned
+
+- Business logo upload and business cover-image upload.
+- Supabase Storage for binary files and PostgreSQL media metadata.
+- Upload validation, MIME/type validation, file-size limits, safe storage paths, replacement/delete behavior, role/ownership permissions, alt text, practical image optimization, and public-listing rendering.
+
+This priority covers logo and cover only. Gallery functionality is not included.
+
+### 2.5 Tracking & Measurement Foundation
 
 **Status:** Planned
 
@@ -176,7 +186,7 @@ The implementation must prevent duplicate `page_view` and conversion events, dup
 
 **Custom analytics dashboard status:** Deferred. The first implementation relies on GA4 reports, GTM debugging, Meta reporting, and Clarity rather than a custom Buzl analytics dashboard.
 
-### 2.5 Production hardening
+### 2.6 Production hardening
 
 **Status:** Planned
 
@@ -187,7 +197,7 @@ The implementation must prevent duplicate `page_view` and conversion events, dup
 
 These controls are not yet claimed as production-complete.
 
-### 2.6 Map / geocoder provider selection
+### 2.7 Map / geocoder provider selection
 
 **Status:** Requires product decision
 
@@ -222,15 +232,24 @@ The current architecture intentionally remains provider-neutral. A decision is n
 | Bookings | Requires product decision |
 | Quote leads / quote marketplace | Requires product decision |
 
-### 3.4 Listing enrichment
+### 3.4 Gallery & advanced media
+
+**Status:** Deferred
+
+- General business gallery and multiple gallery images.
+- Service-specific images and product-specific images.
+- Image ordering, advanced captions/metadata, video, bulk media operations, and media moderation.
+
+These future items do not alter the Planned logo-and-cover scope.
+
+### 3.5 Listing enrichment
 
 | Item | Status |
 | --- | --- |
-| Gallery / expanded media | Deferred |
 | Secondary categories | Deferred |
 | Tags | Deferred |
 
-### 3.5 Discovery / analytics
+### 3.6 Discovery / analytics
 
 | Item | Status |
 | --- | --- |
@@ -248,14 +267,22 @@ The current architecture intentionally remains provider-neutral. A decision is n
 - Public-facing fields must continue to use public-safe projections, and service-area privacy remains mandatory.
 - Authentication-provider changes must not bypass trusted role or permission enforcement.
 
+### Data architecture guardrail
+
+- PostgreSQL via Supabase is the canonical database.
+- PostGIS handles geospatial data and PostgreSQL JSONB handles flexible source payloads where needed.
+- Supabase Storage holds binary media; PostgreSQL holds media metadata and references.
+- MongoDB is not part of the current architecture. Any additional database technology requires an explicit architecture/product decision and evidence that PostgreSQL/JSONB is insufficient.
+
 ## Recommended near-term implementation order
 
 1. User management and expanded RBAC.
 2. Google login evaluation/implementation.
 3. WhatsApp login evaluation/implementation.
 4. Remote staging provisioning and deployment.
-5. Tracking & Measurement Foundation: GTM, GA4, Meta Pixel, Microsoft Clarity, dataLayer/event contract, and conversion funnels.
-6. Production hardening.
-7. Map/geocoder provider decision.
+5. Listing Logo & Cover Media.
+6. Tracking & Measurement Foundation: GTM, GA4, Meta Pixel, Microsoft Clarity, dataLayer/event contract, and conversion funnels.
+7. Production hardening.
+8. Map/geocoder provider decision.
 
 Tracking implementation should occur after a working remote staging environment exists so events can be verified against real browser navigation and HTTPS URLs before production. Staging may move earlier operationally if the required infrastructure becomes available.

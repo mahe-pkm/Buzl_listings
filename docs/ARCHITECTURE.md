@@ -223,3 +223,29 @@ Do not introduce:
 until observed requirements justify them.
 
 Next.js + PostgreSQL/Supabase is the approved MVP architecture.
+
+## Data and Storage Architecture
+
+PostgreSQL via Supabase is the Buzl Listing canonical system of record. It holds normalized relational business data, trusted lifecycle/verification state, ownership relationships, import provenance, and media metadata. PostGIS supports geospatial data; PostgreSQL JSONB is the first option for flexible or semi-structured source context.
+
+```text
+External / Buzl JSON
+        ↓
+Validation / Adapter
+        ↓
+PostgreSQL canonical model
+        ├── Relational business data
+        ├── JSONB source metadata where needed
+        ├── PostGIS geospatial data
+        └── Media references
+                 ↓
+          Supabase Storage
+```
+
+Raw JSON is not the canonical public business model. Where original payload preservation is useful, retain it in a dedicated import/audit/source-payload structure as JSONB, behind validation, RLS, lifecycle, privacy, and public-safe projection controls. Raw imported payloads must never be returned directly to anonymous/public users.
+
+Binary listing media belongs in Supabase Storage; PostgreSQL holds its metadata and storage references. The current Planned media scope is logo and cover. A future-capable conceptual layout may support `business-media/{business_id}/logo/` and `cover/`, plus `gallery/`, `services/`, and `products/`; the latter three are future-compatible paths, not current implementation scope.
+
+Media metadata may include `id`, `business_id`, `media_type`, `storage_path`, `caption`, `alt_text`, `sort_order`, `mime_type`, `width`, `height`, and `created_at`. Media access must eventually follow business ownership, publication, and privacy rules.
+
+MongoDB is not part of the current architecture. It may be reconsidered only after a demonstrated requirement that PostgreSQL JSONB cannot reasonably satisfy, such as very large raw crawler snapshots, high-volume external document payloads, or large-scale unstructured enrichment archives.

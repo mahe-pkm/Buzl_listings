@@ -217,6 +217,14 @@ Uncertain matches must be flagged for review rather than auto-merged.
 **Decision:** The Listing application uses the tracked Buzl design system under `docs/design/`.  
 **Reason:** Listing is part of the Buzl product family and should not introduce an unrelated visual language.
 
+## DEC-023 — PostgreSQL remains the canonical data platform
+
+**Status:** Accepted
+**Decision:** Use PostgreSQL via Supabase as the Buzl Listing canonical database. Use PostGIS for geospatial data, JSONB for flexible validated source payloads, PostgreSQL Full Text Search plus `pg_trgm` for search, Supabase Auth for authentication, and Supabase Storage for binary media with PostgreSQL metadata/references.
+**MongoDB:** Not approved for the current architecture.
+**Reason:** The existing stack satisfies current relational, geospatial, flexible JSON, search, media-reference, RLS, and transaction requirements without introducing another operational data platform.
+**Future reconsideration:** Requires demonstrated technical need and explicit architecture/product approval.
+
 ---
 
 # Phase 1 closeout

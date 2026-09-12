@@ -13,6 +13,18 @@ Approved foundation:
 - `pg_trgm`
 - PostGIS
 
+## Database Technology Decision
+
+**Approved canonical database:** PostgreSQL via Supabase.
+
+**Extensions/capabilities:** PostGIS, `pg_trgm`, and PostgreSQL Full Text Search.
+
+**Flexible data:** PostgreSQL JSONB is the first choice for validated, semi-structured source payloads or mapping context. JSONB does not replace normalized relational business data, constraints, RLS, trusted lifecycle transitions, privacy controls, or public-safe projections.
+
+**Media:** Supabase Storage holds binary files; PostgreSQL holds media metadata and storage references.
+
+MongoDB is currently unnecessary because PostgreSQL already supports the relational, geospatial, search, and semi-structured requirements identified by the product. Any future multi-database architecture requires explicit architecture/product review and demonstrated need.
+
 ## 2. Core modeling rules
 
 - one public business record = one establishment/service-area listing
