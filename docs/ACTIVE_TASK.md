@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `DAY1-CORE-WORKFLOW` |
 | Task Name | Day 1 Core Workflow |
-| Status | **IN_PROGRESS** |
+| Status | **PAUSED_HANDOFF** |
 | Current Agent | `codex` |
 | Started From Commit | `ab56b0d6de8db8fa6fd5abb42a3aed36e151bea0` |
-| Latest Commit | `ab56b0d6de8db8fa6fd5abb42a3aed36e151bea0` |
+| Latest Commit | `52ebde7ba7829ac7b45addcfe797056786be2770` |
 | Branch | `master` |
 | Started At | 2026-09-12T14:46:34+05:30 |
-| Last Updated | 2026-09-12T14:46:34+05:30 |
+| Last Updated | 2026-09-12T14:46:57+05:30 |
 
 ## Objective
 
@@ -27,15 +27,23 @@ Implement the authorized Day 1 email/password auth, protected dashboard shell, a
 
 ## Completed Work
 
-- —
+- Secure Day 1 foundation is committed at ab56b0d
+- no auth, dashboard, or business CRUD product work was started. AgentRelay handoff task state is checkpointed at 52ebde7.
 
 ## Remaining Work
 
-- —
+- Implement the authorized Day 1 core workflow: email/password login/logout
+- server-enforced protected dashboard/admin routes
+- responsive Buzl dashboard shell
+- assignment-aware business list and metrics
+- streamlined create/edit business form using trusted database RPCs and locked validation
+- preview/submit and admin publish/suspend controls. Do not start Day 2 public discovery or redesign the secure foundation.
 
 ## Checks / Tests
 
-- —
+- Before handoff: git status clean
+- git diff --stat clean
+- secure foundation checks already passed at ab56b0d: local migration/seed, pgTAP RLS suite, independent security review, npm run lint, and npm run build.
 
 ## Known Issues
 
@@ -43,11 +51,11 @@ Implement the authorized Day 1 email/password auth, protected dashboard shell, a
 
 ## Next Exact Action
 
-—
+Read AGENTS.md, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, BUSINESS_FIELD_MATRIX.md, USER_JOURNEYS.md, MVP_BUILD_CONTRACT.md, and relevant source files. Then begin /login with SSR session protection; do not alter migration/RLS unless integration proves a defect.
 
 ## Handoff Notes
 
-—
+Codex usage window is low; hand off before beginning the large Day 1 auth/dashboard/CRUD implementation area.
 
 ## Agent Handoff Rule
 
