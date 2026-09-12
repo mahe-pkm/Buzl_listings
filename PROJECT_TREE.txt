@@ -1,0 +1,62 @@
+.gitignore
+AGENTS.md
+CODEX_START.md
+PLAN.md
+README.md
+STACK.md
+WORKFLOW.md
+supabase/
+    config.toml
+    seed.sql
+    migrations/
+        .gitkeep
+skills/
+    DATABASE_CHANGES.md
+    HANDOFF.md
+    QUALITY_GATE.md
+    UI_IMPLEMENTATION.md
+docs/
+    ARCHITECTURE.md
+    CURRENT_STATE.md
+    DATABASE.md
+    DECISIONS.md
+    PRODUCT.md
+    PROJECT_DOCUMENTATION.md
+    SECURITY.md
+    SEO.md
+    exec-plans/
+        PHASE_00_FOUNDATION.md
+        PHASE_01_RESEARCH.md
+        PHASE_02_MVP.md
+    features/
+        authentication.md
+        business-listings.md
+        categories.md
+        locations.md
+        moderation.md
+        search.md
+    design/
+        DESIGN_SYSTEM.md
+        DESIGN_TOKENS.md
+lib/
+    .gitkeep
+.research/
+    README.md
+    notes/
+        .gitkeep
+    seo/
+        .gitkeep
+    github/
+        .gitkeep
+    experiments/
+        .gitkeep
+    competitors/
+        .gitkeep
+    screenshots/
+        .gitkeep
+components/
+    .gitkeep
+public/
+    .gitkeep
+app/
+    .gitkeep

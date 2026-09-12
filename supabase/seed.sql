@@ -1,0 +1,2 @@
+-- Seed data placeholder.
+-- Add deterministic local development data only after the schema is finalized.
