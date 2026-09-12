@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `DAY1.5-BUZL-MEMBER-IMPORT` |
 | Task Name | Day 1.5 Buzl Member JSON Import |
-| Status | **REVIEW** |
+| Status | **COMPLETE** |
 | Current Agent | `antigravity` |
 | Started From Commit | `b7d7d20f64676f11439a25a80a4c6a58bcf4025d` |
-| Latest Commit | `b7d7d20f64676f11439a25a80a4c6a58bcf4025d` |
+| Latest Commit | `2209936e56a9702e183add561a0d2495e7ef6f16` |
 | Branch | `master` |
 | Started At | 2026-09-12T15:20:28+05:30 |
-| Last Updated | 2026-09-12T15:30:59+05:30 |
+| Last Updated | 2026-09-12T15:31:22+05:30 |
 
 ## Objective
 
@@ -27,14 +27,16 @@ Add Internal Buzl Profile JSON Import with Buzl Member support (buzl_member role
 
 ## Completed Work
 
-- 1. Role Terminology: strictly updated to Buzl Member (buzl_member).
-- 2. member_id Concept: profiles.member_id unique column and set_member_id admin function
-- seeded member@buzl.test (BUZL-M-1024) and admin@buzl.test (BUZL-M-0001).
-- 3. Migration 20260912150000_day1_5_member_and_import.sql: applied and verified with pgTAP day1_5_import_runtime.sql.
-- 4. Schema & Adapter: BuzlProfileImportSchema (Zod) and mapBuzlProfileToListing with Indian address parsing, category matcher (exact & alias with review_required fallback), service area privacy suppression.
-- 5. Importer Routes & UI: /admin/businesses/import and /internal/businesses/import with 8 review sections, public-safe preview, duplicate detection, and success modal.
-- 6. Privacy & Security: show_street_address locked to false for service_area, show_email default false, zero coordinate leakage, strictly draft status on import.
-- 7. Verification: Laptech fixture test, pgTAP suite, lint, and build all PASS. Subagents Product, Security, and Privacy all verified PASS.
+- Implemented Day 1.5 Internal Buzl Profile JSON Import with Buzl Member Support:
+- - Updated terminology strictly to 'Buzl Member' (buzl_member)
+- - Added member_id concept to public.profiles and set_member_id admin-only RPC
+- - Added migration 20260912150000_day1_5_member_and_import.sql with provenance audit columns and indexes
+- - Implemented Zod schema BuzlProfileImportSchema and mapping adapter mapBuzlProfileToListing
+- - Added Indian address parser, category matcher with alias and review_required support, service area privacy suppression
+- - Created /admin/businesses/import and /internal/businesses/import routes with 8-section review interface
+- - Non-blocking duplicate detection on phone, domain, and legacy IDs
+- - Live public-safe preview with zero coordinate or private data leakage
+- - Verified with Laptech fixture, pgTAP suite, lint, and build. All subagents (Product, Security, Privacy) passed.
 
 ## Remaining Work
 
@@ -50,7 +52,7 @@ Add Internal Buzl Profile JSON Import with Buzl Member support (buzl_member role
 
 ## Next Exact Action
 
-Commit changes with message 'feat(import): add Buzl Member profile JSON onboarding' and mark task COMPLETE.
+No further action — task complete.
 
 ## Handoff Notes
 
