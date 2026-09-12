@@ -1,110 +1,192 @@
-# Project Plan
+# Buzl Listing — Project Plan
+
+## Current status
+
+| Phase | Status |
+|---|---|
+| Phase 0 — Project Control Layer | Complete |
+| Phase 1 — Research & Decision Lock | Complete |
+| Phase 2 — MVP Specification Lock | Next |
+| Phase 3 — Technical Foundation | Not started |
+| Phase 4 — Business Listing MVP | Not started |
+| Phase 5 — Discovery | Not started |
+| Phase 6 — SEO Hardening | Not started |
+| Phase 7 — Admin & Moderation | Not started |
 
 ## Phase 0 — Project Control Layer
 
-Goal: make the repository safe for multi-agent development before application coding.
+**Status: Complete**
 
-- Create project documentation.
-- Create research area.
-- Configure `.gitignore`.
-- Establish agent rules and handoff process.
-- Establish current-state tracking.
-- Commit the baseline.
+Completed:
 
-## Phase 1 — Research
+- repository control/documentation structure
+- `.research/` workspace and Git ignore rule
+- agent handoff workflow
+- current-state tracking
+- Phase 0 baseline commit
 
-Research:
+Baseline commit recorded by the project owner:
 
-- business-directory competitors
-- citation-site requirements
+```text
+50ffe3c  chore: establish phase 0 project baseline
+```
+
+---
+
+## Phase 1 — Research & Decision Lock
+
+**Status: Complete**
+
+Research completed:
+
 - open-source directory projects
-- local SEO and schema
-- map providers
-- taxonomy models
-- duplicate-listing handling
-- moderation approaches
-- Next.js and Supabase implementation patterns
+- competitor/directory patterns
+- local SEO architecture
+- canonical URL strategy
+- business/location data-model direction
+- Postgres search
+- PostGIS/geospatial direction
+- duplicate detection
+- moderation/verification concepts
+- maps/geocoding options
+- Buzl dashboard design-system extraction
 
-Raw work goes to `.research/`. Final decisions go to `docs/`.
+Design baseline commit recorded by the project owner:
 
-## Phase 2 — Product Specification
+```text
+d19c105  docs(design): establish Buzl design system baseline
+```
+
+Phase 1 decisions are now recorded in `docs/DECISIONS.md`.
+
+One research item is deliberately deferred:
+
+- final map/geocoding provider selection
+
+That choice will be resolved during Phase 2 after an India-address quality, terms, and cost comparison.
+
+---
+
+## Phase 2 — MVP Specification Lock
+
+**Status: Next**
+
+Goal: convert the accepted Phase 1 architecture into implementation-ready specifications without asking a coding agent to invent product requirements.
 
 Lock:
 
-- MVP scope
-- data fields
-- user roles
-- listing lifecycle
-- taxonomy
-- location hierarchy
-- URL strategy
-- SEO rules
-- database schema
-- moderation model
+- final business field set
+- database tables/columns
+- primary/foreign keys
+- indexes
+- PostGIS column design
+- RLS policies
+- ownership/membership model
+- duplicate scoring/handling rules
+- verification model
+- external-user moderation policy
+- exact onboarding flow
+- category taxonomy seed strategy
+- service representation
+- location hierarchy and seed strategy
+- exact public route structure
+- category/location indexation thresholds
+- map/geocoder provider
+- auth method for MVP
+- media/storage rules
+- public listing information architecture
+- admin MVP boundary
+
+Exit criteria:
+
+> A coding agent can scaffold the application and migrations from repository specifications without researching or inventing product architecture.
+
+---
 
 ## Phase 3 — Technical Foundation
 
-Implement:
+Implement only after Phase 2 is locked:
 
-- Next.js app
+- Next.js application
 - TypeScript
-- Supabase local stack
-- migrations
-- auth
-- app shell
+- Buzl design-token integration
+- Supabase local development stack
+- PostgreSQL extensions
+- database migrations
+- RLS baseline
+- authentication
+- application shell
 - validation
-- design-token layer
-- test/lint/typecheck baseline
+- testing/lint/typecheck/build baseline
+
+---
 
 ## Phase 4 — Business Listing MVP
 
 Implement:
 
-- registration/login
-- create/edit business
-- address
-- categories
-- tags
-- services
-- business hours
-- map location
-- media
-- publish workflow
-- public listing page
+```text
+Register / login
+        ↓
+Create business
+        ↓
+Business identity + NAP
+        ↓
+Category + services
+        ↓
+Location / service area
+        ↓
+Map coordinates
+        ↓
+Preview
+        ↓
+Publish / submit
+        ↓
+Public canonical listing
+```
 
-## Phase 5 — Discovery
+---
+
+## Phase 5 — Directory Discovery
 
 Implement:
 
 - directory home
-- search
+- business search
 - category pages
 - location pages
-- category + location pages
-- related listings
+- selected category + location landing pages
+- related businesses
+
+---
 
 ## Phase 6 — SEO Hardening
 
 Verify:
 
-- titles/descriptions
-- canonicals
-- JSON-LD
+- metadata
+- canonical handling
+- slug redirects
+- LocalBusiness JSON-LD
 - breadcrumbs
-- sitemap
-- robots
+- sitemaps
+- robots/crawl controls
 - internal linking
-- pagination/crawl rules
-- Core Web Vitals
+- thin-page controls
+- performance
 - accessibility
+
+---
 
 ## Phase 7 — Admin & Moderation
 
 Implement:
 
-- listing queue
-- approve/reject/suspend
-- category management
-- user management
-- duplicate handling
+- listing review queue
+- approve / reject
+- suspend / archive
+- duplicate review
+- verification review
+- category/location administration
+- user/business management
 - audit information

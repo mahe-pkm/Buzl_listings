@@ -1,46 +1,113 @@
 # Current Project State
 
-**Phase:** Phase 1 — Research and Decision Lock  
-**Status:** Research conclusions accepted; ready for Phase 2 product specification  
+**Current phase:** Phase 1 decision lock complete → Phase 2 next  
 **Application code:** Not started  
 **Database migrations:** Not started  
-**Local Supabase:** Not initialized  
-**Design system extraction:** Source-backed baseline documented; live-dashboard validation pending  
-**Research:** Complete; raw source material remains local-only in `.research/`
+**Local Supabase app stack:** Not initialized  
+**Phase 0:** Complete  
+**Phase 1:** Complete, with one deliberately deferred provider decision  
+**Phase 2:** Ready to begin after this decision-lock commit
+
+## Git checkpoints recorded by the project owner
+
+```text
+50ffe3c  chore: establish phase 0 project baseline
+d19c105  docs(design): establish Buzl design system baseline
+```
 
 ## Completed
 
-- Project vision documented.
-- Proposed folder structure defined.
-- Multi-agent workflow defined.
-- Next.js + Supabase direction documented.
-- Citation-first MVP boundary documented.
-- Starter feature/specification files created.
-- Root documentation, `docs/`, `skills/`, `supabase/`, and empty application placeholder directories verified against the Phase 0 baseline.
-- `.research/` and its documented subdirectories verified locally; `.research/` is ignored by Git.
-- Git repository initialized and Phase 0 baseline committed.
-- Phase 1 research reviewed across competitors, open-source references, local SEO, maps/geocoding, data modeling, search, duplicate handling, and moderation.
-- Phase 1 decisions P1-01 through P1-17 recorded in tracked documentation; final map-provider selection remains explicitly deferred to Phase 2.
-- Design-system baseline committed separately as `d19c105`.
+### Project control
 
-## Current constraints
+- agent workflow
+- research/document separation
+- Git-based handoff strategy
+- project plans/spec structure
 
-- Map provider has not been selected; a provider-neutral boundary is required.
-- Exact database schema, SQL constraints, RLS policies, and migrations are not yet specified.
-- First authentication credential flow and exact launch moderation policy remain Phase 2 decisions.
-- No production hosting decision has been locked.
+### Phase 1 research
 
-## Verification
+- competitor/directory patterns
+- open-source directory repositories
+- SEO/canonical architecture
+- maps/geocoding options
+- business data-model direction
+- search direction
+- PostGIS direction
+- duplicate detection
+- moderation/verification concepts
+- Buzl design system extraction
 
-- Phase 0 structure and Git-ignore checks: passed.
-- Phase 1 decision documentation review: complete.
-- Application code check: passed; only empty placeholder directories exist.
-- Automated tests: not applicable; no application or test tooling has been introduced.
+### Phase 1 decision lock
+
+Accepted:
+
+- own Next.js/Supabase architecture
+- primary reference repo strategy
+- stable business canonical URL
+- controlled SEO landing pages
+- one listing per establishment/service-area listing
+- storefront/service-area/hybrid modes
+- separate publication/verification states
+- PostgreSQL FTS + pg_trgm
+- PostGIS from foundation
+- layered duplicate detection
+- provider-neutral map integration
+- authoritative Buzl/owner business data
+- citation-safe NAP
+- curated hierarchical categories
+- Supabase Auth
+- Buzl design-system reuse
+
+Deferred:
+
+- final map/geocoder provider selection
+
+## Phase 1 accepted/deferred count
+
+```text
+Accepted: 16
+Deferred: 1
+Rejected: 0
+```
+
+## Important implementation status
+
+No Next.js application scaffolding should exist yet.
+
+No database migration should be written until Phase 2 locks:
+
+- tables/columns/types
+- constraints/indexes
+- RLS
+- ownership model
+- service/tag model
+- routes
+- map provider
+- auth UX
 
 ## Next exact task
 
-Execute Phase 2 product specification only when explicitly instructed. Lock the exact schema, RLS model, routes, onboarding flow, taxonomy seed, map provider, and moderation policy. Do not scaffold Next.js or Supabase before Phase 2 is accepted.
+Begin **Phase 2 — MVP Specification Lock**.
 
-## Handoff note
+First Phase 2 workstream:
 
-Any agent continuing this repository should read `AGENTS.md` and this file before reading broader documentation.
+1. lock business fields and onboarding steps
+2. lock entity relationships
+3. lock database schema
+4. lock RLS/roles
+5. lock route/indexation rules
+6. lock duplicate/verification rules
+7. select/test map provider
+8. finalize implementation-ready MVP spec
+
+## Agent handoff instruction
+
+A new coding/planning agent should read:
+
+1. `AGENTS.md`
+2. this file
+3. `docs/DECISIONS.md`
+4. `docs/exec-plans/PHASE_02_MVP.md`
+5. only the feature/spec files needed for the active Phase 2 task
+
+Do not start application coding unless Phase 2 exit criteria are met and the project owner explicitly authorizes Phase 3.

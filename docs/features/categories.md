@@ -1,8 +1,10 @@
 # Feature — Categories
 
-## Model
+**Status:** Phase 1 taxonomy strategy locked; Phase 2 seeds/governance pending.
 
-Hierarchical categories.
+## Decision
+
+Use a curated Buzl hierarchical taxonomy.
 
 ```text
 Category
@@ -10,22 +12,44 @@ Category
       └── Business
 ```
 
+Do not copy a giant external directory taxonomy wholesale.
+
 ## Requirements
+
+Conceptual category fields:
 
 - name
 - slug
 - parent
 - description
-- active/inactive state
-- optional SEO fields later
+- status
+- sort order
 
 ## Business relationship
 
-A business has:
+A business has one primary category.
 
-- one primary category
-- optional additional categories if later approved
+Phase 2 decides whether MVP also permits secondary categories.
+
+## Categories vs services
+
+Category:
+
+> What kind of business is this?
+
+Services:
+
+> What does the business offer?
+
+Do not create a new category for every service phrase.
 
 ## SEO
 
-Category landing pages should be indexable only when they contain useful content/listings and meet the final SEO rules.
+Category landing pages may be indexable only under the approved quality/indexation policy.
+
+Phase 2 must define:
+
+- category seed strategy
+- category governance
+- secondary category support
+- category landing-page quality threshold

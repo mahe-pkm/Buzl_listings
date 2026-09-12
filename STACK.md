@@ -1,4 +1,7 @@
-# Approved Technology Direction
+# Buzl Listing — Approved Technology Direction
+
+**Status:** Phase 1 architecture locked.  
+**Next review:** Phase 2 specification lock.
 
 ## Application
 
@@ -6,44 +9,120 @@
 - App Router
 - TypeScript
 - React Server Components where appropriate
-- Server rendering / static generation for public SEO pages
+- server rendering / static optimization for public SEO pages
+- client components only where interaction requires them
 
-## Backend
+## Database / backend platform
 
 - Supabase
 - PostgreSQL
 - Supabase Auth
 - Supabase Storage
 - Row Level Security
-- Supabase APIs where useful
-- PostgreSQL Full Text Search and `pg_trgm` for MVP discovery
-- PostGIS for coordinates and future proximity queries
+- migration-driven schema changes
+
+## PostgreSQL capabilities approved for MVP
+
+### Full Text Search
+
+Use PostgreSQL/Supabase Full Text Search for the initial directory search.
+
+### `pg_trgm`
+
+Use trigram similarity for fuzzy matching where needed, especially:
+
+- business names
+- addresses
+- duplicate detection
+
+### PostGIS
+
+Enable PostGIS during the technical foundation.
+
+Use it for:
+
+- canonical business geographic points
+- future radius / "near me" queries
+- proximity signals in duplicate detection
+- service-area/geographic features where appropriate
+
+Do not wait for a later search rewrite to introduce geospatial storage.
+
+## Search infrastructure
+
+Do **not** introduce Algolia, Elasticsearch, OpenSearch, or another dedicated search engine for MVP.
+
+Revisit only if measured search quality/scale requirements exceed PostgreSQL.
 
 ## Local development
 
 - Docker Desktop
 - Supabase CLI
-- Local Supabase stack
-- Version-controlled SQL migrations
+- local Supabase stack
+- version-controlled SQL migrations
+- deterministic local seed data after schema lock
 
-## Styling
+## Styling / UI
 
-Final design system will be extracted from the existing Buzl dashboard.
+Use the tracked Buzl design system:
 
-Until then:
+```text
+docs/design/
+```
 
-- use semantic design tokens
-- avoid app-wide hard-coded temporary colors
-- centralize typography, spacing, radius, shadow, and color values
+Rules:
 
-## Maps
+- reuse Buzl design tokens
+- use semantic tokens
+- do not scatter raw temporary colors
+- dashboard surfaces may use the dense Buzl admin language
+- public listing pages should use the same product DNA with more readable public-facing composition
 
-Provider is intentionally deferred to Phase 2. Use a provider-neutral map/geocoder boundary; do not use public OpenStreetMap Foundation tile or Nominatim infrastructure as production backend.
+The final component/styling implementation library is still a Phase 2/3 implementation choice and must not override the Buzl design system.
 
-## Search
+## Maps / geocoding
 
-Start with PostgreSQL-backed search/filtering. Do not introduce a dedicated search service during MVP unless real requirements justify it.
+### Architecture decision
+
+Map/geocoder integration must be provider-neutral at the application/domain level.
+
+### Final provider
+
+**Deferred to Phase 2.**
+
+Shortlist from research:
+
+- MapTiler
+- LocationIQ
+- Geoapify
+- Google Maps Platform
+- Mapbox
+
+Before locking a provider, compare:
+
+- Indian address/geocoding quality
+- map-load cost
+- autocomplete cost
+- permanent storage rights
+- attribution requirements
+- production terms
+- expected traffic
+
+Do not use OSMF public tile/Nominatim infrastructure as the production backend.
+
+## Authentication
+
+Use Supabase Auth.
+
+The exact MVP method remains to be selected in Phase 2:
+
+- email + password, or
+- magic link
+
+Social login is not required for MVP.
 
 ## Deployment
 
-Not locked yet. Hosting/deployment is a later architecture decision after the MVP requirements are finalized.
+Production hosting remains intentionally unlocked.
+
+Do not choose deployment infrastructure before Phase 2/3 requirements are stable.

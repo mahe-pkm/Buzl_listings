@@ -1,65 +1,57 @@
-# Phase 1 — Research Plan
+# Phase 1 — Research & Decision Lock
 
-## Goal
+**Status:** Complete
 
-Reduce product and architecture uncertainty before coding.
+## Completed research tracks
 
-## Research tracks
+- [x] competitor/directory patterns
+- [x] open-source directory repositories
+- [x] SEO/canonical architecture
+- [x] LocalBusiness/citation direction
+- [x] search architecture
+- [x] PostGIS/geospatial direction
+- [x] duplicate detection
+- [x] moderation/verification concepts
+- [x] maps/geocoding shortlist
+- [x] Buzl design-system extraction
 
-### Competitors
+## Decision result
 
-Study:
+```text
+Accepted: 16
+Deferred: 1
+Rejected: 0
+```
 
-- Justdial-style directory structure
-- citation-focused directories
-- local-service directories
-- onboarding flows
-- taxonomy and location patterns
+Deferred:
 
-### Open source
+- final map/geocoding provider
 
-Find and evaluate relevant:
+## Promoted tracked specifications
 
-- Next.js directories
-- Supabase directories
-- marketplace/directory starters
-- local search projects
+Phase 1 decisions are reflected in:
 
-For each candidate record:
+- `docs/DECISIONS.md`
+- `docs/ARCHITECTURE.md`
+- `docs/DATABASE.md`
+- `docs/SEO.md`
+- `docs/PRODUCT.md`
+- `docs/features/*`
+- `STACK.md`
+- `PLAN.md`
 
-- URL
-- license
-- framework/version
-- activity
-- architecture
-- strengths
-- weaknesses
-- reusable ideas
-- whether to adopt, borrow patterns, or reject
+## Exit criteria
 
-### SEO
+- [x] Build-vs-fork direction resolved
+- [x] SEO canonical direction resolved
+- [x] listing/location semantic model resolved
+- [x] search direction resolved
+- [x] geospatial direction resolved
+- [x] duplicate strategy direction resolved
+- [x] design system normalized
+- [x] map provider deliberately deferred with shortlist/selection criteria
+- [x] Phase 2 can proceed without starting application code
 
-Research:
+## Next
 
-- LocalBusiness schema
-- canonical strategy
-- category/location page quality
-- duplicate/thin page risks
-- sitemap architecture
-- business slug strategy
-
-### Maps
-
-Compare:
-
-- Google Maps
-- Mapbox
-- OpenStreetMap-based providers
-
-Compare cost, developer experience, geocoding, map display, limits, and future proximity search.
-
-## Output
-
-Raw notes → `.research/`
-
-Accepted conclusions → `docs/DECISIONS.md`, feature specs, architecture docs.
+Proceed to `PHASE_02_MVP.md`.

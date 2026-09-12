@@ -1,178 +1,393 @@
-# Database — Phase 1 Model Direction
+# Buzl Listing — Database Direction
 
-This is a decision-locked model direction, not a migration specification. Phase 2 must define exact SQL types, constraints, indexes, RLS policies, and migrations.
+**Status:** Phase 1 conceptual model locked.  
+**Important:** This is not the final SQL schema. Phase 2 must lock table/column types, constraints, indexes, RLS, and migrations.
 
-## Initial entities
+## 1. Database capabilities
 
-### profiles
+Approved foundation:
 
-- id
+- PostgreSQL via Supabase
+- Row Level Security
+- Full Text Search
+- `pg_trgm`
+- PostGIS
+
+## 2. Core modeling rules
+
+- one public business record = one establishment/service-area listing
+- public business identity is separate from account ownership
+- publication status is separate from verification status
+- citation display values are separate from normalized matching values
+- structured address fields are retained
+- coordinates are stored geospatially
+- category taxonomy is hierarchical and curated
+- uncertain duplicates are reviewed, not auto-merged
+
+## 3. `profiles`
+
+Conceptual fields:
+
+```text
+id
+user_id
+full_name
+phone
+avatar_url
+role
+created_at
+updated_at
+```
+
+Final relationship to Supabase `auth.users` is a Phase 2 schema decision.
+
+## 4. `businesses`
+
+Conceptual fields:
+
+```text
+id
+
+name
+slug
+description
+
+publication_status
+verification_status
+
+location_mode
+show_street_address
+
+primary_category_id
+
+primary_phone
+primary_phone_normalized
+alternate_phone
+whatsapp_phone
+
+email
+website_url
+website_domain_normalized
+
+logo_path
+cover_path
+
+geo_point
+
+created_source
+
+created_at
+updated_at
+published_at
+verified_at
+```
+
+### `location_mode`
+
+```text
+storefront
+service_area
+hybrid
+```
+
+### `publication_status`
+
+```text
+draft
+pending
+published
+rejected
+suspended
+archived
+```
+
+### `verification_status`
+
+```text
+unverified
+pending
+verified
+failed
+```
+
+Exact PostgreSQL enum/check-table implementation is a Phase 2 decision.
+
+## 5. Ownership / membership
+
+Do not permanently couple the public business row to one immutable owner.
+
+Phase 2 should evaluate a relationship such as:
+
+```text
+business_members
+- business_id
 - user_id
-- full_name
-- phone
-- avatar_url
 - role
-- created_at
-- updated_at
-
-### businesses
-
-- id
-- owner_user_id
-- name
-- slug
-- description
-- publication_status
-- verification_status
-- location_mode (`storefront`, `service_area`, `hybrid`)
-- show_street_address
-- email
-- primary_phone
-- primary_phone_normalized
-- alternate_phone
-- whatsapp_phone
-- website_url
-- website_domain_normalized
-- logo_path
-- cover_path
-- primary_category_id
-- geo_point (PostGIS geography point)
-- created_at
-- updated_at
-- published_at
-- verified_at
-
-### business_addresses
-
-- id
-- business_id
-- address_line_1
-- address_line_2
-- locality
-- city
-- district
-- state
-- country
-- country_code
-- postal_code
-- latitude
-- longitude
-- is_primary
-- is_public
-- source
-- created_at
-- updated_at
-
-### categories
-
-- id
-- parent_id
-- name
-- slug
-- description
 - status
-- sort_order
+```
 
-### tags
+This supports:
 
-- id
-- name
-- slug
+- Buzl-created unclaimed listings
+- later claiming
+- multiple managers
+- ownership transfer
 
-### business_tags
+## 6. `business_addresses`
 
-- business_id
-- tag_id
+Conceptual fields:
 
-### services
+```text
+id
+business_id
 
-- id
-- category_id
-- name
-- slug
-- description
+address_line_1
+address_line_2
+locality
+city
+district
+state
+country
+country_code
+postal_code
 
-### business_services
+latitude
+longitude
 
-- business_id
-- service_id
-- custom_label (optional)
+is_primary
+is_public
+source
 
-### business_hours
+created_at
+updated_at
+```
 
-- id
+Rules:
+
+- postal/PIN codes are strings, not integers
+- service-area listings may keep a private/internal street address
+- public address visibility is explicitly controlled
+
+Phase 2 must decide whether the canonical PostGIS point resides on `businesses`, `business_addresses`, or both with a clearly defined source of truth.
+
+## 7. Geography / PostGIS
+
+Use an indexable geographic `POINT` representation for canonical coordinates.
+
+Phase 2 must lock:
+
+- column location
+- SRID/type
+- spatial index
+- coordinate synchronization rules
+- distance-query functions
+
+## 8. `categories`
+
+Conceptual:
+
+```text
+id
+parent_id
+name
+slug
+description
+status
+sort_order
+created_at
+updated_at
+```
+
+Rules:
+
+- hierarchical
+- curated by Buzl
+- one primary category per business
+- additional categories only if explicitly included in the Phase 2 product spec
+
+## 9. Services
+
+Category and service are different concepts.
+
+Example:
+
+```text
+Category: Digital Marketing Agency
+
+Services:
+- Local SEO
+- Google Ads
+- Meta Ads
+- Website Development
+```
+
+Phase 2 must choose between:
+
+1. controlled reusable `services` + `business_services`, or
+2. owner-defined business services for MVP with later normalization.
+
+Do not guess this during implementation.
+
+## 10. Tags
+
+Tags are cross-cutting descriptors, not a substitute for categories.
+
+Conceptual:
+
+```text
+tags
+business_tags
+```
+
+Phase 2 must define whether tags are:
+
+- admin-controlled only, or
+- selectable/creatable by business owners
+
+Avoid an unrestricted SEO-spam tag system.
+
+## 11. Business hours
+
+Conceptual:
+
+```text
+business_hours
 - business_id
 - day_of_week
 - opens_at
 - closes_at
 - is_closed
+```
 
-### business_social_links
+Phase 2 should account for:
 
-- id
+- multiple intervals in one day
+- 24-hour businesses
+- temporary/special hours as a future extension
+
+## 12. Social/external links
+
+Conceptual:
+
+```text
+business_social_links
 - business_id
 - platform
 - url
+```
 
-### locations
+Only store valid user/Buzl-provided links.
 
-Reusable hierarchy for browsing and service areas:
+## 13. External identifiers
 
-- id
-- parent_id
-- type (`country`, `state`, `district`, `city`, `locality`)
-- name
-- slug
-- country_code
-- state_code (optional)
-- geo_point (optional)
-- status
+Recommended conceptual table:
 
-### business_service_areas
-
-- id
-- business_id
-- location_id
-- radius_km (optional)
-
-### business_external_ids
-
-- id
+```text
+business_external_ids
 - business_id
 - provider
 - external_id
 - external_url
 - created_at
+```
 
-### business_slug_history
+Examples:
 
-- id
+- legitimate Google Place ID
+- Buzl CRM/client ID
+- future integrations
+
+External IDs are references, never Buzl primary keys.
+
+## 14. Slug history
+
+Recommended:
+
+```text
+business_slug_history
 - business_id
 - slug
 - created_at
-
-## Required lifecycle concepts
-
-Publication status:
-
-```text
-draft | pending | published | rejected | suspended | archived
 ```
 
-Verification status:
+Purpose:
+
+- redirect old published slugs
+- preserve citation/bookmark value after legitimate name/slug changes
+
+## 15. Service areas
+
+Required conceptually for `service_area` / `hybrid` listings.
+
+Potential model:
 
 ```text
-unverified | pending | verified | failed
+business_service_areas
+- business_id
+- location_id
+- radius_km nullable
 ```
 
-These are independent. The final model must capture the actor and time for sensitive state changes.
+Final structure is a Phase 2 decision.
 
-## Important database rules
+Do not encode a service area as a fake street address.
 
-- Preserve exact NAP values.
-- Store matching-normalized values separately from user-facing canonical values.
-- Add uniqueness, full-text, trigram, and spatial indexes intentionally.
-- Flag uncertain duplicates for review; do not auto-merge fuzzy matches.
-- Treat the one-to-one business listing as an establishment/service-area unit; do not build multi-branch grouping in MVP.
-- Use RLS from the beginning.
-- Never rely on client-supplied role/ownership values.
+## 16. Location taxonomy
+
+Reusable hierarchical location entities should support:
+
+```text
+country
+state
+district
+city
+locality
+```
+
+Potential conceptual table:
+
+```text
+locations
+- id
+- parent_id
+- type
+- name
+- slug
+- country_code
+- state_code
+- geo_point nullable
+- status
+```
+
+Phase 2 must decide seeding/source strategy.
+
+## 17. Duplicate detection data
+
+Strong normalized signals may include:
+
+- primary phone
+- website domain
+- legitimate external ID
+- internal Buzl business/client ID
+
+Context/fuzzy signals:
+
+- normalized name
+- address
+- postal code
+- city
+- PostGIS distance
+- trigram similarity
+
+Do not enforce one simplistic uniqueness rule that blocks legitimate chains/branches.
+
+## 18. Database security
+
+Phase 2 must define RLS for every protected table.
+
+Rules already locked:
+
+- users cannot modify arbitrary businesses
+- client-provided role/owner claims are untrusted
+- admin capability comes from trusted server/database state
+- migrations are version-controlled

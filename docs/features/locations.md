@@ -1,6 +1,10 @@
 # Feature — Locations
 
-## Proposed hierarchy
+**Status:** Phase 1 location architecture locked; provider and seed details pending.
+
+## Location hierarchy
+
+The directory should support a reusable hierarchy conceptually shaped as:
 
 ```text
 Country
@@ -10,28 +14,55 @@ Country
               └── Locality
 ```
 
-## Business address
+Exact data source/seeding is Phase 2 work.
 
-Store structured address fields separately.
+## Listing location modes
 
-For storefront and hybrid businesses, retain an internal canonical address and independently control whether the exact street address is public. Service-area businesses must not use a fake street address to represent their coverage.
+```text
+storefront
+service_area
+hybrid
+```
+
+## Structured address
+
+Store address components separately.
+
+Do not encode service area as a fake address.
 
 ## Coordinates
 
-Store an indexable PostGIS geography point for map display and future proximity search. Keep provider-specific geocoding objects out of the core business record.
+Enable PostGIS and retain an indexable canonical geographic point.
 
-## Maps and geocoding
+Uses:
 
-Use provider-neutral map/geocoder interfaces. The provider decision is deferred to Phase 2; the shortlist is MapTiler, LocationIQ, Geoapify, Google Maps Platform, and Mapbox.
+- map display
+- future near-me search
+- distance sorting
+- duplicate proximity signals
 
-Do not use public OpenStreetMap Foundation tile or Nominatim infrastructure as the production backend.
+## Address privacy
 
-## Future public pages
+Street-address visibility is separate from internal storage.
 
-Conceptual examples:
+Service-area businesses may keep a private address while publishing service areas.
 
-- `/location/chennai`
-- `/location/chennai/digital-marketing`
-- `/category/digital-marketing`
+## Maps/geocoding
 
-Only useful category/location combinations with real listings and unique context are indexable. Exact route naming and thresholds are locked in Phase 2.
+Domain/application design must be provider-neutral.
+
+Final provider is deferred to Phase 2.
+
+Shortlist:
+
+- MapTiler
+- LocationIQ
+- Geoapify
+- Google Maps Platform
+- Mapbox
+
+## Public discovery
+
+Potential pages include location and selected location+category landing pages.
+
+Exact route patterns and indexation thresholds are Phase 2 decisions.

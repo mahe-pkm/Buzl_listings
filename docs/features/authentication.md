@@ -1,36 +1,44 @@
 # Feature — Authentication
 
-## MVP
+**Status:** Phase 1 direction locked; Phase 2 UX details pending.
 
-- register
-- login
-- logout
-- password recovery if password auth is enabled
-- protected owner dashboard
-- profile record
-- role-aware navigation
-
-## Preferred backend
+## Approved backend
 
 Supabase Auth.
 
-## Credential decision
-
-The first credential flow will be email/password or magic link. Select one with the Phase 2 onboarding specification; social login is not required for MVP.
-
 ## Initial roles
 
-- `admin`
-- `business_owner`
-- `user`
+Conceptually:
 
-Roles must come from trusted database/server state.
+```text
+admin
+business_owner
+user
+```
 
-## Later
+The exact role/membership implementation must be locked with RLS in Phase 2.
 
+## MVP auth method
+
+Deferred to Phase 2:
+
+- email + password, or
 - magic link
-- OTP
-- Google login
-- team/business staff access
 
-Business ownership and role checks must be derived from trusted server/database state. Future business-member relationships must support ownership separately from a public listing, so claim and admin-created listing flows remain possible.
+Social login is not required for MVP.
+
+## Security rules
+
+- roles must come from trusted server/database state
+- never trust a client-supplied role
+- protected business actions must verify membership/ownership
+- UI route protection does not replace server/database authorization
+
+## Future
+
+Potential additions:
+
+- OTP
+- Google sign-in
+- business team members
+- claim-business verification

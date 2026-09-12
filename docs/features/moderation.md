@@ -1,42 +1,97 @@
-# Feature — Moderation
+# Feature — Moderation, Verification & Duplicates
 
-Moderation should exist in the data model from the beginning, even if Buzl internal listings are initially fast-tracked.
+**Status:** Phase 1 architecture locked; Phase 2 policy/threshold details pending.
 
-## Lifecycle
+## Publication status
+
+```text
+draft
+pending
+published
+rejected
+suspended
+archived
+```
+
+## Verification status
+
+```text
+unverified
+pending
+verified
+failed
+```
+
+Publication and verification are independent.
+
+## Internal/Buzl launch
+
+Buzl-created or trusted client listings may use a faster publishing path.
+
+The exact MVP fast-path policy is a Phase 2 decision.
+
+## External registration
+
+When public external registration is enabled, the recommended direction is:
 
 ```text
 draft
   ↓
+submit
+  ↓
 pending
   ↓
-published / rejected
+duplicate/security/content checks
+  ↓
+published or rejected
 ```
 
-Additional states:
+## Duplicate detection
 
-- suspended
-- archived
+Use layered signals.
 
-Publication status is not verification. Verification uses `unverified`, `pending`, `verified`, and `failed` independently.
+Strong:
 
-## Admin capabilities later
+- normalized phone
+- normalized website domain
+- legitimate external provider ID
+- internal Buzl business/client ID
 
-- review queue
-- approve
-- reject with reason
-- suspend
-- detect possible duplicates
-- restore/archive
-- view owner and change history
+Context/fuzzy:
 
-## Duplicate policy
+- normalized name
+- address
+- postal code
+- city
+- geographic proximity
+- trigram similarity
 
-- Block or require confirmation for high-confidence matches from strong identifiers.
-- Send medium-confidence matches to pending review.
-- Never auto-merge fuzzy name/address matches.
+Do not auto-merge uncertain fuzzy matches.
 
-## Launch policy direction
+## Claiming
 
-Buzl-created or trusted-client listings may use a fast path, but the actor and reason must be recorded. External public signups should enter a review path with duplicate, content, and abuse checks. The exact policy is a Phase 2 decision.
+Future architecture should permit:
 
-External public registrations should not automatically receive trusted status without an explicit policy.
+```text
+existing listing
+  ↓
+claim request
+  ↓
+verification
+  ↓
+business membership/management granted
+```
+
+The public business record should not require an owner account to exist from day one.
+
+## Verification methods
+
+Potential future methods:
+
+- phone OTP
+- email/domain verification
+- website ownership
+- Buzl client verification
+- manual admin evidence
+
+Phase 2 decides what, if any, verification method is required for MVP.

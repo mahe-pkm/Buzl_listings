@@ -1,70 +1,100 @@
 # Feature — Business Listings
 
-## Owner capabilities
+**Status:** Phase 1 behavior model locked; Phase 2 field matrix pending.
 
-- create draft business
-- edit business
-- manage contact details
-- manage address
+## Listing unit
+
+One public listing represents one:
+
+```text
+storefront
+service_area
+hybrid
+```
+
+business establishment/service-area listing.
+
+## Owner/manager capabilities
+
+MVP direction:
+
+- create draft
+- edit business identity
+- manage NAP/contact data
 - manage category
-- manage tags
 - manage services
+- manage location/service area
+- manage map coordinates
 - manage business hours
-- manage website/social URLs
 - manage logo/cover
-- set map coordinates
-- preview public profile
+- manage web/social links
+- preview
+- publish/submit based on policy
 
-## Listing states
+## Publication lifecycle
 
-- draft
-- pending
-- published
-- rejected
-- suspended
-- archived
+```text
+draft
+pending
+published
+rejected
+suspended
+archived
+```
 
-## Verification states
+## Verification lifecycle
 
-- unverified
-- pending
-- verified
-- failed
+```text
+unverified
+pending
+verified
+failed
+```
 
-Verification state is independent from publication state.
+Do not merge publication and verification into one status.
 
-## Listing boundary
+## Citation-safe NAP
 
-One business record represents one physical establishment or one service-area listing. It can have one of these modes:
+Canonical controlled fields:
 
-- `storefront`
-- `service_area`
-- `hybrid`
-
-Multi-branch organization management is deferred. A service-area business may keep its street address internal while showing service areas publicly.
-
-## Citation fields
-
-NAP accuracy is mandatory:
-
-- exact business name
-- structured postal address
+- business name
 - primary phone
+- structured address
 
-Store canonical, display-safe NAP separately from normalized phone/domain/address values used for matching. Owner- or Buzl-provided information is authoritative; do not use scraped third-party data as the source of truth.
+Matching/search-normalized values may exist separately.
 
-## Public page
+## Address visibility
 
-Should expose only publishable fields and use a stable canonical URL.
+For service-area/hybrid businesses, exact street address may be stored internally while hidden publicly.
 
-Canonical concept: `/business/{slug}`. Category and location must not be structural parts of the listing URL. Retain and redirect historical slugs after approved changes.
+## Canonical public route
 
-## Validation
+Concept:
 
-- valid phone/email/URL formats
-- required NAP fields
-- safe slug generation
-- category validity
-- ownership checks
-- publication and verification transition authorization
-- duplicate candidate detection using strong identifiers and contextual/fuzzy signals
+```text
+/business/{business-slug}
+```
+
+Category/location changes do not change the canonical route structure.
+
+Old published slugs should redirect after a legitimate slug change.
+
+## Provenance
+
+Authoritative business data is entered/approved by:
+
+- Buzl
+- owner/authorized manager
+- future trusted integrations
+
+Do not use scraped third-party data as the master record.
+
+## Phase 2 must lock
+
+- exact required/optional fields
+- ownership/membership model
+- publish policy for Buzl clients
+- publish policy for external users
+- slug generation/collision rules
+- media rules
+- claim-business boundary

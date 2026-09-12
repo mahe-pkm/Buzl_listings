@@ -1,66 +1,181 @@
-# SEO & Citation Requirements — Phase 1 Direction
+# Buzl Listing — SEO & Citation Architecture
 
-SEO is part of the platform architecture.
+**Status:** Phase 1 SEO architecture locked; Phase 2 will lock exact routes/indexation thresholds.
 
-## Public pages
+## 1. Core principle
 
-Each public listing should have:
+SEO is part of the data and routing architecture, not a later plugin.
 
-- canonical URL
-- unique title
-- unique meta description where data allows
-- semantic headings
-- business NAP
-- category
+Every published business page must be generated from the same canonical business record that powers visible NAP and structured data.
+
+## 2. Canonical business route
+
+Accepted conceptual route:
+
+```text
+/business/{business-slug}
+```
+
+Do not put required city/category segments into the canonical business URL.
+
+Reason:
+
+- businesses move
+- categories change
+- names can be corrected
+
+A location/category change must not force a new canonical listing URL.
+
+## 3. Slug changes
+
+If a published business slug changes:
+
+1. store the old slug
+2. permanently redirect old URL → current canonical URL
+3. update sitemap/internal links to the new canonical URL
+
+Do not silently allow old URLs to become duplicate live pages.
+
+## 4. Discovery landing pages
+
+Support intentional pages for:
+
+```text
+category
+location
+selected category + location
+```
+
+Exact route patterns are Phase 2 decisions.
+
+Only useful combinations should become indexable.
+
+## 5. Filter/facet control
+
+Do not automatically expose every combination of:
+
+- sort
+- open now
+- tags
+- distance
+- view mode
+- arbitrary query parameters
+
+as indexable SEO pages.
+
+Search/filter URLs are application states unless explicitly promoted to approved landing pages.
+
+## 6. LocalBusiness structured data
+
+Every published listing should emit `LocalBusiness` JSON-LD using the most specific valid subtype available.
+
+Generate from real stored data only.
+
+Potential fields:
+
+- `@type`
+- `name`
+- canonical `url`
+- `telephone`
 - address
-- map/directions link
-- business hours
-- services
-- breadcrumbs
-- Open Graph metadata
-- structured data
+- geo
+- opening hours
+- image
+- `sameAs` where valid
 
-## Canonical routes and indexation
+Do not invent missing values to make schema appear complete.
 
-- Each listing has one canonical URL, conceptually `/business/{slug}`.
-- Category and location changes must not alter a listing's canonical URL.
-- Retain historical slugs and issue permanent redirects when a slug changes.
-- Index category, location, and selected category-plus-location pages only when they have real listings and useful unique context.
-- Keep internal search, sorting, open-now, distance, tag, map-view, and other arbitrary facet URLs out of the indexable landing-page system.
+## 7. One listing = one LocalBusiness location/service-area entity
 
-## Structured data
+MVP aligns one public listing to one establishment/service-area business.
 
-Primary candidate:
+A brand with multiple branches should eventually have multiple location listings grouped under a higher-level brand/organization concept.
 
-- `LocalBusiness` or a more specific subtype
+## 8. Citation integrity
 
-Additional schemas where valid:
+One canonical source must drive:
 
-- `Organization`
-- `WebSite`
-- `BreadcrumbList`
+- business name
+- public primary phone
+- public structured address
+- listing header/cards
+- metadata where appropriate
+- LocalBusiness JSON-LD
 
-Generate schema only from actual stored business data.
+Do not maintain independently editable NAP copies for "SEO".
 
-Use the most specific valid `LocalBusiness` subtype when known. Each physical establishment or public service-area listing is a separate schema entity. Never invent values to complete schema.
+## 9. Service-area businesses
 
-## Citation integrity
+A service-area business may:
 
-The business name, address, and phone number must remain consistent wherever rendered.
+- retain an internal/private street address
+- expose approved service-area information publicly
+- hide exact street address when required by the product policy
 
-## Technical SEO
+Do not fabricate storefront addresses for SEO.
 
-- XML sitemap
-- robots.txt
-- clean URLs
-- crawlable pagination
-- internal linking
-- mobile-first output
-- good Core Web Vitals
-- accessible HTML
+## 10. Sitemap architecture
 
-At scale, generate a sitemap index and split canonical URLs by content class. A sitemap file must remain within Google's 50,000 URL and 50 MB uncompressed limits. Exclude drafts, pending/rejected/suspended records, internal routes, and non-canonical facets.
+Include only canonical public URLs.
 
-## Citation source of truth
+Do not include:
 
-The same canonical business record must drive visible NAP, JSON-LD, Open Graph data, listing cards, and sitemap URLs. Do not create independent SEO copies of business name, phone, or address.
+- drafts
+- pending
+- rejected
+- suspended
+- archived
+- account/dashboard routes
+- internal search/filter URLs
+
+As scale grows, use a sitemap index and segmented sitemap files.
+
+Conceptually:
+
+```text
+/sitemap.xml
+  ├── business sitemap(s)
+  ├── categories sitemap
+  └── locations sitemap
+```
+
+## 11. Metadata
+
+Each public business should have meaningful:
+
+- title
+- meta description when sufficient real data exists
+- canonical
+- Open Graph data
+- breadcrumb context
+
+Potential title pattern:
+
+```text
+{Business Name} in {City} | {Primary Category} | Buzl
+```
+
+This is a template direction, not permission to invent city/category values.
+
+## 12. Thin-page protection
+
+A database combination does not automatically deserve an indexable URL.
+
+Phase 2 must define a quality/indexation policy for:
+
+- empty location pages
+- low-inventory category pages
+- category+location pages
+- pagination
+- duplicate taxonomies
+
+## 13. Performance/accessibility
+
+Public directory SEO depends on:
+
+- server-first output
+- semantic HTML
+- image optimization
+- controlled JS
+- strong Core Web Vitals
+- accessible interaction patterns

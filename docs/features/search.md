@@ -1,36 +1,66 @@
 # Feature — Search
 
-## MVP search dimensions
+**Status:** Phase 1 search architecture locked.
+
+## MVP search engine
+
+Use PostgreSQL.
+
+Approved capabilities:
+
+- Full Text Search
+- `pg_trgm`
+- structured filters
+- PostGIS when proximity search is required
+
+Do not add Algolia, Elasticsearch, or OpenSearch for MVP.
+
+## Search dimensions
+
+Initial product dimensions:
 
 - business name
 - category
 - service
-- tag
+- tag if retained in MVP
 - location
 
-## Architecture
+Future:
 
-Start with PostgreSQL-backed search/filtering:
+- distance / near me
+- open now
+- verified
+- featured
 
-- PostgreSQL full-text search for business names, categories, services, tags, and descriptions
-- `pg_trgm` for business-name and address typo tolerance
-- GIN indexes for text search
-- PostGIS for future distance/proximity queries
+## Ranking direction
 
-Use weighted search fields, prioritizing business name, then category/services, then tags and description. Revisit language configuration when real Tamil or other multilingual content exists; do not add multilingual search infrastructure prematurely.
+Potential weighting:
 
-## Duplicate candidate support
+```text
+highest: business name
+high: category/services
+medium: tags/location
+lower: description
+```
 
-Search capabilities must support duplicate review using normalized phone/domain and legitimate external/Buzl IDs, then name/address/postal-code/coordinate context and trigram similarity. Fuzzy matches are review candidates, never automatic merges.
+Exact ranking formula is Phase 2/implementation tuning.
 
-## Do not add yet
+## Fuzzy matching
 
-- Elasticsearch/OpenSearch/Algolia
-- complex ranking AI
-- paid placement ranking logic
+Use trigram similarity where useful for:
 
-## Indexation boundary
+- business names
+- addresses
+- duplicate detection
 
-Search and facet URLs are user-discovery tools, not automatically indexable SEO landing pages. Only explicitly approved category, location, and category-plus-location pages may be indexable.
+## SEO boundary
 
-Add specialized search infrastructure only when actual scale/quality requirements justify it.
+Internal search/filter states do not automatically become indexable landing pages.
+
+Only explicitly approved category/location landing pages receive SEO treatment.
+
+## Multilingual note
+
+Do not assume English stemming is correct for every future Tamil/Indian-language field.
+
+Keep the design flexible; do not add multilingual search infrastructure until content requires it.
