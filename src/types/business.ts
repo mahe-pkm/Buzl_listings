@@ -71,6 +71,12 @@ export interface Business {
   publication_status: PublicationStatus;
   verification_status: VerificationStatus;
   created_source: string;
+  source_record_id?: string | null;
+  source_buss_id?: string | null;
+  source_loc_id?: string | null;
+  source_place_id?: string | null;
+  imported_by_user_id?: string | null;
+  imported_by_member_id?: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;

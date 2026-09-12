@@ -132,6 +132,49 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   - Production build (`npm run build`) and linter (`npm run lint`) pass cleanly with 0 errors and 0 warnings.
   - Automated integration test suite (`scripts/verify-day1-workflow.mjs`) ran and passed all 6 end-to-end scenarios against local Supabase.
 
+## Day 1.5 implementation status
+
+- **Day 1.5 — Internal Buzl Profile JSON Import with Buzl Member Support is COMPLETE and verified.**
+- **Terminology & Identity Concept:**
+  - Role terminology strictly updated: "Buzl Member" (`buzl_member`) is used exclusively (zero occurrences of "Staff").
+  - `member_id` identity concept added to `public.profiles` (`member_id text unique check (...)`). Assigned via admin-only RPC `set_member_id`.
+  - Buzl Member test account seeded: `member@buzl.test` (`role: 'buzl_member'`, `member_id: 'BUZL-M-1024'`); Admin test account assigned `member_id: 'BUZL-M-0001'`.
+- **Database & Permissions:**
+  - Migration `20260912150000_day1_5_member_and_import.sql` applied.
+  - Helper `is_buzl_member()` returns true for `admin` and `buzl_member`.
+  - Provenance audit columns added to `public.businesses`: `source_record_id`, `source_buss_id`, `source_loc_id`, `source_place_id`, `imported_by_user_id`, `imported_by_member_id`.
+  - `created_source` column check constraint supports `'trusted_import'`.
+  - pgTAP test suite `supabase/tests/day1_5_import_runtime.sql` passes (verifying admin-only member_id assignment, member RPC checks, and denial of direct publication).
+- **Schema & Adapter Layer:**
+  - Strict Zod schema `BuzlProfileImportSchema` (`src/lib/import/schema.ts`) validates legacy payload structure, coerced coordinates, and arrays.
+  - Adapter `mapBuzlProfileToListing()` (`src/lib/import/adapter.ts`) isolates legacy data from canonical schema.
+  - Robust Indian address parser (`parseIndianAddress`) extracts PIN, state, city, and locality.
+  - Category matcher (`matchCategory`) runs exact and alias matching; flags `status: 'review_required'` when source category is not active (e.g. Laptech's "Electronics repair shop").
+  - Service-area privacy: `show_street_address` is strictly false, address lines cleared, source coordinates flagged `isSuppressedFromPublic: true` and held for internal review only.
+- **Route & UI Implementation:**
+  - Importer routes: `/admin/businesses/import` and `/internal/businesses/import` (redirect).
+  - Middleware & layouts allow `admin` and `buzl_member`; strictly deny `business_owner` (redirects to `/dashboard`) and anonymous (redirects to `/login`).
+  - Comprehensive 8-section review interface (`src/components/import/BuzlProfileImporter.tsx`):
+    1. Source Identity & Provenance (recordId, bussId, locId, placeId, legacy status)
+    2. Import Actor Attribution (name, role, member_id badge, traceable audit)
+    3. Business Information (canonical name, phone, contact email, website, highlights)
+    4. Classification & Category Match (source category, match status badge, category picker)
+    5. Location & Delivery Mode (mode, raw address, city/state, service areas, internal coordinates)
+    6. Services Provided (scrollable chips with count)
+    7. Warnings & Duplicate Signals (real-time duplicate detection across phone, domain, legacy IDs)
+    8. Privacy Controls (show_email toggle, show_street_address locked to false for service area)
+  - Live right-column Public-Safe Preview using `BusinessPreviewCard` with zero leakage.
+  - Success modal ("BUZL PROFILE IMPORTED") detailing Business ID, Member ID attribution, and draft status.
+  - Single-click "Load Laptech Sample Profile" for instant validation.
+- **Verification & Review:**
+  - Independent Product Review: PASS (100% compliant with specifications).
+  - Independent Security Review: PASS (Strict authorization, anti-spoofing, publication enforcement).
+  - Independent Privacy Review: PASS (Zero coordinate leakage, service-area address suppression, contact email hidden by default).
+  - Automated integration test suite (`scripts/verify-day1-5-import.mjs`): 9 out of 9 tests passed.
+  - Full pgTAP database test suite (`npx supabase test db`): 2 of 2 test files passed.
+  - Linting (`npm run lint`): 0 errors, 0 warnings.
+  - Production build (`npm run build`): Compiled and generated successfully.
+
 ## Next exact task
 
 Day 2 — Public Directory, Discovery, Search, SEO & Deployment:

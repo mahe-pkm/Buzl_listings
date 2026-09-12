@@ -18,6 +18,8 @@ export default async function DashboardLayout({
         userEmail={user.email}
         role={user.role}
         isAdmin={user.isAdmin}
+        isBuzlMember={user.isBuzlMember}
+        memberId={user.memberId}
       />
       <div className="flex-1 flex flex-col min-w-0 pt-14 md:pt-0">
         {children}

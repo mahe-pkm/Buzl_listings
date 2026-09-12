@@ -1,0 +1,91 @@
+{
+  "_id": "65b2f8a9e4b0123456789abc",
+  "gbpStatus": "active",
+  "name": "Laptech",
+  "category": "Electronics repair shop",
+  "additionalCategories": [
+    "Computer service",
+    "Data recovery service"
+  ],
+  "serviceModel": "service_area",
+  "country": "IN",
+  "languages": ["en", "ta"],
+  "timezone": "Asia/Kolkata",
+  "placeId": "ChIJb8G_laptech_chennai_place_id",
+  "location": {
+    "address": "Shop No 14, 1st Floor, Chennai Complex, Anna Nagar, Chennai, Tamil Nadu 600040",
+    "geo": {
+      "lat": 13.0827,
+      "lng": 80.2707
+    },
+    "serviceAreas": [
+      "Chennai"
+    ],
+    "landmarks": [
+      "Opposite Anna Nagar Tower Park"
+    ]
+  },
+  "contact": {
+    "phone": "+91 97890 90902",
+    "email": "support@laptechsss.in",
+    "bookingUrl": "http://www.laptechsss.in/book-appointment"
+  },
+  "services": [
+    "Laptop Screen Replacement",
+    "Motherboard Chip-level Service",
+    "Hard Drive Data Recovery",
+    "SSD Upgrade & Installation",
+    "RAM Expansion",
+    "Laptop Keyboard Replacement",
+    "Battery Replacement",
+    "Liquid Damage Repair",
+    "Hinges & Body Fabrication",
+    "OS Installation & Activation",
+    "Virus & Malware Removal",
+    "Thermal Paste Reapplication",
+    "Laptop Overheating Fix",
+    "Power Jack DC Port Repair",
+    "Audio Jack & Speaker Repair",
+    "Touchpad Replacement",
+    "Wi-Fi & Bluetooth Troubleshooting",
+    "MacBook Logic Board Repair",
+    "MacBook Screen Replacement",
+    "BIOS Reprogramming",
+    "Custom Gaming Laptop Service",
+    "CCTV Setup for Business",
+    "Annual Maintenance Contract",
+    "Onsite Diagnostic Check",
+    "Blue Screen Crash Resolution",
+    "Laptop Dust Deep Cleaning"
+  ],
+  "products": [],
+  "usp": [
+    "Same-day diagnostic check",
+    "90-day warranty on genuine spare parts"
+  ],
+  "tagline": "Trusted Multi-brand Laptop Service in Chennai",
+  "notes": "Preferred walk-in and doorstep repair across Central and South Chennai",
+  "performanceKeywords": [
+    "laptop repair chennai",
+    "macbook service anna nagar",
+    "chip level motherboard fix"
+  ],
+  "website": {
+    "url": "http://www.laptechsss.in/",
+    "scope": "page"
+  },
+  "social": {
+    "facebook": "https://facebook.com/laptechchennai",
+    "instagram": "https://instagram.com/laptech_chennai",
+    "linkedin": "https://linkedin.com/company/laptech-services",
+    "youtube": "https://youtube.com/@laptechchennai"
+  },
+  "competitors": [],
+  "locId": "locn-2569",
+  "bussId": "buss-94",
+  "status": "active",
+  "createdAt": "2024-01-15T08:30:00.000Z",
+  "createdBy": "legacy_import_agent_01",
+  "updatedAt": "2024-06-20T14:45:00.000Z",
+  "updatedBy": "legacy_admin_chennai"
+}

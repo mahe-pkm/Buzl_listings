@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
-  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
+  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal");
   const isAuthRoute = pathname === "/login";
 
   if (isProtected && !user) {
@@ -45,17 +45,34 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (pathname.startsWith("/admin") && user) {
-    const role = user.app_metadata?.role;
-    if (role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
+  if (user) {
+    const role = user.app_metadata?.role as string | undefined;
+    const isInternalUser = role === "admin" || role === "buzl_member";
 
-  if (isAuthRoute && user) {
-    const role = user.app_metadata?.role;
-    const dest = role === "admin" ? "/admin/businesses" : "/dashboard";
-    return NextResponse.redirect(new URL(dest, request.url));
+    // Importer routes: /admin/businesses/import and /internal/*
+    const isImportRoute = pathname === "/admin/businesses/import" || pathname.startsWith("/internal");
+
+    if (isImportRoute) {
+      if (!isInternalUser) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    } else if (pathname.startsWith("/admin")) {
+      // General admin routes require admin role
+      if (role !== "admin") {
+        const dest = role === "buzl_member" ? "/admin/businesses/import" : "/dashboard";
+        return NextResponse.redirect(new URL(dest, request.url));
+      }
+    }
+
+    if (isAuthRoute) {
+      let dest = "/dashboard";
+      if (role === "admin") {
+        dest = "/admin/businesses";
+      } else if (role === "buzl_member") {
+        dest = "/admin/businesses/import";
+      }
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
   }
 
   return response;
@@ -65,6 +82,7 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/admin/:path*",
+    "/internal/:path*",
     "/login",
   ],
 };

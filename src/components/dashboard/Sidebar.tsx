@@ -8,11 +8,21 @@ interface SidebarProps {
   userEmail?: string | null;
   role?: string;
   isAdmin?: boolean;
+  isBuzlMember?: boolean;
+  memberId?: string | null;
 }
 
-export default function Sidebar({ userEmail, role = 'business_owner', isAdmin = false }: SidebarProps) {
+export default function Sidebar({
+  userEmail,
+  role = 'business_owner',
+  isAdmin = false,
+  isBuzlMember = false,
+  memberId = null,
+}: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isInternal = isAdmin || isBuzlMember || role === 'admin' || role === 'buzl_member';
 
   const navItems = [
     {
@@ -47,16 +57,30 @@ export default function Sidebar({ userEmail, role = 'business_owner', isAdmin = 
     },
   ];
 
-  const adminItems = [
+  const internalItems = [
+    ...(isAdmin
+      ? [
+          {
+            label: 'All Listings (Admin)',
+            href: '/admin/businesses',
+            icon: (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            ),
+            active: pathname.startsWith('/admin') && pathname !== '/admin/businesses/import',
+          },
+        ]
+      : []),
     {
-      label: 'All Listings (Admin)',
-      href: '/admin/businesses',
+      label: 'Import Buzl Profile',
+      href: '/admin/businesses/import',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
         </svg>
       ),
-      active: pathname.startsWith('/admin'),
+      active: pathname === '/admin/businesses/import',
     },
   ];
 
@@ -88,13 +112,13 @@ export default function Sidebar({ userEmail, role = 'business_owner', isAdmin = 
           </nav>
         </div>
 
-        {isAdmin && (
+        {isInternal && (
           <div>
             <div className="px-3 mb-2 text-xs font-semibold text-[#7D8795] uppercase tracking-wider">
-              Admin Area
+              {isAdmin ? 'Admin & Internal' : 'Buzl Member Actions'}
             </div>
             <nav className="space-y-1">
-              {adminItems.map((item) => (
+              {internalItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -120,20 +144,29 @@ export default function Sidebar({ userEmail, role = 'business_owner', isAdmin = 
       <div className="pt-4 border-t border-[#DCE2E8]">
         <div className="bg-[#F2F5FA] p-3 rounded-[8px] mb-2">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="text-xs font-medium text-[#2A3547] truncate max-w-[130px]">
+            <span className="text-xs font-medium text-[#2A3547] truncate max-w-[130px]" title={userEmail || undefined}>
               {userEmail || 'User'}
             </span>
             <span
               className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border ${
                 role === 'admin' || isAdmin
                   ? 'bg-[#E3F2EA] text-[#087C3C] border-[#BCE5CF]'
+                  : role === 'buzl_member' || isBuzlMember
+                  ? 'bg-[#F0EBFF] text-[#6929C4] border-[#D4BBFF]'
                   : 'bg-[#ECF4FF] text-[#004AAD] border-[#BEDBFE]'
               }`}
             >
-              {role === 'admin' || isAdmin ? 'Admin' : 'Owner'}
+              {role === 'admin' || isAdmin ? 'Admin' : role === 'buzl_member' || isBuzlMember ? 'Buzl Member' : 'Owner'}
             </span>
           </div>
-          <p className="text-[11px] text-[#7D8795]">Buzl Enterprise System</p>
+          {memberId ? (
+            <div className="flex items-center gap-1 mt-1 text-[11px] font-mono text-[#5D6776]">
+              <span className="text-[#7D8795]">Member ID:</span>
+              <span className="font-semibold text-[#2A3547]">{memberId}</span>
+            </div>
+          ) : (
+            <p className="text-[11px] text-[#7D8795]">Buzl Enterprise System</p>
+          )}
         </div>
 
         <form action="/auth/logout" method="POST">

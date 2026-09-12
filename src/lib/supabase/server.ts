@@ -34,9 +34,35 @@ export async function getSessionUser() {
   if (!user) return null;
 
   const role = (user.app_metadata?.role as string) || "business_owner";
+  const isAdmin = role === "admin";
+  const isBuzlMember = role === "buzl_member";
+  const isInternal = isAdmin || isBuzlMember;
+
+  let memberId: string | null = null;
+  let profileName: string | null = null;
+
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('member_id, full_name')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profile) {
+      memberId = profile.member_id || null;
+      profileName = profile.full_name || null;
+    }
+  } catch {
+    // If profile lookup fails, continue with auth user defaults
+  }
+
   return {
     ...user,
     role,
-    isAdmin: role === "admin",
+    isAdmin,
+    isBuzlMember,
+    isInternal,
+    memberId,
+    profileName,
   };
 }

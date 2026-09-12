@@ -5,7 +5,13 @@ import { redirect } from 'next/navigation';
 
 export default async function AdminBusinessesPage() {
   const user = await getSessionUser();
-  if (!user || !user.isAdmin) {
+  if (!user) {
+    redirect('/login');
+  }
+  if (!user.isAdmin) {
+    if (user.isBuzlMember) {
+      redirect('/admin/businesses/import');
+    }
     redirect('/dashboard');
   }
 
@@ -47,8 +53,8 @@ export default async function AdminBusinessesPage() {
         userEmail={user.email}
         isAdmin={true}
         action={{
-          label: 'Create Listing',
-          href: '/dashboard/businesses/new',
+          label: 'Import Buzl Profile',
+          href: '/admin/businesses/import',
         }}
       />
 

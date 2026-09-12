@@ -12,7 +12,7 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
-  if (!user.isAdmin) {
+  if (!user.isAdmin && !user.isBuzlMember) {
     redirect('/dashboard');
   }
 
@@ -21,7 +21,9 @@ export default async function AdminLayout({
       <Sidebar
         userEmail={user.email}
         role={user.role}
-        isAdmin={true}
+        isAdmin={user.isAdmin}
+        isBuzlMember={user.isBuzlMember}
+        memberId={user.memberId}
       />
       <div className="flex-1 flex flex-col min-w-0 pt-14 md:pt-0">
         {children}
