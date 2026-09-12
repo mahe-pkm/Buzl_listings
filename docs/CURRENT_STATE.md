@@ -207,21 +207,47 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   - UI Runtime Errors: 0 errors
   - 13 verification screenshots captured in `tests/screenshots/`
 
+---
+
+## Day 2 — Public Directory, Search, Discovery, SEO & Staging Readiness: COMPLETE
+
+- **Database & RPC Layer (`supabase/migrations/20260912160000_day2_public_directory.sql`):**
+  - Applied migration with GIN `pg_trgm` indexes across `businesses`, `categories`, `services`, and `service_areas`.
+  - 8 hardened `SECURITY DEFINER` RPCs with `search_path = pg_catalog, public`, explicit privilege revocation, bounded pagination (`limit 1..50`, `offset >= 0`), bounded input (`query <= 100 chars`, `slug <= 160 chars`), and published-only predicates.
+  - Table `public.approved_combination_indexes` with RLS enforcing editorial approval for indexed location+category combination pages.
+- **5 User Constraints Verified:**
+  1. **Constraint 1 (Factual Content):** Categories and locations use stored factual names, counts, and listing cards; no invented marketing descriptions.
+  2. **Constraint 2 (Combination Indexability Gate):** Approved combinations (`chennai/retail-store`) receive `robots: { index: true }` and enter `sitemap.xml`; unapproved combinations (`chennai/clinic`) render cleanly but receive `robots: { index: false, follow: true }` and are excluded from `sitemap.xml`.
+  3. **Constraint 3 (Trusted Timezone Live Hours):** Live "Open Now" / "Closed" status claims require a trusted timezone (`IN` → `Asia/Kolkata`); unmapped/unknown timezones display operating hours without live-status claims.
+  4. **Constraint 4 (Hardened RPCs & Strict Privacy):** Complete suppression of private street addresses, postal codes, and coordinates for service-area listings; zero internal user IDs, member IDs, or provenance IDs in public projections; contact email rendered only when `show_email = true`.
+  5. **Constraint 5 (Recently Published Businesses):** Homepage section titled "Recently Published Businesses" querying `publication_status = 'published' order by updated_at desc limit 6`; no artificial "Featured" or paid rankings.
+- **Public App Router Routes (10):**
+  - `/` (Homepage with search hero, active categories, top cities, recently published listings)
+  - `/business/[slug]` (Canonical listing detail with 301 slug redirect handling, 404 for non-published, breadcrumbs, action buttons, hours, services, and Schema.org `LocalBusiness` JSON-LD)
+  - `/search` (Full-text & trigram search by name, service, location, and category; `robots: { index: false }`)
+  - `/category/[slug]` (Category discovery with factual count and listings)
+  - `/categories/[slug]` (HTTP 301 permanent redirect to `/category/[slug]`)
+  - `/location/[slug]` (City & regional discovery)
+  - `/locations/[slug]` (HTTP 301 permanent redirect to `/location/[slug]`)
+  - `/location/[slug]/[categorySlug]` (Curated combination discovery with indexability gate)
+  - `/sitemap.xml` (Dynamic sitemap with published listings, active categories, active locations, and approved combinations)
+  - `/robots.txt` (Crawler permissions allowing public directory, disallowing `/admin/`, `/dashboard/`, `/internal/`, `/login`, `/search`)
+  - `/_not-found` (Accessible 404 page with search input and directory navigation)
+- **Review Subagent Audits (4 PASS):**
+  - **Product Reviewer:** PASS (100% compliant with MVP Build Contract, Business Field Matrix, and User Journeys)
+  - **SEO Reviewer:** PASS (Metadata, canonicals, Schema.org LocalBusiness & BreadcrumbList, sitemap, and robots verified)
+  - **Security & Privacy Reviewer:** PASS (Hardened RPCs, zero privacy leaks, email privacy, and timezone defenses verified)
+  - **UI Reviewer:** PASS (Buzl design tokens, mobile responsiveness at 375px, desktop readability, and action CTAs verified)
+- **Automated Test Results:**
+  - `scripts/verify-day2-public.mjs`: 58/58 checks passed
+  - `npm run test:smoke:public`: 41/41 browser checks passed
+  - `npm run test:smoke`: 5/5 persona regression suites passed
+  - `npm run lint`: 0 errors, 0 warnings
+  - `npm run build`: Production build succeeded in 742ms across all 22 routes
+
+## Current git status
+All Day 2 changes verified and ready for git commit.
+
 ## Next exact task
+Stage, review, and commit Day 2 Public Directory milestone.
 
-Day 2 — Public Directory, Discovery, Search, SEO & Deployment:
-1. Public canonical listing page (`/business/[slug]`) using `get_published_business_public`.
-2. Historical slug redirects (`slug_history`).
-3. PostgreSQL full-text search (`/search`).
-4. Category discovery (`/categories/[slug]`) and location discovery (`/locations/[slug]`).
-5. LocalBusiness JSON-LD, sitemap, robots.txt, and metadata.
-
-## Agent handoff instruction
-
-A new coding/planning agent should read:
-
-1. `AGENTS.md`
-2. this file
-3. `docs/DECISIONS.md`
-4. `docs/specs/MVP_BUILD_CONTRACT.md`
-5. only the feature/spec files needed for Day 2 public directory work.
