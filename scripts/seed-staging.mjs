@@ -1,23 +1,39 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
-const SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-  auth: { autoRefreshToken: false, persistSession: false },
-});
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is required`);
+  return value;
+}
+
+function assertStagingTarget() {
+  if (process.env.BUZL_ENV !== 'staging' || process.env.ALLOW_STAGING_SEED !== 'true') throw new Error('Refusing to seed: BUZL_ENV=staging and ALLOW_STAGING_SEED=true are required');
+  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+  requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+  const expectedRef = requireEnv('STAGING_SUPABASE_PROJECT_REF');
+  const actualRef = new URL(url).hostname.split('.')[0];
+  if (actualRef !== expectedRef) throw new Error('Refusing to seed: target project ref does not match STAGING_SUPABASE_PROJECT_REF');
+  console.log('BUZL STAGING SEED TARGET'); console.log('URL:', url); console.log('Project Ref:', actualRef); console.log('Environment: staging');
+}
+
+let supabaseAdmin;
 
 async function main() {
+  assertStagingTarget();
+  supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
   console.log('=== BUZL LISTING STAGING SEEDER ===');
   console.log('Target:', SUPABASE_URL);
 
   console.log('\n--- 1. Provisioning Staging Personas ---');
   const personas = [
-    { email: 'admin@buzl.test', role: 'admin', fullName: 'Buzl System Administrator', memberId: 'BUZL-M-0001' },
-    { email: 'member@buzl.test', role: 'buzl_member', fullName: 'Buzl Onboarding Specialist', memberId: 'BUZL-M-1024' },
-    { email: 'owner@buzl.test', role: 'business_owner', fullName: 'Buzl Demo Business Owner', memberId: null },
+    { email: requireEnv('STAGING_ADMIN_EMAIL'), password: requireEnv('STAGING_ADMIN_PASSWORD'), role: 'admin', fullName: 'Buzl System Administrator', memberId: 'BUZL-M-0001' },
+    { email: requireEnv('STAGING_MEMBER_EMAIL'), password: requireEnv('STAGING_MEMBER_PASSWORD'), role: 'buzl_member', fullName: 'Buzl Onboarding Specialist', memberId: 'BUZL-M-1024' },
+    { email: requireEnv('STAGING_OWNER_EMAIL'), password: requireEnv('STAGING_OWNER_PASSWORD'), role: 'business_owner', fullName: 'Buzl Demo Business Owner', memberId: null },
   ];
 
   const { data: usersData, error: listErr } = await supabaseAdmin.auth.admin.listUsers();
@@ -30,7 +46,7 @@ async function main() {
     if (!user) {
       const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
         email: p.email,
-        password: 'password123',
+        password: p.password,
         email_confirm: true,
         app_metadata: { role: p.role },
         user_metadata: { full_name: p.fullName },
@@ -46,7 +62,7 @@ async function main() {
       console.log('✓ Verified persona:', p.email, '(' + p.role + ')');
     }
 
-    personaMap[p.email] = user;
+    personaMap[p.role] = user;
 
     if (p.memberId) {
       await supabaseAdmin
@@ -74,8 +90,8 @@ async function main() {
   const autoCategory = categories.find((c) => c.slug === 'automotive') || categories[2];
   const wellnessCategory = categories.find((c) => c.slug === 'health-wellness') || categories[3];
 
-  const ownerId = personaMap['owner@buzl.test'].id;
-  const adminId = personaMap['admin@buzl.test'].id;
+  const ownerId = personaMap.business_owner.id;
+  const adminId = personaMap.admin.id;
 
   console.log('\n--- 3. Seeding Demonstration Listings ---');
   const demoListings = [

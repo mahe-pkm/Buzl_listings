@@ -1,7 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SUPABASE_URL) throw new Error('NEXT_PUBLIC_SUPABASE_URL is required');
+if (!SERVICE_ROLE_KEY) throw new Error('SUPABASE_SERVICE_ROLE_KEY is required');
 
 const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -20,7 +22,7 @@ async function main() {
   if (!memberUser) {
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email: memberEmail,
-      password: 'password123',
+      password: process.env.STAGING_MEMBER_PASSWORD || (() => { throw new Error('STAGING_MEMBER_PASSWORD is required'); })(),
       email_confirm: true,
       app_metadata: { role: 'buzl_member' },
       user_metadata: { full_name: 'Buzl Onboarding Specialist' },

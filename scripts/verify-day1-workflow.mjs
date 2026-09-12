@@ -10,7 +10,7 @@ async function main() {
   const ownerClient = createClient(SUPABASE_URL, ANON_KEY);
   const { data: ownerAuth, error: ownerLoginErr } = await ownerClient.auth.signInWithPassword({
     email: 'owner@buzl.test',
-    password: 'password123',
+    password: process.env.STAGING_OWNER_PASSWORD || (() => { throw new Error('STAGING_OWNER_PASSWORD is required'); })(),
   });
 
   if (ownerLoginErr || !ownerAuth.user) {
@@ -22,7 +22,7 @@ async function main() {
   const adminClient = createClient(SUPABASE_URL, ANON_KEY);
   const { data: adminAuth, error: adminLoginErr } = await adminClient.auth.signInWithPassword({
     email: 'admin@buzl.test',
-    password: 'password123',
+    password: process.env.STAGING_ADMIN_PASSWORD || (() => { throw new Error('STAGING_ADMIN_PASSWORD is required'); })(),
   });
 
   if (adminLoginErr || !adminAuth.user) {

@@ -56,7 +56,7 @@ function LoginForm() {
 
   const fillDemoAccount = (demoEmail: string) => {
     setEmail(demoEmail);
-    setPassword("password123");
+    setPassword("");
     setErrorMessage(null);
   };
 

@@ -26,7 +26,7 @@
 ## 3. Test Personas & Credentials
 
 > [!NOTE]
-> All test accounts are pre-seeded in the database with verified email statuses and trusted roles in `auth.users.app_metadata`. In accordance with security rules, plaintext passwords are not checked into public Git documentation; test accounts in the prototype environment use standard team development passwords (`password123`).
+> Test credentials are provided separately through a secure staging handoff. This document contains no passwords or secret values.
 
 | Persona | Email | System Role (`app_metadata.role`) | Identifier (`member_id`) | Description & Scope |
 |---|---|---|---|---|
@@ -203,12 +203,31 @@ Apply migrations in strict numerical order using the Supabase CLI or direct Post
 3. `supabase/migrations/20260912160000_day2_public_directory.sql` (Public RPCs, trigram search, approved combination table)
 
 ### Staging Data Seeding Process
-Run the idempotent staging seeder:
+
+The staging seeder requires **all** of the following environment variables. Missing or mismatched values will abort before any data is modified:
+
 ```bash
+BUZL_ENV=staging \
+ALLOW_STAGING_SEED=true \
 NEXT_PUBLIC_SUPABASE_URL=https://your-staging-project.supabase.co \
 SUPABASE_SERVICE_ROLE_KEY=your-staging-service-role-key \
+STAGING_SUPABASE_PROJECT_REF=your-staging-project \
+STAGING_ADMIN_EMAIL=admin@buzl.test \
+STAGING_ADMIN_PASSWORD=<secure-staging-password> \
+STAGING_MEMBER_EMAIL=member@buzl.test \
+STAGING_MEMBER_PASSWORD=<secure-staging-password> \
+STAGING_OWNER_EMAIL=owner@buzl.test \
+STAGING_OWNER_PASSWORD=<secure-staging-password> \
 node scripts/seed-staging.mjs
 ```
+
+**Safety gates (all must pass or seeder aborts):**
+1. `BUZL_ENV=staging` — explicit staging intent
+2. `ALLOW_STAGING_SEED=true` — explicit operator confirmation
+3. `STAGING_SUPABASE_PROJECT_REF` — expected project ref must be set
+4. Project ref extracted from `NEXT_PUBLIC_SUPABASE_URL` must exactly match `STAGING_SUPABASE_PROJECT_REF`
+5. `SUPABASE_SERVICE_ROLE_KEY` — privileged credential required
+6. All persona email/password variables — no hardcoded fallbacks
 
 ### Supabase Auth URL Configuration
 In the Supabase Staging Dashboard (**Authentication -> URL Configuration**):
@@ -221,12 +240,12 @@ In the Supabase Staging Dashboard (**Authentication -> URL Configuration**):
 npm run lint
 npm run build
 
-# Vercel deployment command
-npx vercel --prod --yes
+# Staging deployment command (after provider authorization)
+npx vercel --yes
 ```
 
 ### Rollback Method
-1. **Application Code:** In Vercel / hosting dashboard, click **Promote to Production** on the previous successful deployment, or redeploy commit `46c454a`.
+1. **Application Code:** Redeploy the prior successful staging deployment or commit `46c454a` through the approved hosting workflow.
 2. **Database:** All Day 2 migrations are backward-compatible and additive; schema rollback is not required for application rollbacks to Day 1.5 or Day 2 baseline.
 
 ---
@@ -246,4 +265,4 @@ To deploy this verified build to an external cloud URL, the following remote inf
 1. **Remote Staging Supabase Project:** A dedicated remote Supabase project ref/URL and API keys (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) are required. (Currently, only local Supabase is running on `http://127.0.0.1:54321`).
 2. **Hosting Provider Authentication:** An active CLI token or access token for a remote hosting service (e.g., `VERCEL_TOKEN`, `NETLIFY_AUTH_TOKEN`, or remote Git repository access) is required. (Currently, no cloud hosting tokens or git remotes exist on this machine).
 
-Once these credentials are provided, running `npm run build` and pushing to the remote host will immediately transition the project to `STAGING REVIEW READY`.
+Remote staging has NOT yet been deployed. It remains blocked until the dedicated Supabase project and hosting authorization are configured.

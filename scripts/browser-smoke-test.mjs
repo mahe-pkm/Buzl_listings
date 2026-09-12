@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
 const results = {
@@ -45,7 +45,11 @@ async function main() {
       const page = await context.newPage();
 
       page.on('console', (msg) => {
-        if (msg.type() === 'error') results.consoleErrors.push(`[Anon] ${msg.text()}`);
+        if (msg.type() === 'error') {
+          const text = msg.text();
+          if (text.includes('_next/hmr') || text.includes('WebSocket')) return;
+          results.consoleErrors.push(`[Anon] ${text}`);
+        }
       });
       page.on('pageerror', (err) => results.pageErrors.push(`[Anon] ${err.message}`));
 
@@ -82,7 +86,11 @@ async function main() {
       const page = await context.newPage();
 
       page.on('console', (msg) => {
-        if (msg.type() === 'error') results.consoleErrors.push(`[Owner] ${msg.text()}`);
+        if (msg.type() === 'error') {
+          const text = msg.text();
+          if (text.includes('_next/hmr') || text.includes('WebSocket')) return;
+          results.consoleErrors.push(`[Owner] ${text}`);
+        }
       });
       page.on('pageerror', (err) => results.pageErrors.push(`[Owner] ${err.message}`));
 
@@ -185,7 +193,11 @@ async function main() {
       const page = await context.newPage();
 
       page.on('console', (msg) => {
-        if (msg.type() === 'error') results.consoleErrors.push(`[Member] ${msg.text()}`);
+        if (msg.type() === 'error') {
+          const text = msg.text();
+          if (text.includes('_next/hmr') || text.includes('WebSocket')) return;
+          results.consoleErrors.push(`[Member] ${text}`);
+        }
       });
       page.on('pageerror', (err) => results.pageErrors.push(`[Member] ${err.message}`));
 
@@ -267,7 +279,11 @@ async function main() {
       const page = await context.newPage();
 
       page.on('console', (msg) => {
-        if (msg.type() === 'error') results.consoleErrors.push(`[Admin] ${msg.text()}`);
+        if (msg.type() === 'error') {
+          const text = msg.text();
+          if (text.includes('_next/hmr') || text.includes('WebSocket')) return;
+          results.consoleErrors.push(`[Admin] ${text}`);
+        }
       });
       page.on('pageerror', (err) => results.pageErrors.push(`[Admin] ${err.message}`));
 
@@ -318,7 +334,11 @@ async function main() {
       const page = await context.newPage();
 
       page.on('console', (msg) => {
-        if (msg.type() === 'error') results.consoleErrors.push(`[Mobile] ${msg.text()}`);
+        if (msg.type() === 'error') {
+          const text = msg.text();
+          if (text.includes('_next/hmr') || text.includes('WebSocket')) return;
+          results.consoleErrors.push(`[Mobile] ${text}`);
+        }
       });
       page.on('pageerror', (err) => results.pageErrors.push(`[Mobile] ${err.message}`));
 

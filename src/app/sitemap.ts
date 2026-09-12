@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { getSitemapEntries } from '@/lib/public-directory';
-import { getAppBaseUrl } from '@/lib/staging';
+import { getAppBaseUrl, isStagingEnvironment } from '@/lib/staging';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (isStagingEnvironment()) return [];
   const baseUrl = getAppBaseUrl();
   const data = await getSitemapEntries();
 
