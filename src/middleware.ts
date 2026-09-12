@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isStagingEnvironment } from "@/lib/staging";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -7,6 +8,18 @@ export async function middleware(request: NextRequest) {
       headers: request.headers,
     },
   });
+
+  if (isStagingEnvironment()) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  }
+
+  const pathname = request.nextUrl.pathname;
+  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal");
+  const isAuthRoute = pathname === "/login";
+
+  if (!isProtected && !isAuthRoute) {
+    return response;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,6 +36,9 @@ export async function middleware(request: NextRequest) {
           response = NextResponse.next({
             request,
           });
+          if (isStagingEnvironment()) {
+            response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+          }
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -34,10 +50,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const pathname = request.nextUrl.pathname;
-
-  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal");
-  const isAuthRoute = pathname === "/login";
 
   if (isProtected && !user) {
     const loginUrl = new URL("/login", request.url);
@@ -80,9 +92,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/admin/:path*",
-    "/internal/:path*",
-    "/login",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

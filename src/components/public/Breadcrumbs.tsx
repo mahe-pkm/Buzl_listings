@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getAppBaseUrl } from '@/lib/staging';
 
 export interface BreadcrumbItem {
   label: string;
@@ -10,6 +11,7 @@ interface BreadcrumbsProps {
 }
 
 export default function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const baseUrl = getAppBaseUrl();
   const schemaData = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -19,9 +21,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       name: item.label,
       ...(item.href
         ? {
-            item: `${
-              process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-            }${item.href}`,
+            item: `${baseUrl}${item.href}`,
           }
         : {}),
     })),

@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { getSitemapEntries } from '@/lib/public-directory';
+import { getAppBaseUrl } from '@/lib/staging';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = getAppBaseUrl();
   const data = await getSitemapEntries();
 
   const entries: MetadataRoute.Sitemap = [

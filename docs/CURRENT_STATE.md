@@ -243,11 +243,36 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   - `npm run test:smoke:public`: 41/41 browser checks passed
   - `npm run test:smoke`: 5/5 persona regression suites passed
   - `npm run lint`: 0 errors, 0 warnings
-  - `npm run build`: Production build succeeded in 742ms across all 22 routes
+  - `npm run build`: Production build succeeded in 740ms across all 22 routes
+
+---
+
+## Staging Readiness & Review Package: COMPLETE
+
+- **Search Engine Staging Safety:**
+  - Centralized staging detection via `src/lib/staging.ts` (`isStagingEnvironment()`).
+  - Staging `robots.txt` disallows all crawlers (`User-Agent: * \n Disallow: /`).
+  - Next.js root layout injects `<meta name="robots" content="noindex, nofollow, nocache" />` when staging.
+  - Next.js middleware enforces HTTP response header `X-Robots-Tag: noindex, nofollow, noarchive`.
+  - Canonical production SEO logic remains 100% untouched when `NEXT_PUBLIC_IS_STAGING` is false or unset.
+- **Staging Database & Seeding Automation:**
+  - Idempotent seeder script `scripts/seed-staging.mjs` provisions 3 test personas (`admin@buzl.test`, `member@buzl.test`, `owner@buzl.test`) with trusted `app_metadata` roles and `member_id` assignments.
+  - Seeds safe demonstration listings across all location modes (`storefront`, `service_area`, `hybrid`) and publication statuses (`draft`, `pending`, `published`, `suspended`), including approved combination index `chennai / retail-store`.
+  - Service-area listings strictly enforce zero leakage of street addresses or coordinates in public projections.
+- **Reviewer Package (`docs/REVIEW_PACKAGE.md`):**
+  - Comprehensive handoff document covering project info, baseline commit `46c454a`, staging URL instructions, persona credentials, core review flows (Owner, Buzl Member, Admin, Public), verified vs. deferred features, non-blocking hardening, reviewer checklist, 16 screenshots inventory, deployment/rollback guides, and blocker audit.
+- **Quality & Verification:**
+  - Production compile (`npm run build`) succeeded in 740ms with 0 errors.
+  - Linter (`npm run lint`) passed with 0 errors and 0 warnings.
+  - Verification suite `verify-day2-public.mjs`: 58/58 checks passed.
+  - Browser smoke test `test:smoke:public`: 41/41 checks passed.
+  - Persona smoke test `test:smoke`: 5/5 suites passed with 0 console errors, 0 hydration errors.
+  - Staging protection runtime test: verified `robots.txt` disallows `/`, `X-Robots-Tag: noindex`, and meta robots `noindex, nofollow`.
 
 ## Current git status
-All Day 2 changes verified and ready for git commit.
+Staging deployment & review package files created and verified. Working tree ready for release commit.
 
 ## Next exact task
-Stage, review, and commit Day 2 Public Directory milestone.
+Create release commit `chore(release): prepare Buzl Listing staging review` and provide remote staging credentials to execute cloud deployment.
+
 

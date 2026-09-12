@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { isStagingEnvironment, getAppBaseUrl } from "@/lib/staging";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,6 +13,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const isStaging = isStagingEnvironment();
+
 export const metadata: Metadata = {
   title: {
     default: "Buzl Directory — Verified Local Businesses & Services",
@@ -19,12 +22,24 @@ export const metadata: Metadata = {
   },
   description:
     "Discover verified local businesses, specialized service providers, and accurate operating hours across India.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-  ),
+  metadataBase: new URL(getAppBaseUrl()),
   icons: {
     icon: "/favicon.ico",
   },
+  ...(isStaging
+    ? {
+        robots: {
+          index: false,
+          follow: false,
+          nocache: true,
+          googleBot: {
+            index: false,
+            follow: false,
+            noimageindex: true,
+          },
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({

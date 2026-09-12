@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { getPublishedBusiness, resolveSlugRedirect } from '@/lib/public-directory';
+import { getAppBaseUrl } from '@/lib/staging';
 import PublicHeader from '@/components/public/PublicHeader';
 import PublicFooter from '@/components/public/PublicFooter';
 import Breadcrumbs from '@/components/public/Breadcrumbs';
@@ -69,7 +70,7 @@ export default async function BusinessDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = getAppBaseUrl();
   const canonicalUrl = `${baseUrl}/business/${business.slug}`;
 
   const cleanPhone = business.primary_phone.replace(/[^0-9+]/g, '');

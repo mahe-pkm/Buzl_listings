@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getBusinessesByLocationAndCategory } from '@/lib/public-directory';
+import { isStagingEnvironment } from '@/lib/staging';
 import PublicHeader from '@/components/public/PublicHeader';
 import PublicFooter from '@/components/public/PublicFooter';
 import PublicBusinessCard from '@/components/public/PublicBusinessCard';
@@ -25,6 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = `${result.category.name} in ${result.location.name}`;
   const canonicalUrl = `/location/${result.location.slug}/${result.category.slug}`;
+  const isStaging = isStagingEnvironment();
 
   return {
     title,
@@ -32,10 +34,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: canonicalUrl,
     },
-    // Constraint 2: Only approved combinations receive index=true; unapproved receive noindex
+    // Constraint 2: Only approved combinations receive index=true; unapproved receive noindex.
+    // Staging Safety: Staging environment strictly forces index: false.
     robots: {
-      index: result.is_indexable,
-      follow: true,
+      index: isStaging ? false : result.is_indexable,
+      follow: isStaging ? false : true,
     },
     openGraph: {
       title,
