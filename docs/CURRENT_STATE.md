@@ -173,7 +173,39 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   - Automated integration test suite (`scripts/verify-day1-5-import.mjs`): 9 out of 9 tests passed.
   - Full pgTAP database test suite (`npx supabase test db`): 2 of 2 test files passed.
   - Linting (`npm run lint`): 0 errors, 0 warnings.
-  - Production build (`npm run build`): Compiled and generated successfully.
+  - Production build (`npm run build`): Compiled and generated successfully with 0 errors across all 13 routes.
+  - Browser Smoke Test (`npm run test:smoke`): 5 of 5 suites passed cleanly with 0 console errors, 0 hydration errors, 0 UI runtime issues across 8 routes, 3 user personas, and mobile viewport (375px).
+
+## Browser Smoke Test Report (Pre-Day 2)
+
+- **Local App URL:** `http://localhost:3000`
+- **Engine:** Google Chrome (`1.63.0` via Playwright automation)
+- **Routes Tested (8):**
+  - `/dashboard`
+  - `/admin/businesses`
+  - `/admin/businesses/import`
+  - `/internal/businesses/import`
+  - `/login`
+  - `/dashboard/businesses`
+  - `/dashboard/businesses/new`
+  - `/dashboard/businesses/[id]/edit`
+- **Account Flows Tested (3 personas):**
+  1. `owner@buzl.test` (/login → /dashboard → business list → 6-step creation form → preview → submit for review)
+  2. `member@buzl.test` (/login → /admin/businesses/import → load Laptech sample → 8 review sections → confirm CATEGORY REVIEW REQUIRED → confirm service-area privacy → select category → create draft → verify 26 services & Member ID BUZL-M-1024)
+  3. `admin@buzl.test` (/login → /admin/businesses → table view → publish listing → confirm published state → suspend listing → confirm suspended state)
+  4. Anonymous user denied protected routes and redirected to `/login`
+  5. Business Owner denied importer routes and redirected to `/dashboard`
+  6. Mobile width (375x667): Hamburger header, accessible slide-out drawer, 0px horizontal scroll overflow
+- **Integration Defects Resolved:**
+  1. Root Next.js route collision: removed `app/.gitkeep` at root which had taken precedence over `src/app`.
+  2. Server Action constraint: extracted synchronous `parseEwkbPoint` from `'use server'` action file into `src/lib/geo.ts`.
+  3. Prerender bailout: isolated `useSearchParams` inside `<Suspense>` in `src/app/login/page.tsx`.
+  4. Form accessibility: added semantic `id`, `name`, and matching `htmlFor` attributes across `BusinessForm.tsx`.
+- **Telemetry & Artifacts:**
+  - Console Errors: 0 errors
+  - Page / Hydration Errors: 0 errors
+  - UI Runtime Errors: 0 errors
+  - 13 verification screenshots captured in `tests/screenshots/`
 
 ## Next exact task
 

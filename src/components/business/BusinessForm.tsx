@@ -392,10 +392,12 @@ export default function BusinessForm({
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="canonical_name" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Canonical Business Name <span className="text-[#E36B5D]">*</span>
                 </label>
                 <input
+                  id="canonical_name"
+                  name="canonical_name"
                   type="text"
                   value={formData.canonical_name}
                   onChange={(e) => updateField('canonical_name', e.target.value)}
@@ -409,10 +411,12 @@ export default function BusinessForm({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="description" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Business Description
                 </label>
                 <textarea
+                  id="description"
+                  name="description"
                   value={formData.description}
                   onChange={(e) => updateField('description', e.target.value)}
                   rows={4}
@@ -423,10 +427,12 @@ export default function BusinessForm({
               </div>
 
               <div className="max-w-xs">
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="year_established" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Year Established
                 </label>
                 <input
+                  id="year_established"
+                  name="year_established"
                   type="number"
                   value={formData.year_established}
                   onChange={(e) => updateField('year_established', e.target.value)}
@@ -452,10 +458,12 @@ export default function BusinessForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="primary_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Primary Phone <span className="text-[#E36B5D]">*</span>
                 </label>
                 <input
+                  id="primary_phone"
+                  name="primary_phone"
                   type="text"
                   value={formData.primary_phone}
                   onChange={(e) => updateField('primary_phone', e.target.value)}
@@ -468,10 +476,12 @@ export default function BusinessForm({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="alternate_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Alternate Phone
                 </label>
                 <input
+                  id="alternate_phone"
+                  name="alternate_phone"
                   type="text"
                   value={formData.alternate_phone}
                   onChange={(e) => updateField('alternate_phone', e.target.value)}
@@ -481,10 +491,12 @@ export default function BusinessForm({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="whatsapp_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   WhatsApp Number
                 </label>
                 <input
+                  id="whatsapp_phone"
+                  name="whatsapp_phone"
                   type="text"
                   value={formData.whatsapp_phone}
                   onChange={(e) => updateField('whatsapp_phone', e.target.value)}
@@ -494,10 +506,12 @@ export default function BusinessForm({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="website_url" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Official Website URL
                 </label>
                 <input
+                  id="website_url"
+                  name="website_url"
                   type="url"
                   value={formData.website_url}
                   onChange={(e) => updateField('website_url', e.target.value)}
@@ -508,10 +522,12 @@ export default function BusinessForm({
 
               <div className="md:col-span-2 p-4 rounded-[8px] bg-[#F2F5FA] border border-[#DCE2E8] space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                  <label htmlFor="business_contact_email" className="block text-xs font-semibold text-[#2A3547] mb-1">
                     Business Contact Email (Optional)
                   </label>
                   <input
+                    id="business_contact_email"
+                    name="business_contact_email"
                     type="email"
                     value={formData.business_contact_email}
                     onChange={(e) => updateField('business_contact_email', e.target.value)}
@@ -552,10 +568,12 @@ export default function BusinessForm({
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="primary_category_id" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Primary Category <span className="text-[#E36B5D]">*</span>
                 </label>
                 <select
+                  id="primary_category_id"
+                  name="primary_category_id"
                   value={formData.primary_category_id}
                   onChange={(e) => updateField('primary_category_id', e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] bg-white focus:outline-none focus:border-[#004AAD]"
@@ -689,10 +707,12 @@ export default function BusinessForm({
             {/* Common City/State/Country Hierarchy */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="city" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   City <span className="text-[#E36B5D]">*</span>
                 </label>
                 <input
+                  id="city"
+                  name="city"
                   type="text"
                   value={formData.city}
                   onChange={(e) => updateField('city', e.target.value)}
@@ -702,10 +722,12 @@ export default function BusinessForm({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="state" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   State <span className="text-[#E36B5D]">*</span>
                 </label>
                 <input
+                  id="state"
+                  name="state"
                   type="text"
                   value={formData.state}
                   onChange={(e) => updateField('state', e.target.value)}
@@ -715,10 +737,12 @@ export default function BusinessForm({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                <label htmlFor="country" className="block text-xs font-semibold text-[#2A3547] mb-1">
                   Country <span className="text-[#E36B5D]">*</span>
                 </label>
                 <input
+                  id="country"
+                  name="country"
                   type="text"
                   value={formData.country}
                   onChange={(e) => updateField('country', e.target.value)}
@@ -737,10 +761,12 @@ export default function BusinessForm({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                    <label htmlFor="address_line_1" className="block text-xs font-semibold text-[#2A3547] mb-1">
                       Address Line 1 <span className="text-[#E36B5D]">*</span>
                     </label>
                     <input
+                      id="address_line_1"
+                      name="address_line_1"
                       type="text"
                       value={formData.address_line_1}
                       onChange={(e) => updateField('address_line_1', e.target.value)}
@@ -750,10 +776,12 @@ export default function BusinessForm({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                    <label htmlFor="address_line_2" className="block text-xs font-semibold text-[#2A3547] mb-1">
                       Address Line 2
                     </label>
                     <input
+                      id="address_line_2"
+                      name="address_line_2"
                       type="text"
                       value={formData.address_line_2}
                       onChange={(e) => updateField('address_line_2', e.target.value)}
@@ -763,10 +791,12 @@ export default function BusinessForm({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                    <label htmlFor="locality" className="block text-xs font-semibold text-[#2A3547] mb-1">
                       Locality / Area <span className="text-[#E36B5D]">*</span>
                     </label>
                     <input
+                      id="locality"
+                      name="locality"
                       type="text"
                       value={formData.locality}
                       onChange={(e) => updateField('locality', e.target.value)}
@@ -776,10 +806,12 @@ export default function BusinessForm({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                    <label htmlFor="postal_code" className="block text-xs font-semibold text-[#2A3547] mb-1">
                       Postal / PIN Code <span className="text-[#E36B5D]">*</span>
                     </label>
                     <input
+                      id="postal_code"
+                      name="postal_code"
                       type="text"
                       value={formData.postal_code}
                       onChange={(e) => updateField('postal_code', e.target.value)}
@@ -789,10 +821,12 @@ export default function BusinessForm({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                    <label htmlFor="latitude" className="block text-xs font-semibold text-[#2A3547] mb-1">
                       Map Latitude <span className="text-[#E36B5D]">*</span>
                     </label>
                     <input
+                      id="latitude"
+                      name="latitude"
                       type="text"
                       value={formData.latitude}
                       onChange={(e) => updateField('latitude', e.target.value)}
@@ -802,10 +836,12 @@ export default function BusinessForm({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                    <label htmlFor="longitude" className="block text-xs font-semibold text-[#2A3547] mb-1">
                       Map Longitude <span className="text-[#E36B5D]">*</span>
                     </label>
                     <input
+                      id="longitude"
+                      name="longitude"
                       type="text"
                       value={formData.longitude}
                       onChange={(e) => updateField('longitude', e.target.value)}

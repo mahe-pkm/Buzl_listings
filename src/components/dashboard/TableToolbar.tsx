@@ -37,6 +37,7 @@ export default function TableToolbar({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by business name or city..."
+            suppressHydrationWarning
             className="w-full pl-9 pr-3.5 py-1.5 rounded-[8px] border border-[#DCE2E8] text-xs text-[#2A3547] placeholder-[#7D8795] focus:outline-none focus:border-[#004AAD]"
           />
         </div>

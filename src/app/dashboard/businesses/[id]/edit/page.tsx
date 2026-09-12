@@ -2,8 +2,8 @@ import { createClient, getSessionUser } from '@/lib/supabase/server';
 import Topbar from '@/components/dashboard/Topbar';
 import BusinessForm from '@/components/business/BusinessForm';
 import { notFound, redirect } from 'next/navigation';
+import { parseEwkbPoint } from '@/lib/geo';
 import { BusinessFormData, Category, LocationMode } from '@/types/business';
-import { parseEwkbPoint } from '@/lib/business-actions';
 
 interface EditPageProps {
   params: Promise<{ id: string }>;

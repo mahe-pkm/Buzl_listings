@@ -290,6 +290,7 @@ export default function BuzlProfileImporter({
             </span>
             <span className="text-xs text-[#7D8795]">•</span>
             <span
+              data-testid="header-role-badge"
               className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
                 user.isAdmin
                   ? 'bg-[#E3F2EA] text-[#087C3C] border-[#BCE5CF]'
@@ -694,10 +695,11 @@ export default function BuzlProfileImporter({
                   )}
 
                   <div>
-                    <label className="text-[11px] font-semibold text-[#7D8795] block mb-1">
+                    <label htmlFor="platform_category_select" className="text-[11px] font-semibold text-[#7D8795] block mb-1">
                       Assigned Platform Category <span className="text-red-500">*</span>
                     </label>
                     <select
+                      id="platform_category_select"
                       value={formData.primary_category_id}
                       onChange={(e) => handleCategoryChange(e.target.value)}
                       className={`w-full text-xs p-2 rounded border text-[#2A3547] focus:border-[#004AAD] outline-none ${

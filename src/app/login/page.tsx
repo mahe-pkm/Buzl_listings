@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawRedirect = searchParams.get("redirect") || "/dashboard";
@@ -36,11 +36,14 @@ export default function LoginPage() {
 
       if (data.user) {
         const role = data.user.app_metadata?.role;
-        const target = redirectPath !== "/dashboard"
-          ? redirectPath
-          : role === "admin"
-          ? "/admin/businesses"
-          : "/dashboard";
+        let target = redirectPath;
+        if (redirectPath === "/dashboard") {
+          if (role === "admin") {
+            target = "/admin/businesses";
+          } else if (role === "buzl_member") {
+            target = "/admin/businesses/import";
+          }
+        }
         
         router.push(target);
         router.refresh();
@@ -58,98 +61,125 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-[#F2F5FA]">
-      <div className="w-full max-w-md">
-        {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#004AAD] text-white font-bold text-2xl mb-3 shadow-sm">
+    <div className="bg-white p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm">
+      <h2 className="text-xl font-bold text-[#2A3547] text-center mb-1">
+        Sign in to your account
+      </h2>
+      <p className="text-xs text-[#5D6776] text-center mb-6">
+        Enter your authorized credentials to access your dashboard
+      </p>
+
+      {errorMessage && (
+        <div className="mb-5 p-3.5 bg-[#FDECEE] border border-[#F8B4B4] rounded-[8px] flex items-start gap-2.5">
+          <svg className="w-4 h-4 text-[#C52707] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div className="text-xs text-[#C52707] font-medium">{errorMessage}</div>
+        </div>
+      )}
+
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-[#2A3547] mb-1.5" htmlFor="email">
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="name@business.com"
+            suppressHydrationWarning
+            className="w-full px-3.5 py-2.5 bg-white border border-[#DCE2E8] rounded-[8px] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD] transition-all"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-[#2A3547] mb-1.5" htmlFor="password">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            suppressHydrationWarning
+            className="w-full px-3.5 py-2.5 bg-white border border-[#DCE2E8] rounded-[8px] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD] transition-all"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-2.5 px-4 bg-[#004AAD] text-white font-semibold rounded-[8px] text-sm hover:bg-[#003882] focus:outline-none focus:ring-2 focus:ring-[#004AAD] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
+        >
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
+      </form>
+
+      {/* Demo account helper pills */}
+      <div className="mt-8 pt-6 border-t border-[#DCE2E8]">
+        <p className="text-xs font-semibold text-[#7D8795] uppercase tracking-wider text-center mb-3">
+          Prototype Demo Accounts
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={() => fillDemoAccount("owner@buzl.test")}
+            className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#004AAD] hover:bg-[#F2F5FA] transition-colors text-xs"
+          >
+            <div className="font-semibold text-[#2A3547]">Business Owner</div>
+            <div className="text-[#5D6776] truncate text-[11px]">owner@buzl.test</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => fillDemoAccount("member@buzl.test")}
+            className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#6929C4] hover:bg-[#F0EBFF]/40 transition-colors text-xs"
+          >
+            <div className="font-semibold text-[#6929C4]">Buzl Member</div>
+            <div className="text-[#5D6776] truncate text-[11px]">member@buzl.test</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => fillDemoAccount("admin@buzl.test")}
+            className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#087C3C] hover:bg-[#E3F2EA]/40 transition-colors text-xs"
+          >
+            <div className="font-semibold text-[#087C3C]">Platform Admin</div>
+            <div className="text-[#5D6776] truncate text-[11px]">admin@buzl.test</div>
+          </button>
+        </div>
+        <p className="text-[11px] text-[#7D8795] text-center mt-3">
+          No public registration. Contact Buzl admin for account access.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen bg-[#F2F5FA] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center mb-3">
+          <div className="w-10 h-10 rounded-xl bg-[#004AAD] flex items-center justify-center text-white font-bold text-xl tracking-wider shadow-sm">
             B
           </div>
-          <h1 className="text-2xl font-bold text-[#2A3547]">Buzl Listing</h1>
-          <p className="text-sm text-[#5D6776] mt-1">Sign in to manage your business directory listings</p>
         </div>
+        <h1 className="text-center text-2xl font-bold text-[#2A3547] tracking-tight">
+          Buzl Listing
+        </h1>
+        <p className="text-center text-xs text-[#7D8795] mt-1">
+          Rapid MVP Prototype • Day 1 Foundation
+        </p>
+      </div>
 
-        {/* Card */}
-        <div className="bg-white border border-[#DCE2E8] rounded-xl shadow-sm p-8">
-          {errorMessage && (
-            <div className="mb-6 p-4 rounded-lg bg-[#FDECEE] border border-[#E36B5D]/30 text-sm text-[#E36B5D] flex items-start gap-2">
-              <span className="font-bold text-base leading-none">!</span>
-              <div>{errorMessage}</div>
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#2A3547] mb-1.5">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@business.com"
-                className="w-full px-3.5 py-2.5 bg-white border border-[#DCE2E8] rounded-lg text-sm text-[#2A3547] placeholder-[#7D8795] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD] transition-colors"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[#2A3547] mb-1.5">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 bg-white border border-[#DCE2E8] rounded-lg text-sm text-[#2A3547] placeholder-[#7D8795] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD] transition-colors"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 px-4 bg-[#004AAD] hover:bg-[#003E91] text-white text-sm font-semibold rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#004AAD] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? "Signing in..." : "Sign In"}
-            </button>
-          </form>
-
-          {/* Demo account helper pills */}
-          <div className="mt-8 pt-6 border-t border-[#DCE2E8]">
-            <p className="text-xs font-semibold text-[#7D8795] uppercase tracking-wider text-center mb-3">
-              Prototype Demo Accounts
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => fillDemoAccount("owner@buzl.test")}
-                className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#004AAD] hover:bg-[#F2F5FA] transition-colors text-xs"
-              >
-                <div className="font-semibold text-[#2A3547]">Business Owner</div>
-                <div className="text-[#5D6776] truncate">owner@buzl.test</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => fillDemoAccount("admin@buzl.test")}
-                className="text-left p-2.5 border border-[#DCE2E8] rounded-lg hover:border-[#004AAD] hover:bg-[#F2F5FA] transition-colors text-xs"
-              >
-                <div className="font-semibold text-[#2A3547]">Platform Admin</div>
-                <div className="text-[#5D6776] truncate">admin@buzl.test</div>
-              </button>
-            </div>
-            <p className="text-[11px] text-[#7D8795] text-center mt-3">
-              No public registration. Contact Buzl admin for account access.
-            </p>
-          </div>
-        </div>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <Suspense fallback={<div className="bg-white p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm text-center text-xs text-[#5D6776]">Loading sign in...</div>}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
