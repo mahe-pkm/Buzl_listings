@@ -12,6 +12,7 @@ out/
 
 # Supabase generated/temp
 .supabase/
+/supabase/.temp/
 
 # Local/editor
 .DS_Store

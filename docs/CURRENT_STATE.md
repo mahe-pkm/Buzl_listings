@@ -1,9 +1,9 @@
 # Current Project State
 
 **Current phase:** Rapid MVP Prototype Build Contract ready / locked; prototype implementation is next
-**Application code:** Not started  
-**Database migrations:** Not started  
-**Local Supabase app stack:** Not initialized  
+**Application code:** Day 1 secure foundation complete; authenticated business workflow not implemented
+**Database migrations:** Secure Day 1 foundation applied and runtime-tested locally
+**Local Supabase app stack:** Running locally on repository-specific ports
 **Phase 0:** Complete  
 **Phase 1:** Complete, with one deliberately deferred provider decision  
 **Phase 2:** Rapid prototype exception approved: remaining detailed Phase 2 workstreams are consolidated in the MVP Build Contract rather than separately completed.
@@ -103,6 +103,14 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
 - It consolidates the minimum implementation decisions for database structure, permissions, duplicate handling, publication/verification, taxonomy/services, locations, routes, SEO, auth, public IA, maps/location behavior, and prototype QA.
 - Remaining detailed Phase 2 documents are deferred because their necessary MVP decisions are consolidated in the Build Contract; they are not individually complete.
 - Prototype implementation is the next authorized task. Do not treat this authorization as production hardening or as completion of the deferred detailed workstreams.
+
+## Day 1 implementation status
+
+- Next.js App Router scaffold, Tailwind, ESLint, Supabase client dependencies, environment example, normalization/validation helpers, and an uncommitted Day 1 migration are present.
+- The Day 1 migration passed independent static and runtime security reviews. It provides default-deny operational tables, JWT app-metadata role authority, atomic owner bootstrap, trusted lifecycle and derived-field functions, publishability enforcement, deterministic category seed, and a published-only public-safe read function.
+- Local Supabase started with this repository's database on port `54330` to avoid an existing unrelated local project on `54322`. The migration, category seed, and rollback-only pgTAP RLS/security suite passed locally.
+- Authentication UI, dashboard routes, CRUD UI, location modes, preview/publish UI, media UI, and admin controls remain unfinished.
+- The generated app linted successfully. Initial production build reached TypeScript, where a scaffold layout type issue was corrected; a subsequent build is blocked by the prior Next build process lock and must be rerun after that process exits.
 
 ## Next exact task
 
