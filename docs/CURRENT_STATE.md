@@ -269,10 +269,43 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   - Persona smoke test `test:smoke`: 5/5 suites passed with 0 console errors, 0 hydration errors.
   - Staging protection runtime test: verified `robots.txt` disallows `/`, `X-Robots-Tag: noindex`, and meta robots `noindex, nofollow`.
 
+## Release-Security Hardening: COMPLETE
+
+- **Commit:** `13cff2e` (`chore(security): harden staging release workflow`)
+- **Credential Audit:** PASS — zero real service-role keys, production API keys, or plaintext passwords in tracked files. Supabase local dev demo anon keys (issuer: `supabase-demo`, role: `anon`) retained as safe local-only fallbacks in verification scripts.
+- **Service-Role Fallback Removal:** All scripts requiring privileged Supabase client (`seed-staging.mjs`, `seed-buzl-member.mjs`, `verify-day1-5-import.mjs`) now require `SUPABASE_SERVICE_ROLE_KEY` from env — zero hardcoded fallbacks.
+- **Plaintext Password Removal:** `password123` removed from `login/page.tsx` demo fill, `seed-staging.mjs`, `verify-day1-workflow.mjs`, `verify-day1-5-import.mjs`. All persona passwords sourced from `STAGING_*_PASSWORD` env vars.
+- **Staging Seed Safety Gates (5 mandatory):**
+  1. `BUZL_ENV=staging` — explicit staging intent
+  2. `ALLOW_STAGING_SEED=true` — explicit operator confirmation
+  3. `NEXT_PUBLIC_SUPABASE_URL` — required (abort if missing)
+  4. `STAGING_SUPABASE_PROJECT_REF` — required, exact match against URL hostname (abort on mismatch)
+  5. `SUPABASE_SERVICE_ROLE_KEY` — required (abort if missing)
+  - Privileged client constructed ONLY after all gates pass.
+- **Negative Seed Tests (6/6 DENIED):**
+  - staging intent absent → DENIED
+  - operator confirmation absent → DENIED
+  - URL absent → DENIED
+  - project-ref mismatch → DENIED
+  - service credential absent → DENIED
+  - production-like ref without exact match → DENIED
+- **Staging Indexing Protection (4 layers):**
+  1. `layout.tsx` — `robots: { index: false, follow: false }` when staging
+  2. `middleware.ts` — `X-Robots-Tag: noindex, nofollow, noarchive` HTTP header
+  3. `robots.ts` — `Disallow: /` for all user agents
+  4. `sitemap.ts` — returns empty array `[]`
+- **Production Indexing:** Verified unchanged — `isStagingEnvironment()` returns false when staging env vars are unset, all SEO/sitemap/robots logic operates normally.
+- **Temporary File Hygiene:** `.temp/` added to `.gitignore`; tunnel binary excluded from version control.
+- **Documentation:** `REVIEW_PACKAGE.md` updated with complete safety gates, all required env vars, and safe operator sequence.
+- **Quality Verification:**
+  - `npm run lint`: PASS (0 errors, 0 warnings)
+  - `npm run build`: PASS (exit code 0, compiled in 530ms, TypeScript in 1173ms, 16 pages generated)
+
 ## Current git status
-Staging deployment & review package files created and verified. Working tree ready for release commit.
+
+Working tree: CLEAN
+Latest commit: `13cff2e chore(security): harden staging release workflow`
 
 ## Next exact task
-Create release commit `chore(release): prepare Buzl Listing staging review` and provide remote staging credentials to execute cloud deployment.
 
-
+Provide remote staging Supabase project credentials and hosting authorization to execute cloud deployment.
