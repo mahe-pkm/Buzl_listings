@@ -1,12 +1,12 @@
 # Current Project State
 
-**Current phase:** Phase 2 started — Phase 2.1 Business Field Matrix drafted; awaiting project-owner review  
+**Current phase:** Phase 2 started — Phase 2.1 Business Field Matrix complete / locked; awaiting project-owner review and Git checkpoint
 **Application code:** Not started  
 **Database migrations:** Not started  
 **Local Supabase app stack:** Not initialized  
 **Phase 0:** Complete  
 **Phase 1:** Complete, with one deliberately deferred provider decision  
-**Phase 2:** In progress; do not advance beyond Phase 2.1 until the Business Field Matrix is reviewed and approved
+**Phase 2:** In progress; Phase 2.2 User Journeys is next, but must not start until directed
 
 ## Git checkpoints recorded by the project owner
 
@@ -85,15 +85,16 @@ No database migration should be written until Phase 2 locks:
 - map provider
 - auth UX
 
-## Phase 2.1 draft
+## Phase 2.1 — Business Field Matrix
 
-- `docs/specs/BUSINESS_FIELD_MATRIX.md` drafted.
-- Awaiting project-owner review; its proposals and open decisions are not approved or locked.
-- No application code, database schema, RLS policy, migration, provider selection, or implementation work has started.
+- `docs/specs/BUSINESS_FIELD_MATRIX.md` is complete / locked as the authoritative product/data field contract for subsequent Phase 2 work.
+- OD-01 through OD-12 are locked, including the approved minimum publishable record, India-first globally extensible geography, and service-area privacy.
+- No application code, Next.js scaffolding, Supabase initialization, database schema, SQL, RLS policy, migration, provider selection, or implementation work has started.
+- Phase 3 is not authorized.
 
 ## Next exact task
 
-Review and approve `docs/specs/BUSINESS_FIELD_MATRIX.md`.
+Phase 2.2 — User Journeys. Do not start it until the project owner directs the next task.
 
 ## Agent handoff instruction
 
