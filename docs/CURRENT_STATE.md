@@ -1,12 +1,12 @@
 # Current Project State
 
-**Phase:** Phase 0 — Project Control Layer  
-**Status:** Baseline verified and committed  
+**Phase:** Phase 1 — Research and Decision Lock  
+**Status:** Research conclusions accepted; ready for Phase 2 product specification  
 **Application code:** Not started  
 **Database migrations:** Not started  
 **Local Supabase:** Not initialized  
-**Design system extraction:** Pending dashboard access  
-**Research:** Not started
+**Design system extraction:** Source-backed baseline documented; live-dashboard validation pending  
+**Research:** Complete; raw source material remains local-only in `.research/`
 
 ## Completed
 
@@ -19,24 +19,27 @@
 - Root documentation, `docs/`, `skills/`, `supabase/`, and empty application placeholder directories verified against the Phase 0 baseline.
 - `.research/` and its documented subdirectories verified locally; `.research/` is ignored by Git.
 - Git repository initialized and Phase 0 baseline committed.
+- Phase 1 research reviewed across competitors, open-source references, local SEO, maps/geocoding, data modeling, search, duplicate handling, and moderation.
+- Phase 1 decisions P1-01 through P1-17 recorded in tracked documentation; final map-provider selection remains explicitly deferred to Phase 2.
+- Design-system baseline committed separately as `d19c105`.
 
 ## Current constraints
 
-- Existing Buzl dashboard design tokens have not yet been extracted.
-- Map provider has not been selected.
-- Final URL/taxonomy/database architecture still requires research and confirmation.
+- Map provider has not been selected; a provider-neutral boundary is required.
+- Exact database schema, SQL constraints, RLS policies, and migrations are not yet specified.
+- First authentication credential flow and exact launch moderation policy remain Phase 2 decisions.
 - No production hosting decision has been locked.
 
 ## Verification
 
-- Phase 0 structure check: passed.
-- Git ignore check for `.research/`: passed.
+- Phase 0 structure and Git-ignore checks: passed.
+- Phase 1 decision documentation review: complete.
 - Application code check: passed; only empty placeholder directories exist.
 - Automated tests: not applicable; no application or test tooling has been introduced.
 
 ## Next exact task
 
-Begin Phase 1 research only when explicitly instructed. Do not scaffold the application before the user explicitly approves moving to implementation.
+Execute Phase 2 product specification only when explicitly instructed. Lock the exact schema, RLS model, routes, onboarding flow, taxonomy seed, map provider, and moderation policy. Do not scaffold Next.js or Supabase before Phase 2 is accepted.
 
 ## Handoff note
 

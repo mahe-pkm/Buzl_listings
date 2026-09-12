@@ -1,6 +1,6 @@
-# Database — Preliminary Model
+# Database — Phase 1 Model Direction
 
-This file is a starting point only. Final schema must be locked after Phase 1 research.
+This is a decision-locked model direction, not a migration specification. Phase 2 must define exact SQL types, constraints, indexes, RLS policies, and migrations.
 
 ## Initial entities
 
@@ -18,24 +18,29 @@ This file is a starting point only. Final schema must be locked after Phase 1 re
 ### businesses
 
 - id
-- owner_id
+- owner_user_id
 - name
 - slug
 - description
+- publication_status
+- verification_status
+- location_mode (`storefront`, `service_area`, `hybrid`)
+- show_street_address
 - email
-- phone
+- primary_phone
+- primary_phone_normalized
 - alternate_phone
-- whatsapp
-- website
-- logo_url
-- cover_url
-- status
+- whatsapp_phone
+- website_url
+- website_domain_normalized
+- logo_path
+- cover_path
 - primary_category_id
-- latitude
-- longitude
+- geo_point (PostGIS geography point)
 - created_at
 - updated_at
 - published_at
+- verified_at
 
 ### business_addresses
 
@@ -48,9 +53,15 @@ This file is a starting point only. Final schema must be locked after Phase 1 re
 - district
 - state
 - country
+- country_code
 - postal_code
 - latitude
 - longitude
+- is_primary
+- is_public
+- source
+- created_at
+- updated_at
 
 ### categories
 
@@ -60,6 +71,7 @@ This file is a starting point only. Final schema must be locked after Phase 1 re
 - slug
 - description
 - status
+- sort_order
 
 ### tags
 
@@ -75,10 +87,16 @@ This file is a starting point only. Final schema must be locked after Phase 1 re
 ### services
 
 - id
-- business_id
+- category_id
 - name
 - slug
 - description
+
+### business_services
+
+- business_id
+- service_id
+- custom_label (optional)
 
 ### business_hours
 
@@ -96,10 +114,65 @@ This file is a starting point only. Final schema must be locked after Phase 1 re
 - platform
 - url
 
+### locations
+
+Reusable hierarchy for browsing and service areas:
+
+- id
+- parent_id
+- type (`country`, `state`, `district`, `city`, `locality`)
+- name
+- slug
+- country_code
+- state_code (optional)
+- geo_point (optional)
+- status
+
+### business_service_areas
+
+- id
+- business_id
+- location_id
+- radius_km (optional)
+
+### business_external_ids
+
+- id
+- business_id
+- provider
+- external_id
+- external_url
+- created_at
+
+### business_slug_history
+
+- id
+- business_id
+- slug
+- created_at
+
+## Required lifecycle concepts
+
+Publication status:
+
+```text
+draft | pending | published | rejected | suspended | archived
+```
+
+Verification status:
+
+```text
+unverified | pending | verified | failed
+```
+
+These are independent. The final model must capture the actor and time for sensitive state changes.
+
 ## Important database rules
 
 - Preserve exact NAP values.
-- Add uniqueness/index rules intentionally.
-- Use explicit listing status values.
+- Store matching-normalized values separately from user-facing canonical values.
+- Add uniqueness, full-text, trigram, and spatial indexes intentionally.
+- Flag uncertain duplicates for review; do not auto-merge fuzzy matches.
+- Treat the one-to-one business listing as an establishment/service-area unit; do not build multi-branch grouping in MVP.
 - Use RLS from the beginning.
 - Never rely on client-supplied role/ownership values.

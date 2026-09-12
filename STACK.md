@@ -16,6 +16,8 @@
 - Supabase Storage
 - Row Level Security
 - Supabase APIs where useful
+- PostgreSQL Full Text Search and `pg_trgm` for MVP discovery
+- PostGIS for coordinates and future proximity queries
 
 ## Local development
 
@@ -36,7 +38,7 @@ Until then:
 
 ## Maps
 
-Provider not locked yet. Research Google Maps, Mapbox, and OpenStreetMap-based options before implementation.
+Provider is intentionally deferred to Phase 2. Use a provider-neutral map/geocoder boundary; do not use public OpenStreetMap Foundation tile or Nominatim infrastructure as production backend.
 
 ## Search
 
