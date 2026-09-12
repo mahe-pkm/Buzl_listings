@@ -175,6 +175,7 @@ See [docs/REVIEW_PACKAGE.md](docs/REVIEW_PACKAGE.md) for the review checklist an
 - [Architecture decisions](docs/DECISIONS.md)
 - [Technology direction](STACK.md)
 - [Agent workflow](WORKFLOW.md)
+- [Roadmap](docs/ROADMAP.md)
 - [Release notes](CHANGELOG.md)
 
 ## Development rules
