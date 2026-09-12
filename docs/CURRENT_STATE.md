@@ -1,12 +1,12 @@
 # Current Project State
 
-**Current phase:** Phase 2 started — Phase 2.1 Business Field Matrix complete / locked; awaiting project-owner review and Git checkpoint
+**Current phase:** Phase 2 started — Phase 2.2 User Journeys drafted; awaiting independent review and project-owner approval
 **Application code:** Not started  
 **Database migrations:** Not started  
 **Local Supabase app stack:** Not initialized  
 **Phase 0:** Complete  
 **Phase 1:** Complete, with one deliberately deferred provider decision  
-**Phase 2:** In progress; Phase 2.2 User Journeys is next, but must not start until directed
+**Phase 2:** In progress; Phase 2.2 User Journeys is in draft/review. Do not advance to Phase 2.3.
 
 ## Git checkpoints recorded by the project owner
 
@@ -92,9 +92,16 @@ No database migration should be written until Phase 2 locks:
 - No application code, Next.js scaffolding, Supabase initialization, database schema, SQL, RLS policy, migration, provider selection, or implementation work has started.
 - Phase 3 is not authorized.
 
+## Phase 2.2 — User Journeys
+
+- `docs/specs/USER_JOURNEYS.md` is drafted for review; it defines implementation-neutral MVP journeys J01 through J24.
+- It preserves the Phase 2.1 minimum publishable record, service-area privacy, publication/verification separation, and feature-gated external registration.
+- No application code, Next.js scaffolding, Supabase initialization, database schema, SQL, RLS policy, migration, provider selection, or implementation work has started.
+- Phase 2.3 has not started and Phase 3 remains unauthorized.
+
 ## Next exact task
 
-Phase 2.2 — User Journeys. Do not start it until the project owner directs the next task.
+Phase 2.2 — User Journeys review. Do not advance to Phase 2.3 until this draft is approved.
 
 ## Agent handoff instruction
 
