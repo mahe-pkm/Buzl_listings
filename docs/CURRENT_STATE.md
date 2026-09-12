@@ -1,12 +1,12 @@
 # Current Project State
 
-**Current phase:** Phase 2 started — Phase 2.2 User Journeys drafted; awaiting independent review and project-owner approval
+**Current phase:** Rapid MVP Prototype Build Contract ready / locked; prototype implementation is next
 **Application code:** Not started  
 **Database migrations:** Not started  
 **Local Supabase app stack:** Not initialized  
 **Phase 0:** Complete  
 **Phase 1:** Complete, with one deliberately deferred provider decision  
-**Phase 2:** In progress; Phase 2.2 User Journeys is in draft/review. Do not advance to Phase 2.3.
+**Phase 2:** Rapid prototype exception approved: remaining detailed Phase 2 workstreams are consolidated in the MVP Build Contract rather than separately completed.
 
 ## Git checkpoints recorded by the project owner
 
@@ -70,11 +70,9 @@ Deferred: 1
 Rejected: 0
 ```
 
-## Important implementation status
+## Normal detailed Phase 2 path — deferred
 
-No Next.js application scaffolding should exist yet.
-
-No database migration should be written until Phase 2 locks:
+For the normal production-oriented Phase 2 path, do not scaffold or write migrations until Phase 2 separately locks:
 
 - tables/columns/types
 - constraints/indexes
@@ -85,23 +83,30 @@ No database migration should be written until Phase 2 locks:
 - map provider
 - auth UX
 
+The rapid internal prototype is the approved exception: its locked `docs/specs/MVP_BUILD_CONTRACT.md` authorizes the minimum scaffolding, migrations, RLS, and implementation needed for the prototype while leaving the detailed production workstreams deferred.
+
 ## Phase 2.1 — Business Field Matrix
 
 - `docs/specs/BUSINESS_FIELD_MATRIX.md` is complete / locked as the authoritative product/data field contract for subsequent Phase 2 work.
 - OD-01 through OD-12 are locked, including the approved minimum publishable record, India-first globally extensible geography, and service-area privacy.
-- No application code, Next.js scaffolding, Supabase initialization, database schema, SQL, RLS policy, migration, provider selection, or implementation work has started.
-- Phase 3 is not authorized.
+- At the Phase 2.1 checkpoint, no implementation work had started and Phase 3 was not authorized; the later Rapid MVP Build Contract below supersedes that implementation gate for the internal prototype only.
 
 ## Phase 2.2 — User Journeys
 
-- `docs/specs/USER_JOURNEYS.md` is drafted for review; it defines implementation-neutral MVP journeys J01 through J24.
+- `docs/specs/USER_JOURNEYS.md` is complete / locked; it defines implementation-neutral MVP journeys J01 through J24.
 - It preserves the Phase 2.1 minimum publishable record, service-area privacy, publication/verification separation, and feature-gated external registration.
 - No application code, Next.js scaffolding, Supabase initialization, database schema, SQL, RLS policy, migration, provider selection, or implementation work has started.
-- Phase 2.3 has not started and Phase 3 remains unauthorized.
+
+## Rapid MVP Build Contract
+
+- `docs/specs/MVP_BUILD_CONTRACT.md` is READY / LOCKED for the fast internal prototype.
+- It consolidates the minimum implementation decisions for database structure, permissions, duplicate handling, publication/verification, taxonomy/services, locations, routes, SEO, auth, public IA, maps/location behavior, and prototype QA.
+- Remaining detailed Phase 2 documents are deferred because their necessary MVP decisions are consolidated in the Build Contract; they are not individually complete.
+- Prototype implementation is the next authorized task. Do not treat this authorization as production hardening or as completion of the deferred detailed workstreams.
 
 ## Next exact task
 
-Phase 2.2 — User Journeys review. Do not advance to Phase 2.3 until this draft is approved.
+Prototype implementation from `docs/specs/MVP_BUILD_CONTRACT.md`.
 
 ## Agent handoff instruction
 
@@ -113,4 +118,4 @@ A new coding/planning agent should read:
 4. `docs/exec-plans/PHASE_02_MVP.md`
 5. only the feature/spec files needed for the active Phase 2 task
 
-Do not start application coding unless Phase 2 exit criteria are met and the project owner explicitly authorizes Phase 3.
+For this rapid internal prototype, begin implementation only from the locked `docs/specs/MVP_BUILD_CONTRACT.md`. The normal detailed Phase 2 exit criteria remain deferred for later production hardening.
