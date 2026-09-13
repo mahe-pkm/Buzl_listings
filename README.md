@@ -1,7 +1,7 @@
 # Buzl Listing
 
 **Version:** 0.1.0
-**Status:** local MVP baseline verified; remote staging infrastructure is not configured.
+**Status:** v0.1.0 baseline verified; isolated remote staging is active.
 
 Buzl Listing is a Next.js and Supabase business-directory MVP. It supports three listing modes (storefront, service-area, and hybrid), role-gated business management, internal Buzl profile imports, moderation, and a privacy-first public directory.
 
@@ -98,6 +98,21 @@ PostgreSQL remains the canonical system of record. Flexible imported/source payl
 | `node scripts/verify-day2-public.mjs` | Run public-directory verification against local Supabase. |
 | `npx supabase test db` | Run the database test suite. |
 
+## Docker
+
+The repository includes reproducible Docker packaging for the Next.js
+application only; it connects to the existing local or isolated VPS Supabase
+stack rather than starting another one.
+
+```bash
+npx supabase start
+cp .env.docker.example .env.docker.local
+docker compose --env-file .env.docker.local up --build
+```
+
+Open `http://localhost:3000`. See [Docker workflow](docs/DOCKER.md) for the
+environment contract, health checks, logs, restart, VPS rebuild, and rollback.
+
 ## Application routes
 
 ### Public
@@ -145,7 +160,9 @@ Publication and verification are independent state machines. Only `published` li
 
 ## Staging and deployment
 
-Remote staging has **not** been deployed. It needs a dedicated remote Supabase project, secure test-persona credentials, and hosting authorization.
+Remote staging is active at `https://listing.rclk.in` with an isolated Buzl
+Supabase stack at `https://api-listing.rclk.in`. It remains noindex and is for
+internal review only.
 
 Use the documented staging environment variables only:
 

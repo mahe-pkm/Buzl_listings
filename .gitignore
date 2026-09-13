@@ -9,6 +9,8 @@ out/
 .env
 .env.*
 !.env.example
+!.env.docker.example
+.env.docker.local
 
 # Supabase generated/temp
 .supabase/

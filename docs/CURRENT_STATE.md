@@ -313,6 +313,22 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
 - **Indexing safety:** The live staging app returns noindex response headers and meta tags; `robots.txt` disallows all crawling; `sitemap.xml` contains zero URLs.
 - **Validation:** The Linux production image build and Linux lint check passed. Public HTTPS app, API, directory listing, and approved location/category route checks passed.
 
+## Docker application packaging — COMPLETE
+
+- The repository contains a reproducible standalone Next.js production image,
+  root application-only Compose workflow, health endpoint, and safe local
+  Docker environment template.
+- Local Docker server-side Supabase calls may use `SUPABASE_INTERNAL_URL`; the
+  browser continues to use `NEXT_PUBLIC_SUPABASE_URL`.
+- Docker packaging does not create or modify a Supabase stack and is compatible
+  with the isolated VPS `buzl-listing` Compose project.
+- Native lint/build, Docker build/config, image secret audit, healthcheck,
+  restart/stop-start, and the Dockerized public smoke suite (41/41) passed.
+- The legacy authenticated smoke script expects a local `password123` fixture
+  that this local Supabase instance no longer accepts. No account password or
+  local data was changed as part of Docker packaging; provide the current local
+  test-persona credentials before treating authenticated smoke as rerun-ready.
+
 ## Next exact task
 
 Perform project-owner staging review using the separately provided persona credentials. Keep staging noindex until an explicit production-release task is approved.

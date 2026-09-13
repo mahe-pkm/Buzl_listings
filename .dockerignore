@@ -4,9 +4,11 @@ node_modules
 .env
 .env.*
 !.env.example
+!.env.docker.example
 .research
 .supabase
 .temp
 coverage
 dist
 tests/screenshots
+*.log
