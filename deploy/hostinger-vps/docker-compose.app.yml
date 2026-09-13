@@ -14,6 +14,9 @@ services:
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY}
       NEXT_PUBLIC_SITE_URL: https://listing.rclk.in
       NEXT_PUBLIC_IS_STAGING: "true"
+      # Server-only: supplies the isolated Buzl service role to admin actions.
+      # It is deliberately not a build argument or NEXT_PUBLIC_ variable.
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
       STAGING_ADMIN_EMAIL: ${STAGING_ADMIN_EMAIL}
       STAGING_ADMIN_PASSWORD: ${STAGING_ADMIN_PASSWORD}
       STAGING_MEMBER_EMAIL: ${STAGING_MEMBER_EMAIL}
