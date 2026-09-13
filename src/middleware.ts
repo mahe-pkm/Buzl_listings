@@ -60,6 +60,11 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
+    const { data: profile } = await supabase.from('profiles').select('account_status').eq('id', user.id).maybeSingle();
+    if (profile && profile.account_status !== 'active') {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(new URL('/login?error=account_inactive', request.url));
+    }
     const role = user.app_metadata?.role as string | undefined;
     const isInternalUser = role === "admin" || role === "buzl_member";
 
