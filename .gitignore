@@ -9,6 +9,8 @@ out/
 .env
 .env.*
 !.env.example
+!.env.docker.example
+.env.docker.local
 
 # Supabase generated/temp
 .supabase/
@@ -33,3 +35,6 @@ pnpm-debug.log*
 coverage/
 dist/
 .temp/
+
+# Operator-selected business promotion manifests contain local/staging identity mappings.
+/scripts/data/staging-promotion.local.json

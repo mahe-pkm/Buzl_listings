@@ -9,6 +9,7 @@ services:
         NEXT_PUBLIC_SITE_URL: https://listing.rclk.in
         NEXT_PUBLIC_IS_STAGING: "true"
     environment:
+      APP_ENV: "staging"
       NEXT_PUBLIC_SUPABASE_URL: https://api-listing.rclk.in
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY}
       NEXT_PUBLIC_SITE_URL: https://listing.rclk.in

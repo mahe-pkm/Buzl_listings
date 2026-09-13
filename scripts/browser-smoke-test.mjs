@@ -1,7 +1,30 @@
 import { chromium } from 'playwright';
+import { assertSafeMutationTarget } from './lib/mutation-safety.mjs';
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
+assertSafeMutationTarget(BASE_URL, 'browser smoke test');
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is required for authenticated smoke tests`);
+  return value;
+}
+
+const fixtures = {
+  owner: {
+    email: requireEnv('LOCAL_FIXTURE_OWNER_EMAIL'),
+    password: requireEnv('LOCAL_FIXTURE_OWNER_PASSWORD'),
+  },
+  member: {
+    email: requireEnv('LOCAL_FIXTURE_MEMBER_EMAIL'),
+    password: requireEnv('LOCAL_FIXTURE_MEMBER_PASSWORD'),
+  },
+  admin: {
+    email: requireEnv('LOCAL_FIXTURE_ADMIN_EMAIL'),
+    password: requireEnv('LOCAL_FIXTURE_ADMIN_PASSWORD'),
+  },
+};
 
 const results = {
   routesTested: new Set(),
@@ -97,8 +120,8 @@ async function main() {
       // 1. Login
       await page.goto(`${BASE_URL}/login`);
       results.routesTested.add('/login');
-      await page.fill('input[type="email"]', 'owner@buzl.test');
-      await page.fill('input[type="password"]', 'password123');
+      await page.fill('input[type="email"]', fixtures.owner.email);
+      await page.fill('input[type="password"]', fixtures.owner.password);
       await page.click('button[type="submit"]');
       await page.waitForURL('**/dashboard**');
       assert(page.url().includes('/dashboard'), 'Owner logs in and redirects to /dashboard');
@@ -203,8 +226,8 @@ async function main() {
 
       // 1. Login
       await page.goto(`${BASE_URL}/login`);
-      await page.fill('input[type="email"]', 'member@buzl.test');
-      await page.fill('input[type="password"]', 'password123');
+      await page.fill('input[type="email"]', fixtures.member.email);
+      await page.fill('input[type="password"]', fixtures.member.password);
       await page.click('button[type="submit"]');
       await page.waitForURL('**/admin/businesses/import**', { timeout: 15000 });
       assert(page.url().includes('/admin/businesses/import'), 'Buzl Member logs in and routes to /admin/businesses/import');
@@ -289,8 +312,8 @@ async function main() {
 
       // 1. Login
       await page.goto(`${BASE_URL}/login`);
-      await page.fill('input[type="email"]', 'admin@buzl.test');
-      await page.fill('input[type="password"]', 'password123');
+      await page.fill('input[type="email"]', fixtures.admin.email);
+      await page.fill('input[type="password"]', fixtures.admin.password);
       await page.click('button[type="submit"]');
       await page.waitForURL('**/admin/businesses**', { timeout: 15000 });
       assert(page.url().includes('/admin/businesses'), 'Admin logs in and routes to /admin/businesses');
@@ -344,8 +367,8 @@ async function main() {
 
       // 1. Login on mobile
       await page.goto(`${BASE_URL}/login`);
-      await page.fill('input[type="email"]', 'owner@buzl.test');
-      await page.fill('input[type="password"]', 'password123');
+      await page.fill('input[type="email"]', fixtures.owner.email);
+      await page.fill('input[type="password"]', fixtures.owner.password);
       await page.click('button[type="submit"]');
       await page.waitForURL('**/dashboard**');
 

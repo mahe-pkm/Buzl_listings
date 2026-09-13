@@ -1,15 +1,17 @@
-FROM node:24-alpine AS dependencies
+FROM node:24-alpine AS base
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+FROM base AS dependencies
 
 WORKDIR /app
-ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:24-alpine AS builder
+FROM base AS builder
 
 WORKDIR /app
-ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 ARG NEXT_PUBLIC_SUPABASE_URL
@@ -26,23 +28,23 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-FROM node:24-alpine AS runner
+FROM base AS runner
 
 WORKDIR /app
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
 RUN addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+  && adduser --system --uid 1001 nextjs \
+  && apk add --no-cache dumb-init
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.ts ./next.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "server.js"]

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "selectedBusinesses": [
+    {
+      "selectionKey": "replace-with-a-stable-source-id",
+      "localSelector": {
+        "source_buss_id": "replace-with-local-source-business-id"
+      },
+      "ownerEmail": "owner@example.test",
+      "requestedPublicationStatus": "published"
+    }
+  ]
+}

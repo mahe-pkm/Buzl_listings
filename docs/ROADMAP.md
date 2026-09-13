@@ -43,7 +43,8 @@ Version 0.1.0 is the currently prepared and verified MVP baseline. This roadmap 
 
 - Local RLS/runtime checks, privacy review, release-security hardening, browser smoke checks, lint, and production-build verification.
 - Staging safety controls are implemented: noindex metadata/header directives, disallow-all staging robots policy, and empty staging sitemap.
-- **Remote staging provisioning/deployment is not yet complete.**
+- Isolated remote staging deployment is active for internal review; the public
+  staging surface remains noindex.
 
 ## 2. Upcoming approved priorities
 
@@ -51,7 +52,7 @@ These are the currently approved next work areas. Their stated status is a plann
 
 ### 2.1 User management and expanded RBAC
 
-**Status:** Planned
+**Status:** Prepared / verified
 
 - Admin user list and user detail views.
 - Create/invite user, activation, deactivation/suspension, password reset/invite flow, and practical session revocation.
@@ -81,7 +82,9 @@ Authentication provider identity does **not** determine Buzl authorization. Role
 - Planned Supabase API/Auth endpoint: `https://api-listing.rclk.in`.
 - DNS, HTTPS, migrations, guarded staging seed, noindex enforcement, live browser smoke testing, and staging review package.
 
-Local deployment preparation is complete enough to proceed. Remote infrastructure provisioning is **Not started** and depends on operator infrastructure setup and credentials.
+The isolated staging topology, migrations, guarded seed, HTTPS routing, and
+noindex controls have been verified. Production infrastructure remains a
+separate future release decision.
 
 ### 2.4 Listing Logo & Cover Media
 

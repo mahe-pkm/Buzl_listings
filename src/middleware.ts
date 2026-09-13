@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isStagingEnvironment } from "@/lib/staging";
+import { getPublicSupabaseAuthCookieName, getServerSupabaseUrl } from "@/lib/supabase/url";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -14,17 +15,18 @@ export async function middleware(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
-  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal");
-  const isAuthRoute = pathname === "/login";
+  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal") || pathname.startsWith("/review");
+  const isAuthRoute = pathname === "/login" || pathname === "/signup";
 
   if (!isProtected && !isAuthRoute) {
     return response;
   }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    getServerSupabaseUrl(),
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: { name: getPublicSupabaseAuthCookieName() },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -58,13 +60,23 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
+    const { data: profile } = await supabase.from('profiles').select('account_status').eq('id', user.id).maybeSingle();
+    if (!profile || profile.account_status !== 'active') {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(new URL('/login?error=account_inactive', request.url));
+    }
     const role = user.app_metadata?.role as string | undefined;
     const isInternalUser = role === "admin" || role === "buzl_member";
 
     // Importer routes: /admin/businesses/import and /internal/*
     const isImportRoute = pathname === "/admin/businesses/import" || pathname.startsWith("/internal");
+    const isReviewRoute = pathname.startsWith('/review/businesses');
 
-    if (isImportRoute) {
+    if (isReviewRoute) {
+      const { data: reviewProfile } = await supabase.from('profiles').select('permission_preset').eq('id', user.id).maybeSingle();
+      const canReview = role === 'admin' || (role === 'buzl_member' && reviewProfile?.permission_preset === 'listing_manager');
+      if (!canReview) return NextResponse.redirect(new URL(role === 'buzl_member' ? '/admin/businesses/import' : '/dashboard', request.url));
+    } else if (isImportRoute) {
       if (!isInternalUser) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }

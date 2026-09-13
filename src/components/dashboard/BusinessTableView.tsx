@@ -24,11 +24,13 @@ export interface BusinessTableRow {
 interface BusinessTableViewProps {
   businesses: BusinessTableRow[];
   isAdmin?: boolean;
+  moderationPermissions?: { publish: boolean; suspend: boolean; verify: boolean; delete: boolean };
 }
 
-export default function BusinessTableView({ businesses, isAdmin = false }: BusinessTableViewProps) {
+export default function BusinessTableView({ businesses, isAdmin = false, moderationPermissions }: BusinessTableViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const canEdit = !isAdmin || moderationPermissions?.delete !== false;
 
   const filteredList = useMemo(() => {
     return businesses.filter((b) => {
@@ -96,9 +98,11 @@ export default function BusinessTableView({ businesses, isAdmin = false }: Busin
                 return (
                   <tr key={b.id} className="hover:bg-[#F2F5FA]/50 transition-colors">
                     <td className="py-3.5 px-6 font-semibold text-[#2A3547]">
-                      <Link href={`/dashboard/businesses/${b.id}/edit`} className="hover:text-[#004AAD] block">
-                        {b.canonical_name}
-                      </Link>
+                      {canEdit ? (
+                        <Link href={`/dashboard/businesses/${b.id}/edit`} className="hover:text-[#004AAD] block">
+                          {b.canonical_name}
+                        </Link>
+                      ) : b.canonical_name}
                       <span className="text-[11px] text-[#7D8795] font-normal">
                         /business/{b.slug}
                       </span>
@@ -123,6 +127,13 @@ export default function BusinessTableView({ businesses, isAdmin = false }: Busin
                           businessId={b.id}
                           publicationStatus={b.publication_status}
                           verificationStatus={b.verification_status}
+                          permissions={{
+                            publish: moderationPermissions?.publish ?? true,
+                            suspend: moderationPermissions?.suspend ?? true,
+                            verify: moderationPermissions?.verify ?? true,
+                            delete: moderationPermissions?.delete ?? true,
+                            edit: canEdit,
+                          }}
                         />
                       ) : (
                         <Link

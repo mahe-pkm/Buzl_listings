@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { assertSafeMutationTarget } from './lib/mutation-safety.mjs';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -10,8 +11,9 @@ function requireEnv(name) {
 }
 
 function assertStagingTarget() {
-  if (process.env.BUZL_ENV !== 'staging' || process.env.ALLOW_STAGING_SEED !== 'true') throw new Error('Refusing to seed: BUZL_ENV=staging and ALLOW_STAGING_SEED=true are required');
   const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+  assertSafeMutationTarget(url, 'staging seed');
+  if (process.env.ALLOW_STAGING_SEED !== 'true') throw new Error('Refusing to seed: ALLOW_STAGING_SEED=true is required');
   requireEnv('SUPABASE_SERVICE_ROLE_KEY');
   const expectedRef = requireEnv('STAGING_SUPABASE_PROJECT_REF');
   const actualRef = new URL(url).hostname.split('.')[0];

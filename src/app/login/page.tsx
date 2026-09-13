@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -139,6 +140,7 @@ function LoginForm() {
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
+      <p className="mt-5 text-center text-xs text-[#5D6776]">New business? <Link href="/signup" className="font-semibold text-[#004AAD]">Create an owner account</Link></p>
 
       {/* Demo account helper pills */}
       <div className="mt-8 pt-6 border-t border-[#DCE2E8]">

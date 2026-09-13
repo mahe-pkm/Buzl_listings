@@ -10,12 +10,14 @@ interface AdminBusinessRowActionsProps {
   businessId: string;
   publicationStatus: PublicationStatus;
   verificationStatus: VerificationStatus;
+  permissions?: { publish: boolean; suspend: boolean; verify: boolean; delete: boolean; edit?: boolean };
 }
 
 export default function AdminBusinessRowActions({
   businessId,
   publicationStatus,
   verificationStatus,
+  permissions = { publish: true, suspend: true, verify: true, delete: true, edit: true },
 }: AdminBusinessRowActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -75,14 +77,14 @@ export default function AdminBusinessRowActions({
     <div className="flex flex-col items-end gap-1">
       {error && <span className="text-[10px] text-[#E36B5D] font-medium">{error}</span>}
       <div className="flex items-center gap-1.5">
-        <Link
+        {permissions.edit !== false && <Link
           href={`/dashboard/businesses/${businessId}/edit`}
           className="px-2 py-1 rounded bg-[#F2F5FA] text-[#2A3547] text-[11px] font-semibold hover:bg-[#EAEFF4] transition-colors border border-[#DCE2E8]"
         >
           Edit
-        </Link>
+        </Link>}
 
-        {publicationStatus !== 'published' ? (
+        {publicationStatus !== 'published' && permissions.publish ? (
           <button
             type="button"
             disabled={isPending}
@@ -91,7 +93,7 @@ export default function AdminBusinessRowActions({
           >
             Publish
           </button>
-        ) : (
+        ) : publicationStatus === 'published' && permissions.suspend ? (
           <button
             type="button"
             disabled={isPending}
@@ -100,18 +102,18 @@ export default function AdminBusinessRowActions({
           >
             Suspend
           </button>
-        )}
+        ) : null}
 
-        <button
+        {permissions.verify && <button
           type="button"
           disabled={isPending}
           onClick={handleVerify}
           className="px-2 py-1 rounded bg-white text-[#004AAD] text-[11px] font-semibold hover:bg-[#ECF4FF] transition-colors border border-[#BEDBFE] disabled:opacity-50"
         >
           {verificationStatus === 'verified' ? 'Unverify' : 'Verify'}
-        </button>
+        </button>}
 
-        <button
+        {permissions.delete && <button
           type="button"
           disabled={isPending}
           onClick={handleDelete}
@@ -121,7 +123,7 @@ export default function AdminBusinessRowActions({
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
-        </button>
+        </button>}
       </div>
     </div>
   );

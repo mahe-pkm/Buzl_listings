@@ -274,7 +274,7 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
 - **Commit:** `13cff2e` (`chore(security): harden staging release workflow`)
 - **Credential Audit:** PASS — zero real service-role keys, production API keys, or plaintext passwords in tracked files. Supabase local dev demo anon keys (issuer: `supabase-demo`, role: `anon`) retained as safe local-only fallbacks in verification scripts.
 - **Service-Role Fallback Removal:** All scripts requiring privileged Supabase client (`seed-staging.mjs`, `seed-buzl-member.mjs`, `verify-day1-5-import.mjs`) now require `SUPABASE_SERVICE_ROLE_KEY` from env — zero hardcoded fallbacks.
-- **Plaintext Password Removal:** `password123` removed from `login/page.tsx` demo fill, `seed-staging.mjs`, `verify-day1-workflow.mjs`, `verify-day1-5-import.mjs`. All persona passwords sourced from `STAGING_*_PASSWORD` env vars.
+- **Plaintext Password Removal:** the legacy hard-coded test password was removed from `login/page.tsx` demo fill, `seed-staging.mjs`, `verify-day1-workflow.mjs`, and `verify-day1-5-import.mjs`. All persona passwords are sourced from `STAGING_*_PASSWORD` env vars.
 - **Staging Seed Safety Gates (5 mandatory):**
   1. `BUZL_ENV=staging` — explicit staging intent
   2. `ALLOW_STAGING_SEED=true` — explicit operator confirmation
@@ -312,6 +312,27 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
 - **Internal demo login helper:** The staging-only login cards retrieve the server-held demo credentials at runtime to fill the sign-in form. This is intentionally limited to the internal staging environment; it must be removed or protected before any public release.
 - **Indexing safety:** The live staging app returns noindex response headers and meta tags; `robots.txt` disallows all crawling; `sitemap.xml` contains zero URLs.
 - **Validation:** The Linux production image build and Linux lint check passed. Public HTTPS app, API, directory listing, and approved location/category route checks passed.
+
+## Docker application packaging — COMPLETE
+
+- The repository contains a reproducible standalone Next.js production image,
+  root application-only Compose workflow, health endpoint, and safe local
+  Docker environment template.
+- Local Docker server-side Supabase calls may use `SUPABASE_INTERNAL_URL`; the
+  browser continues to use `NEXT_PUBLIC_SUPABASE_URL`.
+- Docker packaging does not create or modify a Supabase stack and is compatible
+  with the isolated VPS `buzl-listing` Compose project.
+- Native lint/build, Docker build/config, image secret audit, healthcheck,
+  restart/stop-start, and the Dockerized public smoke suite (41/41) passed.
+- Local authenticated smoke fixtures are deterministic and local-only:
+  `test:fixtures:auth` creates or updates the three role fixtures from ignored
+  local environment variables, resets their current credentials, preserves the
+  expected roles, and synchronizes Buzl Member identifiers without duplicates.
+- Native and Docker browser checks passed for Business Owner, Buzl Member, and
+  Admin login flows, including protected-route role boundaries and anonymous
+  redirects. Server-side Supabase clients now derive their auth-cookie name
+  from the public URL so Docker's internal service URL cannot hide browser
+  sessions from middleware.
 
 ## Next exact task
 

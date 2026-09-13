@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isStagingEnvironment } from "@/lib/staging";
+import { isProductionEnvironment, isStagingEnvironment } from "@/lib/staging";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,11 @@ const demoAccounts = {
 };
 
 export async function GET() {
-  if (!isStagingEnvironment() || Object.values(demoAccounts).some(({ email, password }) => !email || !password)) {
+  if (
+    isProductionEnvironment() ||
+    !isStagingEnvironment() ||
+    Object.values(demoAccounts).some(({ email, password }) => !email || !password)
+  ) {
     return new NextResponse(null, { status: 404 });
   }
 

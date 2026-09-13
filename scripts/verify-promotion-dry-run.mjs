@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { classifyCandidate, makePackage, privacyIssues, validateRequestedPublicationStatus, validateSelector } from './lib/promotion-dry-run.mjs';
+
+assert.equal(validateSelector({ source_buss_id: 'legacy-1' }), null);
+assert.match(validateSelector({ source_buss_id: 'a', source_place_id: 'b' }), /one source provenance key/);
+assert.equal(classifyCandidate({}, [], {}).classification, 'LOCAL ONLY');
+assert.equal(classifyCandidate({}, [{ signals: ['provenance:source_buss_id'] }], {}).classification, 'EXISTS IN STAGING');
+assert.equal(classifyCandidate({}, [{ signals: ['phone'] }], {}).classification, 'POSSIBLE DUPLICATE');
+assert.equal(classifyCandidate({}, [{ signals: ['provenance-support:source_loc_id'] }], {}).classification, 'POSSIBLE DUPLICATE');
+assert.equal(classifyCandidate({}, [], { categoryMissing: true }).classification, 'NEEDS REVIEW');
+assert.match(validateRequestedPublicationStatus('unreviewed'), /valid publication state/);
+assert.deepEqual(privacyIssues({ location_mode: 'service_area', show_street_address: true, address_line_1: 'Private' }), ['service_area listing has show_street_address=true', 'service_area listing retains street address, postal code, or coordinates']);
+const pkg = makePackage({ canonical_name: 'Example', primary_phone: '919999999999', location_mode: 'service_area', source_buss_id: 'legacy' }, { slug: 'retail-store' }, { services: [], hours: [], serviceAreas: [] });
+assert.equal(pkg.mediaExcluded, true);
+assert.equal(pkg.publicationStatusExplicitlyRequested, false);
+assert.equal(pkg.business.provenance.source_buss_id, 'legacy');
+const implementation = fs.readFileSync(new URL('./promote-businesses-to-staging.mjs', import.meta.url), 'utf8');
+assert(!/\.insert\(|\.update\(|\.upsert\(|\.delete\(/.test(implementation), 'dry-run implementation contains no write operation');
+console.log('Promotion dry-run helper checks: PASS');

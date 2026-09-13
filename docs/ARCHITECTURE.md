@@ -249,3 +249,23 @@ Binary listing media belongs in Supabase Storage; PostgreSQL holds its metadata 
 Media metadata may include `id`, `business_id`, `media_type`, `storage_path`, `caption`, `alt_text`, `sort_order`, `mime_type`, `width`, `height`, and `created_at`. Media access must eventually follow business ownership, publication, and privacy rules.
 
 MongoDB is not part of the current architecture. It may be reconsidered only after a demonstrated requirement that PostgreSQL JSONB cannot reasonably satisfy, such as very large raw crawler snapshots, high-volume external document payloads, or large-scale unstructured enrichment archives.
+
+## Deployment topology
+
+Local Docker development keeps the application and local Supabase responsibilities separate:
+
+```text
+Browser -> Dockerized Next.js application -> Local Supabase
+```
+
+The application container uses a server-only internal Supabase URL when needed;
+the browser continues to use the public local API URL.
+
+The isolated VPS staging topology is:
+
+```text
+listing.rclk.in -> HTTPS reverse proxy -> Next.js container
+api-listing.rclk.in -> isolated Buzl Supabase
+```
+
+The Buzl Compose project is separate from the unrelated VPS Supabase project.
