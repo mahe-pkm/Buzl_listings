@@ -4,6 +4,14 @@ All notable changes to Buzl Listing are documented here.
 
 This project uses semantic versioning. Version `0.1.0` is the first complete local MVP baseline; it is not a production deployment.
 
+## [Unreleased]
+
+### Staging handoff checkpoint — 2026-09-14
+
+- Canonical `main`, `origin/main`, and deployed staging are aligned at `15539b9` (`fix(deploy): provide server admin key to staging app`).
+- Verified Docker packaging, deterministic local auth fixtures, staging/production separation, RBAC and account-status enforcement, Admin User Management, public Business Owner signup, Listing Manager moderation/publish controls, public regression coverage, and staging noindex protections.
+- The remaining verification is intentionally limited to the real-browser staging Owner flow: draft → submit → pending, including owner publish denial, pending visibility for Listing Manager/Admin, and anonymous pending invisibility.
+
 ## [0.1.0] - 2026-09-12
 
 ### Added
@@ -36,8 +44,8 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ### Known limitations
 
-- No remote staging deployment or remote Supabase project is configured.
-- Public self-registration, Google login, WhatsApp login, user-management expansion, advanced RBAC, claims, reviews, payments, bookings, radius search, and advanced analytics are deferred.
+- Staging is deployed and remains protected from indexing; production release infrastructure is not configured.
+- Google login, WhatsApp login, claims, reviews, payments, bookings, radius search, and advanced analytics are deferred.
 - A map/geocoder provider remains intentionally undecided and provider-neutral.
 
 [0.1.0]: https://github.com/mahe-pkm/Buzl_listings/releases/tag/mvp-review-baseline

@@ -7,56 +7,48 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `DAY1.5-BUZL-MEMBER-IMPORT` |
-| Task Name | Day 1.5 Buzl Member JSON Import |
-| Status | **COMPLETE** |
-| Current Agent | `antigravity` |
-| Started From Commit | `b7d7d20f64676f11439a25a80a4c6a58bcf4025d` |
-| Latest Commit | `2209936e56a9702e183add561a0d2495e7ef6f16` |
-| Branch | `master` |
-| Started At | 2026-09-12T15:20:28+05:30 |
-| Last Updated | 2026-09-12T15:31:22+05:30 |
+| Task ID | `STAGING-OWNER-SUBMIT-VERIFY` |
+| Task Name | Staging Owner Draft Submit Verification |
+| Status | **PAUSED_HANDOFF** |
+| Current Agent | `codex` |
+| Started From Commit | `15539b91b8b1a67146a2c4d48fe384c74fdaeb1a` |
+| Latest Commit | `15539b91b8b1a67146a2c4d48fe384c74fdaeb1a` |
+| Branch | `main` |
+| Started At | 2026-09-14T02:06:34+05:30 |
+| Last Updated | 2026-09-14T02:06:43+05:30 |
 
 ## Objective
 
-Add Internal Buzl Profile JSON Import with Buzl Member support (buzl_member role, member_id, Zod import schema, mapping adapter, category matching, location mode & privacy review, duplicate detection, and import UI).
+Verify the live staging Owner draft to submit to pending flow through the real browser UI and confirm publication and visibility boundaries.
 
 ## Allowed Files
 
-- src, supabase, tests, docs/CURRENT_STATE.md, docs/ACTIVE_TASK.md
+- docs/ACTIVE_TASK.md, docs/CHANGELOG.md
 
 ## Completed Work
 
-- Implemented Day 1.5 Internal Buzl Profile JSON Import with Buzl Member Support:
-- - Updated terminology strictly to 'Buzl Member' (buzl_member)
-- - Added member_id concept to public.profiles and set_member_id admin-only RPC
-- - Added migration 20260912150000_day1_5_member_and_import.sql with provenance audit columns and indexes
-- - Implemented Zod schema BuzlProfileImportSchema and mapping adapter mapBuzlProfileToListing
-- - Added Indian address parser, category matcher with alias and review_required support, service area privacy suppression
-- - Created /admin/businesses/import and /internal/businesses/import routes with 8-section review interface
-- - Non-blocking duplicate detection on phone, domain, and legacy IDs
-- - Live public-safe preview with zero coordinate or private data leakage
-- - Verified with Laptech fixture, pgTAP suite, lint, and build. All subagents (Product, Security, Privacy) passed.
+- Canonical main at 15539b9 is deployed to staging. Docker packaging, local auth fixtures, staging/production separation, RBAC and account-status enforcement, Admin User Management, public Business Owner signup, Listing Manager moderation/publish, public regression, and staging noindex protections are verified.
 
 ## Remaining Work
 
-- —
+- One browser-only staging check: Owner draft → submit → pending.
 
 ## Checks / Tests
 
-- npx supabase test db (PASS), node scripts/verify-day1-5-import.mjs (PASS), npm run lint (PASS), npm run build (PASS), Independent Product Review (PASS), Independent Security Review (PASS), Independent Privacy Review (PASS)
+- Canonical main and origin/main both resolve to 15539b9
+- working tree was clean before AgentRelay created this handoff record.
 
 ## Known Issues
 
-- —
+- None recorded.
 
 ## Next Exact Action
 
-No further action — task complete.
+Verify staging Owner draft → submit → pending through the real browser UI. Confirm Owner cannot publish; Listing Manager/Admin can see pending; anonymous users cannot see pending.
 
 ## Handoff Notes
 
-—
+Cross-agent handoff for the remaining real-browser staging verification.
 
 ## Agent Handoff Rule
 
