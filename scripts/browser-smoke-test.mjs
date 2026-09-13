@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
+import { assertSafeMutationTarget } from './lib/mutation-safety.mjs';
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
+assertSafeMutationTarget(BASE_URL, 'browser smoke test');
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
 function requireEnv(name) {

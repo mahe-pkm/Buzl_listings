@@ -5,7 +5,13 @@
  * altering canonical production SEO logic.
  */
 
+export function isProductionEnvironment(): boolean {
+  return process.env.APP_ENV === 'production';
+}
+
 export function isStagingEnvironment(): boolean {
+  if (isProductionEnvironment()) return false;
+
   return (
     process.env.NEXT_PUBLIC_IS_STAGING === 'true' ||
     process.env.BUZL_ENV === 'staging' ||

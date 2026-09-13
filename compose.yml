@@ -12,6 +12,7 @@ services:
       - .env.docker.local
     environment:
       NODE_ENV: production
+      APP_ENV: ${APP_ENV:-local}
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
     ports:

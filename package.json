@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:fixtures:auth": "node scripts/prepare-local-auth-fixtures.mjs",
+    "test:guards": "node scripts/verify-mutation-guards.mjs",
     "test:smoke:auth": "node scripts/verify-auth-fixtures.mjs",
     "test:smoke": "node scripts/browser-smoke-test.mjs",
     "test:smoke:public": "node scripts/browser-smoke-test-public.mjs"

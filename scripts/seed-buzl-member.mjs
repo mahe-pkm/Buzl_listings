@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
+import { assertSafeMutationTarget } from './lib/mutation-safety.mjs';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!SUPABASE_URL) throw new Error('NEXT_PUBLIC_SUPABASE_URL is required');
+assertSafeMutationTarget(SUPABASE_URL, 'Buzl Member seed');
 if (!SERVICE_ROLE_KEY) throw new Error('SUPABASE_SERVICE_ROLE_KEY is required');
 
 const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {

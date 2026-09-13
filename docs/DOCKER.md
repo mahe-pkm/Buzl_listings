@@ -88,6 +88,8 @@ load the values only into your local shell, then run:
 
 ```powershell
 $env:BUZL_LOCAL_FIXTURES = "true"
+$env:BUZL_MUTATION_ENV = "local"
+$env:APP_ENV = "local"
 $env:LOCAL_SUPABASE_URL = "http://127.0.0.1:54321"
 $env:LOCAL_SUPABASE_SERVICE_ROLE_KEY = "<local-service-role-key>"
 $env:LOCAL_FIXTURE_OWNER_EMAIL = "owner@buzl.test"
@@ -108,6 +110,12 @@ local environment:
 $env:TEST_BASE_URL = "http://localhost:3000"
 npm run test:smoke:auth
 ```
+
+Scripts that create, update, or delete test data also require
+`BUZL_MUTATION_ENV=local` and reject any non-loopback target. A staging mutation
+requires `BUZL_MUTATION_ENV=staging`, `BUZL_ENV=staging`,
+`ALLOW_STAGING_MUTATIONS=true`, and an exact `STAGING_MUTATION_TARGET_HOST`.
+`APP_ENV=production` rejects all guarded mutations.
 
 ## Troubleshooting
 
@@ -149,3 +157,7 @@ modify the unrelated VPS Supabase project.
 
 No database migration, seed, or data-volume operation is part of this
 application-container rollback process.
+
+The VPS overlay sets `APP_ENV=staging`. The demo credential helper is available
+only to staging detection and always returns 404 when `APP_ENV=production`,
+even if demo fixture environment variables are present.

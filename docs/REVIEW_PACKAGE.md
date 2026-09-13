@@ -194,6 +194,7 @@ NEXT_PUBLIC_SITE_URL=https://staging-listing.yourdomain.com
 
 # Staging Protection (Enforces global noindex and robots disallow)
 NEXT_PUBLIC_IS_STAGING=true
+APP_ENV=staging
 ```
 
 ### Database Migration Process
@@ -209,6 +210,9 @@ The staging seeder requires **all** of the following environment variables. Miss
 ```bash
 BUZL_ENV=staging \
 ALLOW_STAGING_SEED=true \
+BUZL_MUTATION_ENV=staging \
+ALLOW_STAGING_MUTATIONS=true \
+STAGING_MUTATION_TARGET_HOST=your-staging-project.supabase.co \
 NEXT_PUBLIC_SUPABASE_URL=https://your-staging-project.supabase.co \
 SUPABASE_SERVICE_ROLE_KEY=your-staging-service-role-key \
 STAGING_SUPABASE_PROJECT_REF=your-staging-project \
@@ -228,6 +232,8 @@ node scripts/seed-staging.mjs
 4. Project ref extracted from `NEXT_PUBLIC_SUPABASE_URL` must exactly match `STAGING_SUPABASE_PROJECT_REF`
 5. `SUPABASE_SERVICE_ROLE_KEY` — privileged credential required
 6. All persona email/password variables — no hardcoded fallbacks
+7. `APP_ENV` must not be `production`; guarded mutation scripts reject production
+8. `STAGING_MUTATION_TARGET_HOST` must exactly match the supplied target host
 
 ### Supabase Auth URL Configuration
 In the Supabase Staging Dashboard (**Authentication -> URL Configuration**):
