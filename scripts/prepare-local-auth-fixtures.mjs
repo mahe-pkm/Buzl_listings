@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { loadLocalFixtureEnvironment } from "./lib/local-fixture-env.mjs";
+
+loadLocalFixtureEnvironment();
 
 function requireEnv(name) {
   const value = process.env[name];
@@ -38,6 +41,9 @@ async function ensurePersona(admin, persona) {
     email: persona.email,
     password: persona.password,
     email_confirm: true,
+    // Reset must also clear a previous local suspension in GoTrue, not only
+    // restore the app profile's account_status.
+    ban_duration: "none",
     app_metadata: { ...(user?.app_metadata ?? {}), role: persona.role },
     user_metadata: { ...(user?.user_metadata ?? {}), full_name: persona.fullName },
   };
@@ -57,7 +63,13 @@ async function ensurePersona(admin, persona) {
   const { error: profileError } = await admin
     .from("profiles")
     .upsert(
-      { id: user.id, full_name: persona.fullName, member_id: persona.memberId },
+      {
+        id: user.id,
+        full_name: persona.fullName,
+        member_id: persona.memberId,
+        account_status: "active",
+        permission_preset: persona.permissionPreset ?? null,
+      },
       { onConflict: "id" }
     );
   if (profileError) throw new Error(`Unable to synchronize local ${persona.role} profile: ${profileError.message}`);
@@ -82,6 +94,15 @@ async function main() {
       role: "buzl_member",
       fullName: "Buzl Onboarding Specialist",
       memberId: "BUZL-M-1024",
+      permissionPreset: "onboarding_member",
+    },
+    {
+      email: requireEnv("LOCAL_FIXTURE_MANAGER_EMAIL"),
+      password: requireEnv("LOCAL_FIXTURE_MANAGER_PASSWORD"),
+      role: "buzl_member",
+      fullName: "Buzl Listing Manager",
+      memberId: "BUZL-M-1025",
+      permissionPreset: "listing_manager",
     },
     {
       email: requireEnv("LOCAL_FIXTURE_ADMIN_EMAIL"),

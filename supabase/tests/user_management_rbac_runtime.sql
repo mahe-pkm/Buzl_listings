@@ -1,5 +1,16 @@
 begin;
-select plan(1);
+select plan(4);
+
+-- A normal public Auth signup supplies user_metadata only. The trusted trigger
+-- must assign the least-privileged role without accepting a client role value.
+insert into auth.users (id, aud, role, email, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+values ('40000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'public-signup-rbac@local.test', '{"provider":"email","providers":["email"]}', '{"full_name":"Public Owner"}', now(), now());
+
+select is(
+  (select raw_app_meta_data ->> 'role' from auth.users where id = '40000000-0000-0000-0000-000000000000'),
+  'business_owner',
+  'public signup defaults to business_owner'
+);
 
 insert into auth.users (id, aud, role, email, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
 values
@@ -33,7 +44,17 @@ end $$;
 -- Onboarding member cannot publish; Listing Manager and Admin can publish while unverified.
 select set_config('request.jwt.claims', '{"sub":"40000000-0000-0000-0000-000000000002","role":"authenticated","app_metadata":{"role":"buzl_member"}}', true);
 do $$ begin if public.has_permission('listing.publish') then raise exception 'onboarding member publish permission unexpectedly granted'; end if; end $$;
+select is(
+  (select count(*) from public.businesses where id = current_setting('test.manager_listing')::uuid),
+  0::bigint,
+  'onboarding member cannot read the moderation queue'
+);
 select set_config('request.jwt.claims', '{"sub":"40000000-0000-0000-0000-000000000003","role":"authenticated","app_metadata":{"role":"buzl_member"}}', true);
+select is(
+  (select count(*) from public.businesses where id = current_setting('test.manager_listing')::uuid),
+  1::bigint,
+  'listing manager can read the moderation queue'
+);
 do $$ begin if not public.has_permission('listing.publish') then raise exception 'listing manager publish permission missing'; end if; perform public.transition_business_publication(current_setting('test.manager_listing')::uuid, 'published'); end $$;
 select set_config('request.jwt.claims', '{"sub":"40000000-0000-0000-0000-000000000004","role":"authenticated","app_metadata":{"role":"admin"}}', true);
 do $$ begin if not public.has_permission('listing.publish') then raise exception 'admin publish permission missing'; end if; perform public.transition_business_publication(current_setting('test.admin_listing')::uuid, 'published'); end $$;
@@ -42,7 +63,16 @@ reset role;
 update public.profiles set account_status = 'suspended' where id = '40000000-0000-0000-0000-000000000001';
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"40000000-0000-0000-0000-000000000001","role":"authenticated","app_metadata":{"role":"business_owner"}}', true);
-do $$ begin if public.is_account_active() then raise exception 'suspended account remains active'; end if; end $$;
+do $$
+begin
+  if public.is_account_active() then raise exception 'suspended account remains active'; end if;
+  begin
+    perform public.create_business_for_current_user('Suspended owner denied', '+91 98888 33333', '10000000-0000-0000-0000-000000000001', 'service_area', 'Chennai', 'Tamil Nadu', 'India');
+    raise exception 'suspended account created a listing';
+  exception when raise_exception then
+    if position('active account required' in sqlerrm) = 0 then raise; end if;
+  end;
+end $$;
 
 select pass('user management RBAC approval rules passed');
 rollback;

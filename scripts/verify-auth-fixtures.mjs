@@ -1,4 +1,7 @@
 import { chromium } from "playwright";
+import { loadLocalFixtureEnvironment } from "./lib/local-fixture-env.mjs";
+
+loadLocalFixtureEnvironment();
 
 const baseUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
 const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
@@ -18,6 +21,11 @@ const fixtures = {
   member: {
     email: requireEnv("LOCAL_FIXTURE_MEMBER_EMAIL"),
     password: requireEnv("LOCAL_FIXTURE_MEMBER_PASSWORD"),
+    expectedPath: "/admin/businesses/import",
+  },
+  manager: {
+    email: requireEnv("LOCAL_FIXTURE_MANAGER_EMAIL"),
+    password: requireEnv("LOCAL_FIXTURE_MANAGER_PASSWORD"),
     expectedPath: "/admin/businesses/import",
   },
   admin: {
@@ -50,6 +58,9 @@ async function signIn(context, fixture) {
   try {
     await page.goto(`${baseUrl}/login`, { waitUntil: "commit", timeout: 10000 });
     await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+    // The inputs can render before the Client Component has hydrated. Wait
+    // before entering credentials so React does not replace test input state.
+    await page.waitForTimeout(750);
   } catch (error) {
     const browserErrors = pageErrors.length ? ` Browser errors: ${pageErrors.join(" | ")}` : "";
     throw new Error(`${error.message}${browserErrors}`);
@@ -85,6 +96,10 @@ async function main() {
     await memberPage.goto(`${baseUrl}/admin/businesses`, { waitUntil: "domcontentloaded" });
     assert(memberPage.url().includes("/admin/businesses/import"), "Buzl Member is denied the general admin route");
     await memberContext.close();
+
+    const managerContext = await browser.newContext();
+    await signIn(managerContext, fixtures.manager);
+    await managerContext.close();
 
     const adminContext = await browser.newContext();
     await signIn(adminContext, fixtures.admin);

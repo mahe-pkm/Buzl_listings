@@ -43,7 +43,9 @@ export async function getSessionUser() {
 
   let memberId: string | null = null;
   let profileName: string | null = null;
-  let accountStatus = 'active';
+  // Fail closed for privileged server actions if the lifecycle profile cannot
+  // be read. Middleware and database RPCs independently enforce the same rule.
+  let accountStatus = 'inactive';
   let permissionPreset: PermissionPreset = null;
 
   try {
