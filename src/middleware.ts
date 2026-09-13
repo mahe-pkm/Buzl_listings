@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isStagingEnvironment } from "@/lib/staging";
-import { getServerSupabaseUrl } from "@/lib/supabase/url";
+import { getPublicSupabaseAuthCookieName, getServerSupabaseUrl } from "@/lib/supabase/url";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -26,6 +26,7 @@ export async function middleware(request: NextRequest) {
     getServerSupabaseUrl(),
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: { name: getPublicSupabaseAuthCookieName() },
       cookies: {
         getAll() {
           return request.cookies.getAll();

@@ -79,6 +79,36 @@ docker compose down
 Never use `docker compose down -v` as part of normal Buzl application work.
 The application container is stateless; Buzl data belongs to Supabase.
 
+## Local authentication fixtures
+
+Authenticated smoke tests use deterministic local-only fixtures. They never
+use a committed password and the fixture reset refuses a non-loopback Supabase
+URL. Use `scripts/local-auth-fixtures.example.env` as the variable reference,
+load the values only into your local shell, then run:
+
+```powershell
+$env:BUZL_LOCAL_FIXTURES = "true"
+$env:LOCAL_SUPABASE_URL = "http://127.0.0.1:54321"
+$env:LOCAL_SUPABASE_SERVICE_ROLE_KEY = "<local-service-role-key>"
+$env:LOCAL_FIXTURE_OWNER_EMAIL = "owner@buzl.test"
+$env:LOCAL_FIXTURE_OWNER_PASSWORD = "<local-owner-password>"
+$env:LOCAL_FIXTURE_MEMBER_EMAIL = "member@buzl.test"
+$env:LOCAL_FIXTURE_MEMBER_PASSWORD = "<local-member-password>"
+$env:LOCAL_FIXTURE_ADMIN_EMAIL = "admin@buzl.test"
+$env:LOCAL_FIXTURE_ADMIN_PASSWORD = "<local-admin-password>"
+npm run test:fixtures:auth
+```
+
+The command creates a missing fixture, or resets an existing local fixture's
+password, role metadata, profile name, and expected Buzl Member identifiers
+without creating duplicates. Then run authenticated smoke tests with the same
+local environment:
+
+```powershell
+$env:TEST_BASE_URL = "http://localhost:3000"
+npm run test:smoke:auth
+```
+
 ## Troubleshooting
 
 - **Cannot connect to Supabase from server-rendered routes:** confirm local

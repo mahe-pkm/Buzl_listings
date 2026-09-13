@@ -274,7 +274,7 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
 - **Commit:** `13cff2e` (`chore(security): harden staging release workflow`)
 - **Credential Audit:** PASS — zero real service-role keys, production API keys, or plaintext passwords in tracked files. Supabase local dev demo anon keys (issuer: `supabase-demo`, role: `anon`) retained as safe local-only fallbacks in verification scripts.
 - **Service-Role Fallback Removal:** All scripts requiring privileged Supabase client (`seed-staging.mjs`, `seed-buzl-member.mjs`, `verify-day1-5-import.mjs`) now require `SUPABASE_SERVICE_ROLE_KEY` from env — zero hardcoded fallbacks.
-- **Plaintext Password Removal:** `password123` removed from `login/page.tsx` demo fill, `seed-staging.mjs`, `verify-day1-workflow.mjs`, `verify-day1-5-import.mjs`. All persona passwords sourced from `STAGING_*_PASSWORD` env vars.
+- **Plaintext Password Removal:** the legacy hard-coded test password was removed from `login/page.tsx` demo fill, `seed-staging.mjs`, `verify-day1-workflow.mjs`, and `verify-day1-5-import.mjs`. All persona passwords are sourced from `STAGING_*_PASSWORD` env vars.
 - **Staging Seed Safety Gates (5 mandatory):**
   1. `BUZL_ENV=staging` — explicit staging intent
   2. `ALLOW_STAGING_SEED=true` — explicit operator confirmation
@@ -324,10 +324,15 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   with the isolated VPS `buzl-listing` Compose project.
 - Native lint/build, Docker build/config, image secret audit, healthcheck,
   restart/stop-start, and the Dockerized public smoke suite (41/41) passed.
-- The legacy authenticated smoke script expects a local `password123` fixture
-  that this local Supabase instance no longer accepts. No account password or
-  local data was changed as part of Docker packaging; provide the current local
-  test-persona credentials before treating authenticated smoke as rerun-ready.
+- Local authenticated smoke fixtures are deterministic and local-only:
+  `test:fixtures:auth` creates or updates the three role fixtures from ignored
+  local environment variables, resets their current credentials, preserves the
+  expected roles, and synchronizes Buzl Member identifiers without duplicates.
+- Native and Docker browser checks passed for Business Owner, Buzl Member, and
+  Admin login flows, including protected-route role boundaries and anonymous
+  redirects. Server-side Supabase clients now derive their auth-cookie name
+  from the public URL so Docker's internal service URL cannot hide browser
+  sessions from middleware.
 
 ## Next exact task
 
