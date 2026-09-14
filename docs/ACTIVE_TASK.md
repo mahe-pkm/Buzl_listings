@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `STAGING-OWNER-SUBMIT-VERIFY` |
 | Task Name | Staging Owner Draft Submit Verification |
-| Status | **RESUMED** |
+| Status | **COMPLETE** |
 | Current Agent | `codex` |
 | Started From Commit | `15539b91b8b1a67146a2c4d48fe384c74fdaeb1a` |
-| Latest Commit | `87e10253dd36d9f5254eff0b7e53a8905aab0126` |
+| Latest Commit | `a96e61828f81d64afa71ac19731711d9fa284e8a` |
 | Branch | `main` |
 | Started At | 2026-09-14T02:06:34+05:30 |
-| Last Updated | 2026-09-14T11:50:38+05:30 |
+| Last Updated | 2026-09-14T11:59:11+05:30 |
 
 ## Objective
 
@@ -27,28 +27,34 @@ Verify the live staging Owner draft to submit to pending flow through the real b
 
 ## Completed Work
 
-- Live staging UI verification passed for Owner draft creation, Owner submit to pending, Owner publish-control absence, Admin visibility of the pending listing, and anonymous 404 for the pending listing. Verification listing: Staging Owner Submit Verification 66524070.
+- Provisioned the isolated active staging Buzl Listing Manager persona (manager@buzl.test
+- Buzl Member
+- member ID BUZL-M-STG-0001
+- Listing Manager preset). Verified its real-browser login, pending-queue visibility, and publication of Staging Owner Submit Verification 66524070. Confirmed Onboarding Member and Owner publication denial and Admin access.
 
 ## Remaining Work
 
-- Provision or identify one active staging Buzl Member with the listing_manager permission preset and usable test credentials
-- then log in through the real UI and confirm that account can see the pending verification listing.
+- —
 
 ## Checks / Tests
 
-- Owner draft → pending: PASS. Owner cannot publish: PASS. Admin can see pending: PASS. Anonymous pending URL returns 404: PASS. Read-only staging inventory found zero active listing-manager users.
+- Real staging browser: Owner draft to pending previously verified
+- Listing Manager saw the pending listing and published it
+- Onboarding Member was redirected away from /review/businesses
+- Owner edit UI contains no Publish control
+- Admin sees the published listing. No application code change required.
 
 ## Known Issues
 
-- No application defect identified. The remaining check is blocked by missing staging test-fixture access.
+- None. No application defect was identified during the staging verification.
 
 ## Next Exact Action
 
-Provide or provision an active staging Listing Manager test persona, then verify its moderation queue shows 'Staging Owner Submit Verification 66524070' in pending status.
+No further action — task complete.
 
 ## Handoff Notes
 
-Staging has no active Listing Manager persona; no code defect was found.
+—
 
 ## Agent Handoff Rule
 
