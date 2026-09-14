@@ -12,10 +12,10 @@
 | Status | **PAUSED_HANDOFF** |
 | Current Agent | `codex` |
 | Started From Commit | `15539b91b8b1a67146a2c4d48fe384c74fdaeb1a` |
-| Latest Commit | `15539b91b8b1a67146a2c4d48fe384c74fdaeb1a` |
+| Latest Commit | `b3cfb9dab9678fa9c5cd8eb04f3987aaba03b5e4` |
 | Branch | `main` |
 | Started At | 2026-09-14T02:06:34+05:30 |
-| Last Updated | 2026-09-14T02:06:43+05:30 |
+| Last Updated | 2026-09-14T11:48:30+05:30 |
 
 ## Objective
 
@@ -27,28 +27,28 @@ Verify the live staging Owner draft to submit to pending flow through the real b
 
 ## Completed Work
 
-- Canonical main at 15539b9 is deployed to staging. Docker packaging, local auth fixtures, staging/production separation, RBAC and account-status enforcement, Admin User Management, public Business Owner signup, Listing Manager moderation/publish, public regression, and staging noindex protections are verified.
+- Live staging UI verification passed for Owner draft creation, Owner submit to pending, Owner publish-control absence, Admin visibility of the pending listing, and anonymous 404 for the pending listing. Verification listing: Staging Owner Submit Verification 66524070.
 
 ## Remaining Work
 
-- One browser-only staging check: Owner draft → submit → pending.
+- Provision or identify one active staging Buzl Member with the listing_manager permission preset and usable test credentials
+- then log in through the real UI and confirm that account can see the pending verification listing.
 
 ## Checks / Tests
 
-- Canonical main and origin/main both resolve to 15539b9
-- working tree was clean before AgentRelay created this handoff record.
+- Owner draft → pending: PASS. Owner cannot publish: PASS. Admin can see pending: PASS. Anonymous pending URL returns 404: PASS. Read-only staging inventory found zero active listing-manager users.
 
 ## Known Issues
 
-- None recorded.
+- No application defect identified. The remaining check is blocked by missing staging test-fixture access.
 
 ## Next Exact Action
 
-Verify staging Owner draft → submit → pending through the real browser UI. Confirm Owner cannot publish; Listing Manager/Admin can see pending; anonymous users cannot see pending.
+Provide or provision an active staging Listing Manager test persona, then verify its moderation queue shows 'Staging Owner Submit Verification 66524070' in pending status.
 
 ## Handoff Notes
 
-Cross-agent handoff for the remaining real-browser staging verification.
+Staging has no active Listing Manager persona; no code defect was found.
 
 ## Agent Handoff Rule
 
