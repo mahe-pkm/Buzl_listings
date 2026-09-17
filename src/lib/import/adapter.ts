@@ -324,8 +324,11 @@ export function mapBuzlProfileToListing(
     business_contact_email: (input.contact?.email || '').trim(),
     show_email: false, // Default false for privacy
     website_url: (input.website?.url || '').trim(),
+    google_business_profile_url: '',
     primary_category_id: categoryMatch.categoryId || '',
     services,
+    products: [],
+    media: [],
     location_mode: mode,
     city: parsedAddress.city,
     state: parsedAddress.state,

@@ -7,79 +7,81 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `BOSS-REVIEW-SCOPE-UPDATE` |
-| Task Name | Boss Review Scope Documentation Update |
+| Task ID | `BUSINESS-PROFILE-EXPANSION` |
+| Task Name | Business Profile Expansion Implementation |
 | Status | **COMPLETE** |
 | Current Agent | `antigravity` |
-| Started From Commit | `cb4efbc819bbbd4bd18b5ad845c0abd10fe0b4ff` |
-| Latest Commit | `cb4efbc819bbbd4bd18b5ad845c0abd10fe0b4ff` |
-| Branch | `docs/boss-review-scope-update` |
-| Started At | 2026-09-17T17:53:37+05:30 |
-| Last Updated | 2026-09-17T18:20:00+05:30 |
+| Started From Commit | `b6edbc511bcf7047913cf673e44ca6469bfd648b` |
+| Latest Commit | `b6edbc511bcf7047913cf673e44ca6469bfd648b` |
+| Branch | `feature/business-profile-expansion` |
+| Started At | 2026-09-17T18:29:00+05:30 |
+| Last Updated | 2026-09-17T18:45:00+05:30 |
 
 ## Objective
 
-Record product decisions from Boss (Balaji) review into authoritative project documentation. Documentation-only — no code, migration, deployment, or feature implementation changes.
-
-## Boss Review Decisions
-
-1. **Gallery** — approved for upcoming implementation (previously deferred; DEC-024)
-2. **Products** — new approved feature, max 20 per business (DEC-025)
-3. **Services** — expanded: name + description, max 20 (DEC-026)
-4. **Google Places search** — replaces manual lat/lng entry in UI; API details pending provider configuration (DEC-027)
-5. **Email OTP** — approved; provider/config pending provider configuration (DEC-028)
-6. **WhatsApp OTP** — approved; provider/config pending approved messaging provider configuration (DEC-029)
-7. **Google Business Profile URL** — new approved field, displayed publicly (DEC-030)
-8. **Google OAuth** — paused / requires product confirmation (DEC-031)
-9. **Future direction** — automatic website generation from Buzl Listing data (DEC-032)
+Implement the approved business profile additions from the Boss review:
+1. Services: name + description, max 20 per business, ordering, DB-side limit enforcement.
+2. Products: name, description, image, max 20 per business, ordering, DB-side limit enforcement.
+3. Gallery: Supabase Storage for images, PostgreSQL metadata, display order, upload/delete, no count limit, RLS.
+4. Logo & Cover: integrate with media architecture, distinct roles (logo, cover, gallery).
+5. Google Business Profile URL: collected, validated external URL, stored separately from place_id, displayed as "View on Google".
+6. Business Create/Edit UX: multi-section updates supporting all above features, preview, public display.
 
 ## Allowed Files
 
-- docs/ACTIVE_TASK.md
-- docs/DECISIONS.md
-- docs/ROADMAP.md
-- docs/PRODUCT.md
-- docs/CURRENT_STATE.md
-- docs/specs/BUSINESS_FIELD_MATRIX.md
-- CHANGELOG.md
+- `supabase/migrations/*`
+- `supabase/tests/*`
+- `src/lib/*`
+- `src/components/*`
+- `src/app/*`
+- `scripts/*`
+- `docs/ACTIVE_TASK.md`
+- `docs/CURRENT_STATE.md`
 
 ## Completed Work
 
-- Recorded formal Boss Review decisions DEC-024 through DEC-032 in `docs/DECISIONS.md`.
-- Updated `docs/PRODUCT.md` with the expanded business profile model, location UX, media architecture, OTP auth priorities, GBP URL, and future website generator direction.
-- Updated `docs/ROADMAP.md` with revised implementation order, promoted Gallery and Products, updated Auth section, and added automatic website generation to future scope.
-- Updated `docs/specs/BUSINESS_FIELD_MATRIX.md` with formal revision annotations on OD-02, OD-05, SV-03, and ME-03, and added a Boss Review revision table.
-- Updated `docs/CURRENT_STATE.md` with Boss Review scope update checkpoint.
-- Updated `CHANGELOG.md` with unreleased entry for Boss Review Scope Update.
-- Verified internal documentation consistency across all files, resolved all contradictions, and confirmed zero trailing whitespace issues.
+- Merged `docs/boss-review-scope-update` into `main` and pushed to `origin/main`.
+- Created feature branch `feature/business-profile-expansion`.
+- Database migration `20260917190000_business_profile_expansion.sql`:
+  - Added `service_description` to `business_services` and trigger `trg_enforce_business_services_limit` (max 20).
+  - Created `business_products` table, trigger `trg_enforce_business_products_limit` (max 20), prevent-reassignment trigger, and RLS policies.
+  - Updated `business_media` with partial unique index for singleton logo and cover, while gallery permits multiple items with captions and sort orders.
+  - Added `google_business_profile_url` to `businesses` with `^https?://` constraint and granted update permissions to authenticated role.
+  - Configured `business-media` bucket with 5MB max file size, MIME whitelist, and RLS policies.
+  - Updated `get_published_business_by_slug` to project GBP URL, service descriptions, products, and media with privacy protections.
+- Runtime database tests (`supabase/tests/business_profile_expansion_runtime.sql`): 20 pgTAP tests verifying 20-service limit, 20-product limit, logo/cover uniqueness, gallery multiplicity, owner RLS isolation, and public projection (26/26 tests passing).
+- Media server actions (`src/lib/media-actions.ts`) & client/server utilities (`src/lib/media-utils.ts`): upload, delete, reorder gallery, getMediaPublicUrl.
+- Business server actions (`src/lib/business-actions.ts`): updated `createDraftFromImport`, `createBusiness`, and `updateBusiness` to validate and persist services, products, media metadata, and GBP URL.
+- Public directory layer (`src/lib/public-directory.ts`): updated types and mapper for expanded profile fields.
+- Edit Business page (`src/app/dashboard/businesses/[id]/edit/page.tsx`): fetches services with descriptions, products, and media.
+- Public listing page (`src/app/business/[slug]/page.tsx`): renders cover photo banner, logo avatar, "View on Google" button, service descriptions, products section, and photo gallery.
+- Business Form (`src/components/business/BusinessForm.tsx`): updated to 8 structured steps with live media upload, gallery management, product management, and GBP URL.
+- Business Preview Card (`src/components/business/BusinessPreviewCard.tsx`): rendered cover, logo, GBP URL, service descriptions, products, and gallery preview.
+- Quality checks: `npm run lint` (0 errors), `npm run build` (0 errors, 21 pages generated).
+- Independent security review: PASS across all 6 criteria.
 
 ## Remaining Work
 
-- —
+- None. Ready for review and commit.
 
 ## Checks / Tests
 
-- `git diff --check`: PASS (clean, zero whitespace/merge errors)
-- `git diff --stat`: 7 documentation files updated
-- Contradiction audit across `docs/` and `docs/specs/`: PASS
+- Database tests: PASS (4/4 test files, 26/26 tests)
+- Lint: PASS (0 errors)
+- Build: PASS (0 errors)
+- Security Review: PASS (6/6 items)
 
 ## Known Issues
 
-- Google Places API details pending provider configuration
-- Email OTP provider/config pending provider configuration
-- WhatsApp OTP provider/config pending approved messaging provider configuration
-- Gallery image limit not yet decided by Balaji (marked: Requires product decision)
+- None
 
 ## Next Exact Action
 
-Task complete. Recommended next task: `BUSINESS-PROFILE-EXPANSION`.
-Do NOT start implementation until documentation is reviewed.
+Commit changes on branch `feature/business-profile-expansion`.
 
 ## Handoff Notes
 
-- Previous GOOGLE-AUTH task (started by Codex) is now PAUSED; Boss review prioritized Email OTP + WhatsApp OTP instead.
-- Stashed Codex GOOGLE-AUTH ACTIVE_TASK wip remains safely in git stash.
-- Documentation branch `docs/boss-review-scope-update` is ready for commit.
+—
 
 ## Agent Handoff Rule
 

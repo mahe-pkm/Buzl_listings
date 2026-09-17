@@ -27,6 +27,15 @@ export interface PublicBusinessCardData {
 
 export interface PublicServiceItem {
   service_name: string;
+  service_description?: string | null;
+}
+
+export interface PublicProductItem {
+  id: string;
+  name: string;
+  description?: string | null;
+  image_path?: string | null;
+  sort_order?: number;
 }
 
 export interface PublicServiceAreaItem {
@@ -37,8 +46,11 @@ export interface PublicServiceAreaItem {
 }
 
 export interface PublicMediaItem {
-  kind: 'logo' | 'cover';
+  id?: string;
+  kind: 'logo' | 'cover' | 'gallery';
   storage_path: string;
+  sort_order?: number;
+  caption?: string | null;
 }
 
 export interface PublicBusinessDetail {
@@ -51,6 +63,7 @@ export interface PublicBusinessDetail {
   business_contact_email: string | null;
   show_email: boolean;
   website_url: string | null;
+  google_business_profile_url: string | null;
   category_name: string;
   category_slug: string;
   location_mode: 'storefront' | 'service_area' | 'hybrid';
@@ -72,6 +85,7 @@ export interface PublicBusinessDetail {
   created_at: string;
   updated_at: string;
   services: PublicServiceItem[];
+  products: PublicProductItem[];
   service_areas: PublicServiceAreaItem[];
   hours: BusinessHourRecord[];
   media: PublicMediaItem[];
