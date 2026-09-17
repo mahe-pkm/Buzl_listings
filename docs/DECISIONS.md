@@ -321,3 +321,17 @@ Decisions recorded following product review with Balaji. These revisions superse
 **Status:** Future
 **Decision:** Automatic website generation from structured Buzl Listing business data is recorded as a future product direction. Potential flow: Buzl Listing profile data → auto-generated website → preview → Buzl-hosted option → "Want this website on your own domain?" → contact Buzl for hosting/custom domain/customization. This is future scope only, not current implementation.
 **Reason:** Discussed in Boss review as long-term product direction.
+
+## DEC-033 — Supabase Native Email OTP Integration Architecture
+
+**Status:** Accepted
+**Refines:** DEC-028 (Email OTP authentication)
+**Decision:** Implement Email OTP authentication via Supabase Auth (GoTrue) native OTP (`signInWithOtp` / `verifyOtp`).
+- GoTrue generates and manages 6-digit numeric verification tokens (`{{ .Token }}`) with 10-minute expiry via `supabase/templates/magic_link.html`.
+- Standard Supabase Auth identities (`auth.users`) are strictly preserved: existing emails authenticate to their existing UID, profile, role, and permissions; new emails create `business_owner` profiles with `account_status: 'active'`.
+- Duplicate users and split identities are prohibited.
+- Application-level account-status checks (active vs inactive/suspended) continue to be enforced by middleware and database triggers.
+- Production/Staging email delivery uses SMTP configuration on the Supabase GoTrue service (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_ADMIN_EMAIL`, `SMTP_SENDER_NAME`).
+- Backward-compatible password login remains fully functional.
+- Unified passwordless onboarding is supported on both `/login` and `/signup`.
+**Reason:** Supabase GoTrue provides a battle-tested, cryptographically secure OTP engine with built-in token hashing, single-use invalidation, and seamless integration with existing PostgreSQL RLS, triggers, and session cookies without creating duplicate identity tables.

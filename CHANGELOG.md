@@ -6,7 +6,30 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Email OTP Authentication — 2026-09-17
+
+- **Feature Branch**: `feature/email-otp-auth` based on `main @ e735192`.
+- **Supabase Native Email OTP**:
+  - Implemented passwordless 6-digit numeric verification via Supabase Auth GoTrue.
+  - Created customized magic link template `supabase/templates/magic_link.html` displaying `{{ .Token }}` with 10-minute expiry.
+  - Configured `[auth.email.template.magic_link]` in `supabase/config.toml` with `otp_length = 6` and `otp_expiry = 600`.
+- **User Interface Enhancements**:
+  - `src/app/login/page.tsx`: Dual-tab UI ("Email Code (OTP)" default and "Password" fallback), 6-digit input with numeric keypad optimization, 60s cooldown timer, 5-attempt brute-force limit with 5-minute lockout, open redirect defense (`getSafeRedirectUrl`), and role-based redirect routing.
+  - `src/app/signup/page.tsx`: Unified "Email Code (OTP)" instant passwordless onboarding with automatic account provisioning alongside standard Password signup.
+- **Identity & Authorization Security**:
+  - Identity preservation: Existing Admin, Member, Listing Manager, and Owner accounts authenticate to their exact existing Supabase Auth UIDs with zero duplicate profile or user creation.
+  - Role escalation prevention: New users are assigned least-privileged `business_owner` by database trigger; client input cannot assign elevated roles.
+  - Account status enforcement: Inactive and suspended accounts are denied access by middleware, server session checks, and database RPCs even if possessing a valid GoTrue token.
+  - Contact email privacy: Invariant `AUTH EMAIL != BUSINESS CONTACT EMAIL` strictly preserved.
+- **Automated Verification**:
+  - Comprehensive automated test suite (`scripts/verify-email-otp-flow.mjs`): 49/49 checks passed (100%).
+  - Playwright browser smoke test (`scripts/browser-smoke-test-otp.mjs`): 100% pass across owner OTP login, logout, password login regression, and new user signup OTP.
+  - Database test suites (`npx supabase test db`): 5 suites, 38 tests passed.
+  - Independent security review (`Independent Security Reviewer`): Verdict **PASS_WITH_NOTES** (0 critical / 0 high vulnerabilities).
+  - Next.js build (`npm run build`) and ESLint (`npm run lint`): Clean with 0 errors.
+
 ### Google Places Location Integration — 2026-09-17
+
 
 - **Feature Branch**: `feature/google-places-location` based on `main @ c8f67b8`.
 - **Google Places Search**: Replaced manual latitude/longitude typing in Step 6 (Location) of the business create/edit UX with an accessible, debounced Google Places autocomplete and details lookup.

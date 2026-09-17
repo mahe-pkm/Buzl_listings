@@ -430,12 +430,49 @@ Implementation of approved Google Places Location search replacing manual latitu
   - Service-area address & coordinate suppression confirmed.
   - Backward compatibility verified for existing listings.
 
+## Email OTP Authentication (2026-09-17): IMPLEMENTED & VERIFIED
+
+- **Feature Branch**: `feature/email-otp-auth` based on `main @ e735192`.
+- **Implementation**:
+  - Implemented Supabase Auth GoTrue native OTP with 6-digit numeric verification tokens (`{{ .Token }}`).
+  - Created customized magic link / OTP email template in `supabase/templates/magic_link.html`.
+  - Configured `[auth.email.template.magic_link]` in `supabase/config.toml` with `otp_length = 6` and `otp_expiry = 600` (10 minutes).
+  - Modernized `src/app/login/page.tsx` with dual-mode tabs ("Email Code (OTP)" default and "Password" fallback):
+    - Two-stage OTP flow: Email entry -> 6-digit code entry with accessible numeric formatting (`inputMode="numeric"`, `pattern="[0-9]*"`, `maxLength={6}`).
+    - 60-second countdown cooldown preventing resend spam.
+    - Brute-force protection: 5-attempt limit with 5-minute lockout timer.
+    - Open redirect protection (`getSafeRedirectUrl`) preventing external URL or protocol-relative redirects.
+    - Safe post-login navigation based on verified user role.
+    - Retained prototype demo credentials helper for immediate staging evaluation.
+  - Modernized `src/app/signup/page.tsx` with unified "Email Code (OTP)" fast passwordless onboarding alongside "Password" creation.
+- **Identity & Authorization Invariants**:
+  - Existing Admin (`admin@buzl.test`), Buzl Member (`member@buzl.test`), Listing Manager (`manager@buzl.test`), and Owner (`owner@buzl.test`) retain their exact Supabase Auth UIDs, roles, `member_id` assignments, and permission presets.
+  - Zero duplicate records created in `auth.users` or `public.profiles`.
+  - New users are safely assigned `business_owner` by the PostgreSQL `handle_new_user()` trigger; client input cannot assign elevated roles.
+  - Account status enforcement: Inactive and suspended accounts are strictly signed out and redirected by middleware (`src/middleware.ts`), server auth (`src/lib/supabase/server.ts`), and database RPCs/RLS.
+  - Invariant `AUTH EMAIL != BUSINESS CONTACT EMAIL` strictly preserved: business creation via authenticated session leaves `business_contact_email` unset unless explicitly typed.
+- **Verification & Testing**:
+  - Automated flow test suite (`scripts/verify-email-otp-flow.mjs`): 49/49 checks passed (100%).
+  - Playwright browser smoke test (`scripts/browser-smoke-test-otp.mjs`): 100% passed across owner OTP login, logout, password login regression, and new user signup OTP.
+  - Database test suites (`npx supabase test db`): 5 suites, 38 tests passed.
+  - Next.js build (`npm run build`): Clean with 0 errors.
+  - Linting (`npm run lint`): Clean with 0 errors.
+  - Whitespace / formatting (`git diff --check`): Clean.
+  - Independent security review (`Independent Security Reviewer`): Verdict **PASS_WITH_NOTES** (0 critical / 0 high vulnerabilities).
+- **Configuration Required for Live Staging SMTP**:
+  - `SMTP_HOST`: Staging SMTP server host (e.g. Brevo, SendGrid, Amazon SES, Postmark)
+  - `SMTP_PORT`: Staging SMTP port (e.g. 587)
+  - `SMTP_USER`: Staging SMTP username
+  - `SMTP_PASS`: Staging SMTP password
+  - `SMTP_ADMIN_EMAIL`: Sender address (e.g. `noreply@buzl.in` or `auth@listing.rclk.in`)
+  - `SMTP_SENDER_NAME`: Sender display name (`Buzl Listing`)
+
 ## Current git status
 
-Working tree: branch `main`
-Head commit: `06305fe`
-Status: Fully verified locally and on staging VPS (`https://listing.rclk.in`)
+Working tree: branch `feature/email-otp-auth`
+Base commit: `e735192`
+Status: Fully implemented and verified locally; awaiting live SMTP credentials from the integration provider for external staging deployment.
 
 ## Next exact task
 
-`EMAIL-OTP-AUTH`: Implement Email OTP authentication per Boss review priorities in `docs/ROADMAP.md` and `docs/DECISIONS.md` (DEC-028).
+Awaiting SMTP credentials from the integration provider to configure staging GoTrue service, or operator review to merge `feature/email-otp-auth`.
