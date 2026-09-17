@@ -415,14 +415,27 @@ Implementation of approved Google Places Location search replacing manual latitu
     - Place details lookup and address normalization verified for all required locations (coordinates, postal codes, locality, district, country codes).
     - Browser smoke test (`scripts/browser-smoke-test-places.mjs`) verified in Chromium with live Google Places: place search, auto-fill, PostGIS badge, listing creation, DB persistence (`ChIJm3EiiAdkUjoR4oGVuHcQoL0`), and pre-populated edit page all passed 100%.
 
+## Google Places Location Integration Staging Deployment (2026-09-17): COMPLETE
+
+- **Merge to Main**: `feature/google-places-location` merged into `main` (`511cecd`).
+- **Staging Database Migration**: `20260917200000_google_places_location.sql` applied cleanly to isolated staging PostgreSQL container `buzl-listing-db-1`. Verified `place_id` column, `businesses_place_id_idx` index, and updated `create_business_for_current_user` RPC.
+- **Server Secret Configuration**: Approved Google Places API key configured server-side in staging environment (`/opt/buzl-listing/.env`) with `GOOGLE_PLACES_MOCK=false`. Secret verified absent from client logs, responses, git, and documentation.
+- **Staging Container Deployment**: `buzl-listing-app-1` rebuilt and recreated on Hostinger staging VPS (`213.210.37.204`). Unrelated Supabase and production containers left untouched (12-day uptime intact).
+- **Staging Smoke Verification**: 33/33 checks passed (`scripts/staging-places-smoke.mjs`):
+  - Authenticated proxy enforcement (401 on unauthenticated calls).
+  - Staging indexing protections verified (`X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow: /`, empty `sitemap.xml`).
+  - Live Google Places autocomplete verified across Chennai, Coimbatore, Munnar, Anna Nagar.
+  - Address auto-fill, PostGIS coordinate preservation, and `place_id` DB persistence verified.
+  - Canonical business name protected against mutation.
+  - Service-area address & coordinate suppression confirmed.
+  - Backward compatibility verified for existing listings.
+
 ## Current git status
 
-Working tree: branch `feature/google-places-location`
-Base commit: `c8f67b8`
-Status: Fully tested, live Google verified, security approved, ready for merge into main
+Working tree: branch `main`
+Head commit: `06305fe`
+Status: Fully verified locally and on staging VPS (`https://listing.rclk.in`)
 
 ## Next exact task
 
-1. Operator review & merge `feature/google-places-location` into `main`.
-2. Apply Supabase migration `20260917200000_google_places_location.sql` to staging database.
-3. Deploy updated Buzl Listing to staging (`https://listing.rclk.in`) with server-side `GOOGLE_PLACES_API_KEY`.
+`EMAIL-OTP-AUTH`: Implement Email OTP authentication per Boss review priorities in `docs/ROADMAP.md` and `docs/DECISIONS.md` (DEC-028).

@@ -33,6 +33,12 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
   - Independent security review passed (PASS_WITH_NOTES, 0 critical / 0 high findings).
   - Applied defense-in-depth hardening: added `sessionToken` bounds and format validation in API proxy routes, added coordinate boundary validation in `updateBusiness`, and enhanced production environment detection in `getPlacesProvider()`.
   - Production build (`npm run build`) and ESLint (`npm run lint`) clean with 0 errors.
+- **Staging Deployment & Verification**:
+  - Merged `feature/google-places-location` into `main` (`511cecd`).
+  - Applied migration `20260917200000_google_places_location.sql` to staging database `buzl-listing-db-1`.
+  - Configured live Google Places API key server-side in staging environment with `GOOGLE_PLACES_MOCK=false`.
+  - Rebuilt and recreated `buzl-listing-app-1` container on Hostinger VPS (`213.210.37.204`). Unrelated Supabase and production containers untouched (12-day uptime intact).
+  - Staging smoke verification passed 33/33 checks (`scripts/staging-places-smoke.mjs`): authenticated proxy enforcement (401 on unauthenticated), staging indexing protections, live Google Places search (Chennai, Coimbatore, Munnar, Anna Nagar), address auto-fill, PostGIS coordinate storage, `place_id` DB persistence, canonical name preservation, and service-area privacy.
 
 ### Staging handoff checkpoint — 2026-09-14
 
