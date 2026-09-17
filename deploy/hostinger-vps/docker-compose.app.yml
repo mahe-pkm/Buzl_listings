@@ -23,6 +23,8 @@ services:
       STAGING_MEMBER_PASSWORD: ${STAGING_MEMBER_PASSWORD}
       STAGING_OWNER_EMAIL: ${STAGING_OWNER_EMAIL}
       STAGING_OWNER_PASSWORD: ${STAGING_OWNER_PASSWORD}
+      GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY}
+      GOOGLE_PLACES_MOCK: "false"
     depends_on:
       kong:
         condition: service_healthy
