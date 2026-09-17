@@ -207,12 +207,120 @@ Still to lock:
 
 - exact required business fields
 - exact optional fields
-- service storage model
 - tag governance
-- MVP auth UX
 - external signup launch behavior
 - verification method(s)
 - claim-business flow boundary
-- map provider
 - public listing layout
 - category/location page thresholds
+
+---
+
+## 13. Boss Review Scope Update (2026-09-17)
+
+The following additions were approved following a product review with Balaji.
+
+### Approved target business profile structure
+
+```text
+Business Profile
+├── Business Information (name, description, year established)
+├── Primary Category
+├── Contact Information (phone, WhatsApp, email, website)
+├── Google Business Profile URL
+├── Location (via Google Places search)
+├── Service Areas
+├── Business Hours
+├── Services (max 20)
+│   ├── name
+│   └── description
+├── Products (max 20)
+│   ├── name
+│   ├── description
+│   ├── image
+│   ├── price (requires product decision)
+│   └── product/external URL (requires product decision)
+├── Logo
+├── Cover
+├── Gallery (limit requires product decision)
+├── Social Links
+├── Preview
+└── Submit for Review
+```
+
+### Location UX
+
+The database continues to store latitude, longitude, place_id, and address components. Normal users no longer manually type latitude/longitude.
+
+New intended flow:
+
+```text
+Search business/address
+  → Google Places suggestions
+  → select place
+  → populate address fields
+  → store Place ID
+  → store coordinates internally
+```
+
+Provider/API details: pending provider configuration.
+
+Existing service-area privacy rules remain unchanged. Private address/coordinates must not be exposed publicly for service-area businesses.
+
+### Media architecture
+
+| Purpose | Storage |
+|---|---|
+| Binary media files | Supabase Storage |
+| Media metadata and references | PostgreSQL |
+
+Currently approved media types:
+
+- Logo
+- Cover
+- Gallery
+- Product images
+
+Binary media must not be stored in PostgreSQL. Gallery image limit is not yet specified by Balaji — marked as: **Requires product decision**.
+
+### Authentication roadmap update
+
+Current approved authentication additions:
+
+| Method | Status |
+|---|---|
+| Email OTP | Approved — provider/config pending provider configuration |
+| WhatsApp OTP | Approved — provider/config pending approved messaging provider configuration |
+| Google OAuth | Paused — requires product confirmation (Boss review prioritized OTP methods) |
+
+Authentication method ≠ authorization authority. New public users are `business_owner` only. Admin and Buzl Member roles remain internally assigned.
+
+### Google Business Profile URL
+
+- Collected from the business owner
+- Stored separately from `place_id`
+- Displayed publicly as a link/action (e.g., "View on Google")
+- No deeper GBP API integration at this time
+
+### Future direction: automatic website generation
+
+Not current implementation scope.
+
+Potential future flow:
+
+```text
+Buzl Listing profile
+  → business information
+  → services
+  → products
+  → gallery
+  → logo/cover
+  → location
+  → GBP
+  → contact details
+  → automatically generated website
+  → preview
+  → Buzl-hosted option
+  → CTA: "Want this website on your own domain?"
+  → contact Buzl for hosting/custom domain/customization
+```

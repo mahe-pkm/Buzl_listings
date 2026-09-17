@@ -104,7 +104,7 @@ Do not represent a service area as a fake street address. Storefront address, ad
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | SV-01 | Service | Services offered | services | Describe offerings | OPTIONAL_MVP | NO | YES | YES | YES | NO | NO | NO | YES | YES | NO | NO | Related to category | Owner-defined service names are supported in MVP and remain separate from categories | LOCKED |
 | SV-02 | Service | Service name | service_name | Service label | OPTIONAL_MVP | NO | YES | YES | YES | NO | NO | NO | YES | YES | NO | NO | Owner-defined text | No controlled service taxonomy in MVP; never substitutes for category | LOCKED |
-| SV-03 | Service | Service description | service_description | Explain service | FUTURE | NO | YES | YES | YES | NO | NO | NO | YES | NO | NO | NO | Sanitized length-limited text | Service descriptions are FUTURE | LOCKED |
+| SV-03 | Service | Service description | service_description | Explain service | FUTURE | NO | YES | YES | YES | NO | NO | NO | YES | NO | NO | NO | Sanitized length-limited text | Service descriptions are FUTURE (Revised by DEC-026: now approved, max 20) | LOCKED — Revised by DEC-026 |
 
 ## 12. Tags / Attributes
 
@@ -141,7 +141,7 @@ Do not represent a service area as a fake street address. Storefront address, ad
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | ME-01 | Media | Business logo | logo | Brand identity image | OPTIONAL_MVP | NO | YES | YES | YES | NO | NO | NO | NO | NO | YES | NO | Limits/types deferred | Optional enrichment | LOCKED |
 | ME-02 | Media | Cover image | cover_image | Listing header image | OPTIONAL_MVP | NO | YES | YES | YES | NO | NO | NO | NO | NO | YES | NO | Limits/types deferred | Optional enrichment | LOCKED |
-| ME-03 | Media | Gallery images | gallery_images | Additional visual context | FUTURE | NO | YES | YES | YES | NO | NO | NO | NO | NO | YES | NO | Limits/types/count unresolved | Gallery is FUTURE; MVP media is optional logo and cover only | LOCKED |
+| ME-03 | Media | Gallery images | gallery_images | Additional visual context | FUTURE | NO | YES | YES | YES | NO | NO | NO | NO | NO | YES | NO | Limits/types/count unresolved | Gallery is FUTURE (Revised by DEC-024: now approved for implementation; limit requires product decision) | LOCKED — Revised by DEC-024 |
 
 ## 16. Map / Geographic Data
 
@@ -221,10 +221,10 @@ All Phase 2.1 decisions are locked. There are **0 blocking `OPEN_DECISION` items
 | ID | Decision | Locked outcome | Status |
 |---|---|---|---|
 | OD-01 | Secondary categories in MVP | Exactly one active primary category; secondary categories are FUTURE. | LOCKED |
-| OD-02 | Services | Owner-defined service names are supported in MVP, separate from categories; service descriptions and a controlled service taxonomy are FUTURE. | LOCKED |
+| OD-02 | Services | Owner-defined service names are supported in MVP, separate from categories; service descriptions and a controlled service taxonomy are FUTURE. | LOCKED — **Revised by DEC-026** |
 | OD-03 | Tags | Excluded from MVP; controlled attributes may return later. | LOCKED |
 | OD-04 | Business contact email | OPTIONAL_MVP, hidden by default, and may be made public explicitly by the owner; distinct from auth/login email. | LOCKED |
-| OD-05 | Media | Logo and cover are OPTIONAL_MVP; gallery is FUTURE. | LOCKED |
+| OD-05 | Media | Logo and cover are OPTIONAL_MVP; gallery is FUTURE. | LOCKED — **Revised by DEC-024** |
 | OD-06 | Service areas | Named service-area locations are supported in MVP; service radius is FUTURE. | LOCKED |
 | OD-07 | Verification before publication | Verification is not required for trusted Buzl-created/Buzl-client listings; publication and verification remain independent. | LOCKED |
 | OD-08 | External users | External self-service publishing is feature-gated initially; launch serves Buzl admins and Buzl clients/members. | LOCKED |
@@ -232,6 +232,22 @@ All Phase 2.1 decisions are locked. There are **0 blocking `OPEN_DECISION` items
 | OD-10 | Authentication | Email + password is the MVP method; magic link and social auth may come later. | LOCKED |
 | OD-11 | Geography | India-first UX with a globally extensible conceptual model; retain country and country code. | LOCKED |
 | OD-12 | Service-area private address | A pure service-area business needs no private or public street address to publish; never invent a fake storefront address. | LOCKED |
+
+### Boss Review Decision Revisions (2026-09-17)
+
+The following OD decisions have been formally revised by Boss (Balaji) review decisions recorded in `docs/DECISIONS.md`:
+
+| Original OD | Original Decision | Revision | New Authority |
+|---|---|---|---|
+| OD-02 | Service descriptions are FUTURE | Services now support name + description; max 20 per business | DEC-026 |
+| OD-05 | Gallery is FUTURE | Gallery approved for upcoming implementation; gallery image limit requires product decision | DEC-024 |
+
+Additionally, the following new business profile features were approved (no prior OD existed):
+
+| Feature | Decision | Authority |
+|---|---|---|
+| Business Products | Up to 20 products (name, description, image); optional price/URL require product decision | DEC-025 |
+| Google Business Profile URL | Collected from business, displayed publicly, stored separately from place_id | DEC-030 |
 
 ## 25. Business Listing Completeness Levels
 

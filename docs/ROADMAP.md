@@ -62,13 +62,17 @@ These are the currently approved next work areas. Their stated status is a plann
 
 This work must extend the existing secure Supabase Auth and RLS architecture rather than replace it.
 
-### 2.2 Google and WhatsApp login evaluation / implementation
+### 2.2 Authentication expansion: Email OTP and WhatsApp OTP
 
-**Status:** Planned
+**Status:** Approved — provider/configuration pending provider configuration
 
-**Google:** evaluate and configure Supabase Google OAuth, integrate it with the existing account model, avoid duplicate identities/accounts, and preserve Buzl-controlled role and permission authority.
+**Email OTP:** approved authentication method for upcoming implementation.
 
-**WhatsApp:** evaluate a supported Supabase/Twilio or otherwise approved WhatsApp OTP path, including production feasibility, India/provider requirements, and account-linking behavior.
+**WhatsApp OTP:** approved authentication method for upcoming implementation.
+
+Provider, configuration, and integration details for both methods are pending approved integration setup.
+
+**Google OAuth:** paused / requires product confirmation. The Boss review (2026-09-17) specifically prioritized Email OTP and WhatsApp OTP. Google OAuth is not cancelled but requires explicit product confirmation before resuming. See DEC-031.
 
 Authentication provider identity does **not** determine Buzl authorization. Role, `member_id`, account state, and permissions remain trusted Buzl-controlled data.
 
@@ -86,17 +90,41 @@ The isolated staging topology, migrations, guarded seed, HTTPS routing, and
 noindex controls have been verified. Production infrastructure remains a
 separate future release decision.
 
-### 2.4 Listing Logo & Cover Media
+### 2.4 Business Profile Expansion
 
-**Status:** Planned
+**Status:** Approved (Boss review 2026-09-17)
 
-- Business logo upload and business cover-image upload.
-- Supabase Storage for binary files and PostgreSQL media metadata.
-- Upload validation, MIME/type validation, file-size limits, safe storage paths, replacement/delete behavior, role/ownership permissions, alt text, practical image optimization, and public-listing rendering.
+This priority covers the approved additions to the business profile:
 
-This priority covers logo and cover only. Gallery functionality is not included.
+#### Gallery
 
-### 2.5 Tracking & Measurement Foundation
+Business gallery approved for upcoming implementation (DEC-024, superseding OD-05 gallery deferral). Binary media stored in Supabase Storage with PostgreSQL metadata. Gallery image limit: **Requires product decision** (not yet specified by Balaji).
+
+#### Products (max 20)
+
+New approved business profile feature (DEC-025). Each product has: name, description, image. Optional fields (price, product/external URL) require further product decision before implementation.
+
+#### Services (name + description, max 20)
+
+Services expanded from name-only to name + description (DEC-026, superseding OD-02 service description deferral). Maximum 20 services per business.
+
+#### Google Business Profile URL
+
+New approved public-facing field (DEC-030). Collected from the business owner, stored separately from `place_id`, displayed publicly as a link/action (e.g., "View on Google"). No deeper GBP API integration at this time.
+
+#### Logo & Cover
+
+Logo and cover media remain planned (unchanged from previous scope). Supabase Storage for binary files with PostgreSQL metadata.
+
+### 2.5 Google Places Location Search
+
+**Status:** Approved — provider/API details pending provider configuration
+
+Google Maps / Places API replaces manual latitude/longitude entry in the business creation/edit UI (DEC-027, partially superseding DEC-017 provider deferral). Users search for a business or address, select from Places suggestions, and the system populates address fields and stores Place ID and coordinates internally.
+
+Latitude/longitude remain internal for geospatial functionality but are no longer manually entered by normal users. Existing service-area privacy rules remain unchanged. Private address/coordinates must not be exposed publicly for service-area businesses.
+
+### 2.6 Tracking & Measurement Foundation
 
 **Status:** Planned
 
@@ -189,7 +217,13 @@ The implementation must prevent duplicate `page_view` and conversion events, dup
 
 **Custom analytics dashboard status:** Deferred. The first implementation relies on GA4 reports, GTM debugging, Meta reporting, and Clarity rather than a custom Buzl analytics dashboard.
 
-### 2.6 Production hardening
+### 2.7 Full Business Create/Edit UX Review
+
+**Status:** Planned
+
+Review and update the complete business creation and editing UX to accommodate the expanded profile model: gallery uploads, products (max 20), services with descriptions (max 20), Google Places location search, GBP URL input, and logo/cover integration.
+
+### 2.8 Production hardening
 
 **Status:** Planned
 
@@ -199,12 +233,6 @@ The implementation must prevent duplicate `page_view` and conversion events, dup
 - Database and storage backups, restore verification, deployment rollback process, and security review before production.
 
 These controls are not yet claimed as production-complete.
-
-### 2.7 Map / geocoder provider selection
-
-**Status:** Requires product decision
-
-The current architecture intentionally remains provider-neutral. A decision is needed for map display, geocoding, reverse geocoding, address suggestions, usage costs, API limits, India coverage, privacy, and licensing. Providers may be evaluated later; this roadmap does not select one.
 
 ## 3. Possible future add-ons
 
@@ -235,15 +263,14 @@ The current architecture intentionally remains provider-neutral. A decision is n
 | Bookings | Requires product decision |
 | Quote leads / quote marketplace | Requires product decision |
 
-### 3.4 Gallery & advanced media
+### 3.4 Advanced media
 
 **Status:** Deferred
 
-- General business gallery and multiple gallery images.
-- Service-specific images and product-specific images.
+- Service-specific images and product-specific images beyond the approved product image field.
 - Image ordering, advanced captions/metadata, video, bulk media operations, and media moderation.
 
-These future items do not alter the Planned logo-and-cover scope.
+Note: General business gallery has been promoted to section 2.4 following Boss review (DEC-024). Basic product images are also approved in section 2.4 (DEC-025).
 
 ### 3.5 Listing enrichment
 
@@ -260,11 +287,28 @@ These future items do not alter the Planned logo-and-cover scope.
 | Advanced analytics | Deferred |
 | Custom analytics dashboard | Deferred |
 | Advanced geospatial discovery | Deferred |
+### 3.7 Automatic website generation
+
+**Status:** Future direction (discussed in Boss review 2026-09-17; DEC-032)
+
+Potential flow:
+
+```text
+Buzl Listing profile
+  → business information, services, products, gallery, logo/cover, location, GBP, contact details
+  → automatically generated website
+  → preview
+  → Buzl-hosted option
+  → CTA: "Want this website on your own domain?"
+  → contact Buzl for hosting/custom domain/customization
+```
+
+This is future scope only, not current implementation.
 
 ## Roadmap guardrails
 
-- Locked v0.1.0 product and security decisions remain authoritative.
-- This roadmap does not override the Business Field Matrix, User Journeys, or MVP Build Contract.
+- Locked v0.1.0 product and security decisions remain authoritative unless formally revised by a Boss review or explicit product decision (revisions are recorded in `docs/DECISIONS.md`).
+- This roadmap does not override the Business Field Matrix, User Journeys, or MVP Build Contract except where Boss review decisions formally supersede specific items.
 - Optional ideas are not implementation authorization; scope changes require an explicit product decision.
 - Privacy and security controls must not be weakened for roadmap features.
 - Public-facing fields must continue to use public-safe projections, and service-area privacy remains mandatory.
@@ -279,13 +323,19 @@ These future items do not alter the Planned logo-and-cover scope.
 
 ## Recommended near-term implementation order
 
-1. User management and expanded RBAC.
-2. Google login evaluation/implementation.
-3. WhatsApp login evaluation/implementation.
-4. Remote staging provisioning and deployment.
-5. Listing Logo & Cover Media.
-6. Tracking & Measurement Foundation: GTM, GA4, Meta Pixel, Microsoft Clarity, dataLayer/event contract, and conversion funnels.
-7. Production hardening.
-8. Map/geocoder provider decision.
+Updated following Boss review (2026-09-17):
 
-Tracking implementation should occur after a working remote staging environment exists so events can be verified against real browser navigation and HTTPS URLs before production. Staging may move earlier operationally if the required infrastructure becomes available.
+1. Boss Review Scope Documentation ← current task
+2. Business Profile Expansion (Gallery, Products max 20, Services name + description max 20, GBP URL, Logo/Cover integration)
+3. Google Places Location Search
+4. Email OTP
+5. WhatsApp OTP
+6. Full Business Create/Edit UX Review
+7. Staging Team Review
+8. Tracking & Measurement Foundation
+9. Production Hardening
+
+Future:
+
+- Automatic Website Generator (Buzl-hosted website preview, custom-domain/hosting lead conversion)
+- Claims, reviews, bookings, payments, and other marketplace features remain future unless already approved

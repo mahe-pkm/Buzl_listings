@@ -253,3 +253,71 @@ Additional implementation details intentionally left for Phase 2:
 - map provider
 - production hosting
 - exact component implementation library
+
+---
+
+# Boss Review — 2026-09-17
+
+Decisions recorded following product review with Balaji. These revisions supersede specific earlier deferred/locked items where stated.
+
+## DEC-024 — Gallery approved
+
+**Status:** Accepted
+**Supersedes:** OD-05 gallery portion ("gallery is FUTURE")
+**Decision:** Business gallery is approved for upcoming implementation. Binary media stored in Supabase Storage with PostgreSQL metadata.
+**Gallery image limit:** Requires product decision (not yet specified by Balaji).
+**Reason:** Boss review promoted gallery from deferred to approved scope.
+
+## DEC-025 — Business Products
+
+**Status:** Accepted
+**Decision:** Business profiles may include up to 20 products. Each product has: name, description, image. Optional fields (price, product/external URL) require further product decision before implementation.
+**Reason:** New feature approved in Boss review to enrich business profiles.
+
+## DEC-026 — Services expanded to name + description
+
+**Status:** Accepted
+**Supersedes:** OD-02 ("service descriptions and a controlled service taxonomy are FUTURE")
+**Decision:** Services now support both service name and service description. Maximum 20 services per business.
+**Reason:** Boss review approved service descriptions and set a practical limit.
+
+## DEC-027 — Google Places location search
+
+**Status:** Accepted
+**Supersedes:** DEC-017 provider deferral (partially — selects Google for address/place search UX)
+**Decision:** Google Maps / Places API replaces manual latitude/longitude entry in the business creation/edit UI. Users search for a business or address, select from Places suggestions, and the system populates address fields and stores Place ID and coordinates internally. Latitude/longitude remain internal for geospatial functionality but are no longer manually entered by normal users.
+**Provider/API details:** Pending provider configuration.
+**Reason:** Boss review selected Google Places for location UX. Existing service-area privacy rules remain unchanged.
+
+## DEC-028 — Email OTP authentication
+
+**Status:** Accepted
+**Decision:** Email OTP is an approved authentication method for upcoming implementation.
+**Provider/configuration:** Pending provider configuration.
+**Reason:** Boss review specifically prioritized Email OTP.
+
+## DEC-029 — WhatsApp OTP authentication
+
+**Status:** Accepted
+**Decision:** WhatsApp OTP is an approved authentication method for upcoming implementation.
+**Provider/configuration:** Pending provider configuration.
+**Reason:** Boss review specifically prioritized WhatsApp OTP.
+
+## DEC-030 — Google Business Profile URL
+
+**Status:** Accepted
+**Decision:** A Google Business Profile URL is collected from the business and displayed publicly as a link/action (e.g., "View on Google"). Stored separately from `place_id`. No deeper GBP API integration is planned at this time.
+**Reason:** Boss review approved this as a new public-facing business field.
+
+## DEC-031 — Google OAuth status
+
+**Status:** Paused / Requires product confirmation
+**Previous:** DEC-021 deferred social auth to Phase 2; roadmap section 2.2 listed Google OAuth as planned.
+**Decision:** The GOOGLE-AUTH implementation task (started by Codex) is paused. Boss review specifically prioritized Email OTP (DEC-028) and WhatsApp OTP (DEC-029) over Google OAuth. Google OAuth is not cancelled but requires explicit product confirmation before resuming.
+**Reason:** Boss review reprioritized authentication methods.
+
+## DEC-032 — Automatic website generation (future direction)
+
+**Status:** Future
+**Decision:** Automatic website generation from structured Buzl Listing business data is recorded as a future product direction. Potential flow: Buzl Listing profile data → auto-generated website → preview → Buzl-hosted option → "Want this website on your own domain?" → contact Buzl for hosting/custom domain/customization. This is future scope only, not current implementation.
+**Reason:** Discussed in Boss review as long-term product direction.

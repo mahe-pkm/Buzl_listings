@@ -13,6 +13,21 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 - The remaining verification is intentionally limited to the real-browser staging Owner flow: draft → submit → pending, including owner publish denial, pending visibility for Listing Manager/Admin, and anonymous pending invisibility.
 - Completed the real-browser staging moderation verification. The isolated active Listing Manager test persona can access the pending queue and publish the verification listing; the Onboarding Member and Business Owner remain unable to publish, and Admin access remains available.
 
+### Boss Review Scope Update — 2026-09-17
+
+Documentation-only. No code, migration, or deployment changes.
+
+- **Gallery** approved for upcoming implementation (previously deferred as OD-05). Image limit requires product decision.
+- **Products** (max 20) approved as new business profile feature: name, description, image. Optional price/URL require product decision.
+- **Services** expanded: name + description, max 20 per business (previously name-only, OD-02 revised).
+- **Google Places search** approved to replace manual latitude/longitude entry in UI. API details pending provider configuration.
+- **Email OTP** approved as authentication method. Provider/config pending provider configuration.
+- **WhatsApp OTP** approved as authentication method. Provider/config pending approved messaging provider configuration.
+- **Google Business Profile URL** approved as new public-facing field.
+- **Google OAuth** paused — requires product confirmation (Boss review prioritized OTP methods).
+- **Automatic website generation** recorded as future product direction only.
+- Formal decision revisions recorded: DEC-024 through DEC-032.
+
 ## [0.1.0] - 2026-09-12
 
 ### Added

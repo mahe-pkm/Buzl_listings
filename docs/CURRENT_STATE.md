@@ -334,6 +334,44 @@ The rapid internal prototype is the approved exception: its locked `docs/specs/M
   from the public URL so Docker's internal service URL cannot hide browser
   sessions from middleware.
 
+## Boss Review Scope Update (2026-09-17): COMPLETE
+
+Product review with Balaji approved the following scope additions. All changes are documentation-only. No code, migration, or deployment changes were made.
+
+### Approved additions
+
+| Feature | Status | Decision |
+|---|---|---|
+| Gallery | Approved for upcoming implementation (image limit requires product decision) | DEC-024 |
+| Products | Approved — max 20 per business (name, description, image; optional price/URL require product decision) | DEC-025 |
+| Services | Expanded: name + description, max 20 per business | DEC-026 |
+| Google Places search | Approved — replaces manual lat/lng entry in UI; API details pending provider configuration | DEC-027 |
+| Email OTP | Approved — provider/config pending provider configuration | DEC-028 |
+| WhatsApp OTP | Approved — provider/config pending approved messaging provider configuration | DEC-029 |
+| Google Business Profile URL | Approved — new public-facing field, stored separately from place_id | DEC-030 |
+| Google OAuth | Paused — requires product confirmation (Boss review prioritized OTP methods) | DEC-031 |
+| Automatic website generation | Recorded as future direction only | DEC-032 |
+
+### Documentation updated
+
+- `docs/DECISIONS.md` — DEC-024 through DEC-032 with formal OD revisions
+- `docs/ROADMAP.md` — new implementation priorities, auth update, gallery promotion, auto website future
+- `docs/PRODUCT.md` — expanded business profile model, location UX, media architecture, auth updates, GBP URL, future direction
+- `docs/specs/BUSINESS_FIELD_MATRIX.md` — OD-02 and OD-05 revision markers, Boss Review revision table
+- `docs/CURRENT_STATE.md` — this section
+- `CHANGELOG.md` — Boss Review scope update entry
+
+### Pending Provider Configuration
+
+- Google Places API credentials and configuration details
+- Email OTP provider and configuration
+- WhatsApp OTP provider and configuration
+
+## Current git status
+
+Working tree: documented on branch `docs/boss-review-scope-update`
+Base commit: `cb4efbc`
+
 ## Next exact task
 
-Perform project-owner staging review using the separately provided persona credentials. Keep staging noindex until an explicit production-release task is approved.
+BUSINESS-PROFILE-EXPANSION — implement the approved business profile additions (Gallery, Products max 20, Services name + description max 20, GBP URL, Logo/Cover). Do not start until documentation is reviewed and merged.
