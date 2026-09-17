@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, useRef } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   BusinessFormData,
@@ -74,6 +74,12 @@ export default function BusinessForm({
 }: BusinessFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  const [pubStatus, setPubStatus] = useState<PublicationStatus>(currentPublicationStatus);
+
+  useEffect(() => {
+    setPubStatus(currentPublicationStatus);
+  }, [currentPublicationStatus]);
 
   const [activeStep, setActiveStep] = useState<number>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -647,6 +653,7 @@ export default function BusinessForm({
 
       const transRes = await transitionPublication(businessId, nextStatus);
       if (transRes.success) {
+        setPubStatus(nextStatus);
         setSuccessMsg(
           nextStatus === 'pending'
             ? 'Your listing has been submitted for review.'
@@ -686,7 +693,7 @@ export default function BusinessForm({
   return (
     <div className="space-y-6">
       {/* Pending Review Banner */}
-      {currentPublicationStatus === 'pending' && (
+      {pubStatus === 'pending' && (
         <div className="p-4 rounded-[8px] bg-[#FFF8E6] border border-[#FEE5A5] text-xs space-y-1.5">
           <div className="flex items-center gap-2 text-[#9A6700] font-bold">
             <span className="w-2 h-2 rounded-full bg-[#D99B18]" />
@@ -702,7 +709,7 @@ export default function BusinessForm({
       )}
 
       {/* Published Listing Banner */}
-      {currentPublicationStatus === 'published' && (
+      {pubStatus === 'published' && (
         <div className="p-4 rounded-[8px] bg-[#F0FDF4] border border-[#BBF7D0] text-xs flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2 text-[#166534] font-bold">
@@ -2176,7 +2183,7 @@ export default function BusinessForm({
                 </button>
 
                 {/* Owner: Submit for review if draft */}
-                {businessId && currentPublicationStatus === 'draft' && (
+                {businessId && pubStatus === 'draft' && (
                   <button
                     type="button"
                     disabled={isPending}
@@ -2190,7 +2197,7 @@ export default function BusinessForm({
                 {/* Admin: Publish or Suspend */}
                 {isAdmin && businessId && (
                   <>
-                    {currentPublicationStatus !== 'published' && (
+                    {pubStatus !== 'published' && (
                       <button
                         type="button"
                         disabled={isPending}
@@ -2201,7 +2208,7 @@ export default function BusinessForm({
                       </button>
                     )}
 
-                    {currentPublicationStatus === 'published' && (
+                    {pubStatus === 'published' && (
                       <button
                         type="button"
                         disabled={isPending}

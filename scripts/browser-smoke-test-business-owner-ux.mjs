@@ -217,6 +217,7 @@ async function main() {
     assert(await submissionToast.isVisible(), 'Toast confirms "Your listing has been submitted for review."');
 
     // Verify Pending Review Banner
+    await page.waitForSelector('text=Pending Review', { timeout: 10000 });
     const pendingBanner = page.locator('text=Pending Review');
     assert(await pendingBanner.isVisible(), 'Pending Review banner is visible on the listing');
     const pendingDetails = page.locator('text=You can continue updating your business details below');
