@@ -6,6 +6,33 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Google Places Location Integration — 2026-09-17
+
+- **Feature Branch**: `feature/google-places-location` based on `main @ c8f67b8`.
+- **Google Places Search**: Replaced manual latitude/longitude typing in Step 6 (Location) of the business create/edit UX with an accessible, debounced Google Places autocomplete and details lookup.
+- **Provider Abstraction Layer**:
+  - Defined provider contracts (`PlacesProvider`, `PlaceSuggestion`, `NormalizedPlaceDetails`).
+  - Created `GooglePlacesProvider` with strict server-side HTTP client, 6s timeout, and API key protection.
+  - Implemented `MockPlacesProvider` with deterministic Indian (Chennai, Bengaluru, Delhi, Coimbatore, Munnar) and international (London) locations for testing.
+  - Built factory `getPlacesProvider()` with strict production safeguards (mock strictly forbidden in production; fails safely to `NOT_CONFIGURED` without mock in staging/production).
+- **Secure API Proxy Routes**:
+  - `GET /api/places/autocomplete`: Authenticated session check (`getSessionUser()`), active account verification, bounded query (2..100 chars), `Cache-Control: private, no-store`.
+  - `GET /api/places/details`: Authenticated session check, active account verification, bounded placeId (max 255 chars, strict regex), `Cache-Control: private, no-store`.
+- **Database Migration & Schema**:
+  - Applied migration `20260917200000_google_places_location.sql` adding `place_id text` with check constraint (max 255 chars) and partial index `businesses_place_id_idx` to `public.businesses`.
+  - Granted `update (place_id)` to `authenticated`.
+  - Updated `create_business_for_current_user` RPC with `p_place_id text default null`.
+- **Canonical Identity & Privacy Invariants**:
+  - Selecting a Google Place never overwrites `canonical_name`.
+  - Service-area listings maintain 100% privacy (street address and coordinates suppressed).
+  - Legacy listings without `place_id` remain valid, editable, and publishable.
+- **Verification & Testing**:
+  - 100% passing pgTAP suite (`google_places_location_runtime.sql`, 5 files, 38 tests, 0 failures).
+  - 100% passing automated flow test (`scripts/verify-google-places-flow.mjs`).
+  - 100% passing Playwright browser smoke test (`scripts/browser-smoke-test-places.mjs`).
+  - Independent security review passed (0 critical / 0 high findings).
+  - Production build (`npm run build`) and ESLint (`npm run lint`) clean with 0 errors.
+
 ### Staging handoff checkpoint — 2026-09-14
 
 - Canonical `main`, `origin/main`, and deployed staging are aligned at `15539b9` (`fix(deploy): provide server admin key to staging app`).

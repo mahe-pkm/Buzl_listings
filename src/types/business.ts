@@ -115,6 +115,7 @@ export interface Business {
   linkedin_url: string | null;
   youtube_url: string | null;
   google_business_profile_url: string | null;
+  place_id?: string | null;
   publication_status: PublicationStatus;
   verification_status: VerificationStatus;
   created_source: string;
@@ -164,6 +165,7 @@ export interface BusinessFormData {
   show_street_address: boolean;
   latitude: string;
   longitude: string;
+  place_id?: string | null;
   service_areas: string[];
   // Hours
   hours: BusinessHoursItem[];

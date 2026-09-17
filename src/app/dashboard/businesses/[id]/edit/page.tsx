@@ -150,6 +150,7 @@ export default async function EditBusinessPage({ params }: EditPageProps) {
     show_street_address: Boolean(business.show_street_address),
     latitude: coords ? String(coords.lat) : '',
     longitude: coords ? String(coords.lng) : '',
+    place_id: business.place_id || null,
     service_areas: serviceAreas,
     hours,
     facebook_url: business.facebook_url || '',

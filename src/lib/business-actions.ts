@@ -265,6 +265,7 @@ export async function createDraftFromImport({
       p_show_street_address: showAddress,
       p_latitude: lat,
       p_longitude: lng,
+      p_place_id: (provenance.source_place_id || formData.place_id)?.trim() || null,
     }
   );
 
@@ -284,6 +285,7 @@ export async function createDraftFromImport({
       show_email: formData.show_email ?? false,
       website_url: formData.website_url?.trim() || null,
       google_business_profile_url: formData.google_business_profile_url?.trim() || null,
+      place_id: (provenance.source_place_id || formData.place_id)?.trim() || null,
       facebook_url: formData.facebook_url?.trim() || null,
       instagram_url: formData.instagram_url?.trim() || null,
       linkedin_url: formData.linkedin_url?.trim() || null,
@@ -449,6 +451,7 @@ export async function createBusiness(data: BusinessFormData) {
       p_show_street_address: showAddress,
       p_latitude: lat,
       p_longitude: lng,
+      p_place_id: data.place_id?.trim() || null,
     }
   );
 
@@ -468,6 +471,7 @@ export async function createBusiness(data: BusinessFormData) {
       show_email: data.show_email ?? false,
       website_url: data.website_url?.trim() || null,
       google_business_profile_url: gbpUrl,
+      place_id: data.place_id?.trim() || null,
       facebook_url: data.facebook_url?.trim() || null,
       instagram_url: data.instagram_url?.trim() || null,
       linkedin_url: data.linkedin_url?.trim() || null,
@@ -639,6 +643,7 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
       show_email: data.show_email ?? false,
       website_url: data.website_url?.trim() || null,
       google_business_profile_url: gbpUrl,
+      place_id: data.place_id !== undefined ? (data.place_id ? data.place_id.trim() : null) : undefined,
       city: data.city.trim(),
       state: data.state.trim(),
       country: data.country?.trim() || 'India',

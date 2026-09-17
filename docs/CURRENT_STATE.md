@@ -379,25 +379,40 @@ Implementation and staging deployment of approved Boss review additions:
 - **Public Business Page**: Rendered with cover photo banner, logo avatar, "View on Google" action button, service descriptions, products grid with images, and photo gallery with captions.
 - **Staging Database Migration**: `20260917190000_business_profile_expansion.sql` applied cleanly to isolated staging PostgreSQL container `buzl-listing-db-1`.
 - **Staging Container Deployment**: `buzl-listing-app-1` rebuilt and reloaded on VPS `213.210.37.204`. Unrelated Supabase and production containers untouched (12-day uptime intact).
-- **Staging Smoke Verification**: 37/37 Playwright checks passed (`scripts/staging-profile-expansion-smoke.mjs`), covering:
-  - Anonymous route protection
-  - Owner services (name + description, max 20 enforcement)
-  - Owner products (name + description, max 20 enforcement)
-  - Media upload (logo, cover, gallery)
-  - GBP URL persistence and preview
-  - Listing creation & submission
-  - Admin publication workflow
-  - Member access isolation
-  - Public listing rendering (services, descriptions, products, logo, cover, "View on Google")
-  - Location and coordinate privacy on service-area listings
-  - Staging protection headers (`X-Robots-Tag`, `robots.txt`, empty sitemap, `/api/health` 200 OK).
+- **Staging Smoke Verification**: 37/37 Playwright checks passed (`scripts/staging-profile-expansion-smoke.mjs`).
+
+## Google Places Location Integration (2026-09-17): IMPLEMENTED & VERIFIED
+
+Implementation of approved Google Places Location search replacing manual latitude/longitude typing:
+- **Branch**: `feature/google-places-location` based on `main @ c8f67b8`.
+- **Provider Architecture**: Clean abstraction with `PlacesProvider` interface. Server-side `GooglePlacesProvider` (direct Maps API client with 6s timeout) and `MockPlacesProvider` (deterministic Indian & global locations).
+- **Production Safeguards**: `getPlacesProvider()` strictly forbids mock provider in production (`APP_ENV === 'production'`). In staging/production without key, it yields `NOT_CONFIGURED` (HTTP 503) without leaking mock data.
+- **API Proxy Routes**: Authenticated routes `/api/places/autocomplete` and `/api/places/details` requiring active sessions (`getSessionUser()`), strict query/placeId length and regex bounds, and `Cache-Control: private, no-store`.
+- **Database Schema**: Migration `20260917200000_google_places_location.sql` applied:
+  - Added `place_id text check (place_id is null or char_length(btrim(place_id)) between 1 and 255)` to `public.businesses`.
+  - Added partial index `businesses_place_id_idx on public.businesses (place_id) where place_id is not null`.
+  - Granted `update (place_id)` to `authenticated`.
+  - Updated `create_business_for_current_user` RPC with `p_place_id text default null`.
+- **UX Integration**: `PlacesLocationSearch.tsx` embedded in Step 6 (Location) of `BusinessForm.tsx`. Auto-fills address lines, locality, city, state, postal code, and internal coordinates. Manual lat/long text fields removed from normal UI.
+- **Invariants Maintained**:
+  - Canonical Business Name Safety: selecting a place never overwrites `canonical_name`.
+  - Service-Area Privacy: street address and coordinates strictly suppressed.
+  - Legacy Listings: listings without `place_id` remain valid, editable, and publishable.
+- **Quality Checks & Reviews**:
+  - `npx supabase test db`: 5 test files, 38 tests, 0 failures (PASS).
+  - `npm run lint`: 0 errors (PASS).
+  - `npm run build`: 100% clean production build (PASS).
+  - `node scripts/verify-google-places-flow.mjs`: 100% passing automated flow test.
+  - `node scripts/browser-smoke-test-places.mjs`: 100% passing browser smoke test.
+  - Independent Security Review: FINAL VERDICT PASS (0 critical / 0 high findings).
 
 ## Current git status
 
-Working tree: branch `main`
-Commit: `b656802` (and documentation update)
-Status: Staging deployed and verified
+Working tree: branch `feature/google-places-location`
+Base commit: `c8f67b8`
+Status: Tested, verified, security approved, ready for handoff / review
 
 ## Next exact task
 
-Awaiting next task or instructions from project lead.
+1. Await approved Google Places API key (`GOOGLE_PLACES_API_KEY`) when ready.
+2. Operator review & merge `feature/google-places-location` into `main`.

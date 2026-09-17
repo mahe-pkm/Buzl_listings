@@ -13,6 +13,8 @@ import {
   BusinessMediaInput,
 } from '@/types/business';
 import BusinessPreviewCard from './BusinessPreviewCard';
+import PlacesLocationSearch from './PlacesLocationSearch';
+import { NormalizedPlaceDetails } from '@/lib/places/types';
 import StatusBadge from '@/components/ui/StatusBadge';
 import {
   createBusiness,
@@ -106,6 +108,7 @@ export default function BusinessForm({
       return {
         ...initialData,
         google_business_profile_url: initialData.google_business_profile_url || '',
+        place_id: initialData.place_id || null,
         products: initialData.products || [],
         media: initialData.media || [],
         services: (initialData.services || []).map((s) =>
@@ -126,6 +129,7 @@ export default function BusinessForm({
       show_email: false,
       website_url: '',
       google_business_profile_url: '',
+      place_id: null,
       primary_category_id: categories[0]?.id || '',
       services: [],
       products: [],
@@ -153,6 +157,34 @@ export default function BusinessForm({
 
   const updateField = <K extends keyof BusinessFormData>(key: K, value: BusinessFormData[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handlePlaceSelect = (details: NormalizedPlaceDetails) => {
+    setFormData((prev) => ({
+      ...prev,
+      // Canonical name safety: Never overwrite canonical_name with Google Places name
+      place_id: details.place_id,
+      address_line_1: details.address_line_1 || prev.address_line_1,
+      address_line_2: details.address_line_2 !== null ? details.address_line_2 : prev.address_line_2,
+      locality: details.locality || prev.locality,
+      city: details.city || prev.city,
+      state: details.state || prev.state,
+      country: details.country || prev.country,
+      country_code: details.country_code || prev.country_code,
+      postal_code: details.postal_code || prev.postal_code,
+      latitude: String(details.latitude),
+      longitude: String(details.longitude),
+    }));
+    setErrorMsg(null);
+  };
+
+  const handleClearPlace = () => {
+    setFormData((prev) => ({
+      ...prev,
+      place_id: null,
+      latitude: '',
+      longitude: '',
+    }));
   };
 
   // --- Services Handlers (Max 20) ---
@@ -533,7 +565,7 @@ export default function BusinessForm({
           return false;
         }
         if (!formData.latitude || !formData.longitude) {
-          setErrorMsg('Latitude and Longitude coordinates are required for map location.');
+          setErrorMsg('Location coordinates are required. Please search and select your location using Google Places.');
           return false;
         }
         const lat = parseFloat(formData.latitude);
@@ -1561,99 +1593,118 @@ export default function BusinessForm({
             {/* Storefront & Hybrid Address Fields */}
             {(formData.location_mode === 'storefront' || formData.location_mode === 'hybrid') && (
               <div className="p-4 rounded-[8px] bg-[#F2F5FA] border border-[#DCE2E8] space-y-4">
-                <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
-                  Storefront Physical Address
-                </h3>
+                <div>
+                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
+                    Google Places Search & Verification
+                  </h3>
+                  <p className="text-[11px] text-[#7D8795] mt-0.5">
+                    Search your business on Google Places to verify location and automatically attach coordinates.
+                  </p>
+                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="address_line_1" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Address Line 1 <span className="text-[#E36B5D]">*</span>
-                    </label>
-                    <input
-                      id="address_line_1"
-                      name="address_line_1"
-                      type="text"
-                      value={formData.address_line_1}
-                      onChange={(e) => updateField('address_line_1', e.target.value)}
-                      placeholder="e.g. 104, Barakhamba Road"
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
+                <PlacesLocationSearch
+                  selectedPlaceId={formData.place_id}
+                  currentAddressSummary={
+                    formData.address_line_1
+                      ? [formData.address_line_1, formData.locality, formData.city, formData.state, formData.postal_code]
+                          .filter(Boolean)
+                          .join(', ')
+                      : undefined
+                  }
+                  hasCoordinates={Boolean(formData.latitude && formData.longitude)}
+                  onSelect={handlePlaceSelect}
+                  onClear={handleClearPlace}
+                />
+
+                <div className="pt-2 border-t border-[#DCE2E8]/70">
+                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider mb-1">
+                    Storefront Physical Address
+                  </h3>
+                  <p className="text-[11px] text-[#7D8795] mb-3">
+                    Auto-filled from Google Places. You can refine unit, suite, or floor details below.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="address_line_1" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                        Address Line 1 <span className="text-[#E36B5D]">*</span>
+                      </label>
+                      <input
+                        id="address_line_1"
+                        name="address_line_1"
+                        type="text"
+                        value={formData.address_line_1}
+                        onChange={(e) => updateField('address_line_1', e.target.value)}
+                        placeholder="e.g. 104, Barakhamba Road"
+                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="address_line_2" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                        Address Line 2 (Unit / Suite / Floor)
+                      </label>
+                      <input
+                        id="address_line_2"
+                        name="address_line_2"
+                        type="text"
+                        value={formData.address_line_2}
+                        onChange={(e) => updateField('address_line_2', e.target.value)}
+                        placeholder="e.g. 4th Floor, Statesman House"
+                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="locality" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                        Locality / Area <span className="text-[#E36B5D]">*</span>
+                      </label>
+                      <input
+                        id="locality"
+                        name="locality"
+                        type="text"
+                        value={formData.locality}
+                        onChange={(e) => updateField('locality', e.target.value)}
+                        placeholder="e.g. Connaught Place"
+                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="postal_code" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                        Postal / PIN Code <span className="text-[#E36B5D]">*</span>
+                      </label>
+                      <input
+                        id="postal_code"
+                        name="postal_code"
+                        type="text"
+                        value={formData.postal_code}
+                        onChange={(e) => updateField('postal_code', e.target.value)}
+                        placeholder="e.g. 110001"
+                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="address_line_2" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Address Line 2
-                    </label>
-                    <input
-                      id="address_line_2"
-                      name="address_line_2"
-                      type="text"
-                      value={formData.address_line_2}
-                      onChange={(e) => updateField('address_line_2', e.target.value)}
-                      placeholder="e.g. 4th Floor, Statesman House"
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="locality" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Locality / Area <span className="text-[#E36B5D]">*</span>
-                    </label>
-                    <input
-                      id="locality"
-                      name="locality"
-                      type="text"
-                      value={formData.locality}
-                      onChange={(e) => updateField('locality', e.target.value)}
-                      placeholder="e.g. Connaught Place"
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="postal_code" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Postal / PIN Code <span className="text-[#E36B5D]">*</span>
-                    </label>
-                    <input
-                      id="postal_code"
-                      name="postal_code"
-                      type="text"
-                      value={formData.postal_code}
-                      onChange={(e) => updateField('postal_code', e.target.value)}
-                      placeholder="e.g. 110001"
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="latitude" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Map Latitude <span className="text-[#E36B5D]">*</span>
-                    </label>
-                    <input
-                      id="latitude"
-                      name="latitude"
-                      type="text"
-                      value={formData.latitude}
-                      onChange={(e) => updateField('latitude', e.target.value)}
-                      placeholder="e.g. 28.6297"
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="longitude" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Map Longitude <span className="text-[#E36B5D]">*</span>
-                    </label>
-                    <input
-                      id="longitude"
-                      name="longitude"
-                      type="text"
-                      value={formData.longitude}
-                      onChange={(e) => updateField('longitude', e.target.value)}
-                      placeholder="e.g. 77.2274"
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
+                  {/* Verified Internal Coordinates Display */}
+                  <div className="mt-3 p-3 rounded-[6px] bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-between text-xs text-[#5D6776]">
+                    <div>
+                      <span className="font-semibold text-[#2A3547]">Geospatial Coordinates: </span>
+                      {formData.latitude && formData.longitude ? (
+                        <span className="font-mono text-[#004AAD]">
+                          {formData.latitude}, {formData.longitude}
+                        </span>
+                      ) : (
+                        <span className="text-[#94A3B8] italic">
+                          Not attached yet. Search and select a location via Google Places above.
+                        </span>
+                      )}
+                    </div>
+                    {formData.latitude && formData.longitude && (
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#DCFCE7] text-[#166534] font-semibold">
+                        PostGIS Ready
+                      </span>
+                    )}
                   </div>
                 </div>
 
