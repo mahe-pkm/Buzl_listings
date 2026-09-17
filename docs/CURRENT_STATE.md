@@ -404,15 +404,22 @@ Implementation of approved Google Places Location search replacing manual latitu
   - `npm run build`: 100% clean production build (PASS).
   - `node scripts/verify-google-places-flow.mjs`: 100% passing automated flow test.
   - `node scripts/browser-smoke-test-places.mjs`: 100% passing browser smoke test.
-  - Independent Security Review: FINAL VERDICT PASS (0 critical / 0 high findings).
+  - Independent Security Review: FINAL VERDICT PASS_WITH_NOTES (0 critical / 0 high findings). Applied defense-in-depth hardening:
+    - Added `sessionToken` bounds (`<= 64`) and format regex (`/^[a-zA-Z0-9_\-]+$/`) in `/api/places/autocomplete` and `/api/places/details`.
+    - Added explicit coordinate boundaries (`lat` in `[-90, 90]`, `lng` in `[-180, 180]`, `!isNaN`) in `updateBusiness`.
+    - Enhanced production guard in `getPlacesProvider()` to check `NODE_ENV === 'production'` alongside `APP_ENV === 'production'`.
+- **Live Provider State**:
+  - Offline/Mock Provider: 100% verified across 8 representative mock locations in India and UK.
+  - Live Google Provider: Code is fully implemented and tested with safe error handling (`NOT_CONFIGURED` returned safely when key is absent, zero secret leakage). Awaiting actual `GOOGLE_PLACES_API_KEY` to be saved in `.env.local` with `GOOGLE_PLACES_MOCK=false`.
 
 ## Current git status
 
 Working tree: branch `feature/google-places-location`
 Base commit: `c8f67b8`
-Status: Tested, verified, security approved, ready for handoff / review
+Status: Tested, hardened, verified, security approved, ready for live key verification / operator review
 
 ## Next exact task
 
-1. Await approved Google Places API key (`GOOGLE_PLACES_API_KEY`) when ready.
-2. Operator review & merge `feature/google-places-location` into `main`.
+1. Save actual live Google Places API key (`GOOGLE_PLACES_API_KEY`) in `.env.local` and set `GOOGLE_PLACES_MOCK=false`.
+2. Run live Google autocomplete & details queries to verify Google network responses.
+3. Operator review & merge `feature/google-places-location` into `main`.

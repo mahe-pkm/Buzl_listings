@@ -19,8 +19,8 @@ export * from './mock-provider';
  * 4. In development/local/test (or when GOOGLE_PLACES_MOCK === 'true' outside production), use MockPlacesProvider.
  */
 export function getPlacesProvider(): PlacesProvider {
-  const isProd = isProductionEnvironment();
   const isStaging = isStagingEnvironment();
+  const isProd = isProductionEnvironment() || (process.env.NODE_ENV === 'production' && !isStaging);
   const mockRequested = process.env.GOOGLE_PLACES_MOCK === 'true';
   const hasApiKey = Boolean(process.env.GOOGLE_PLACES_API_KEY?.trim());
 

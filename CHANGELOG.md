@@ -30,7 +30,8 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
   - 100% passing pgTAP suite (`google_places_location_runtime.sql`, 5 files, 38 tests, 0 failures).
   - 100% passing automated flow test (`scripts/verify-google-places-flow.mjs`).
   - 100% passing Playwright browser smoke test (`scripts/browser-smoke-test-places.mjs`).
-  - Independent security review passed (0 critical / 0 high findings).
+  - Independent security review passed (PASS_WITH_NOTES, 0 critical / 0 high findings).
+  - Applied defense-in-depth hardening: added `sessionToken` bounds and format validation in API proxy routes, added coordinate boundary validation in `updateBusiness`, and enhanced production environment detection in `getPlacesProvider()`.
   - Production build (`npm run build`) and ESLint (`npm run lint`) clean with 0 errors.
 
 ### Staging handoff checkpoint — 2026-09-14

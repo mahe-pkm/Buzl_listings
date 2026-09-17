@@ -45,6 +45,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    if (sessionToken && (sessionToken.length > 64 || !/^[a-zA-Z0-9_\-]+$/.test(sessionToken))) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid sessionToken format', errorCode: 'INVALID_REQUEST' },
+        { status: 400, headers: { 'Cache-Control': 'private, no-store' } }
+      );
+    }
+
     const provider = getPlacesProvider();
     const result = await provider.getDetails(placeId, sessionToken || undefined);
 

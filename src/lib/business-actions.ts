@@ -620,8 +620,19 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
     return { success: false, error: 'A business cannot have more than 20 products.' };
   }
 
-  const lat = (mode === 'storefront' || mode === 'hybrid') && data.latitude ? parseFloat(data.latitude) : null;
-  const lng = (mode === 'storefront' || mode === 'hybrid') && data.longitude ? parseFloat(data.longitude) : null;
+  const rawLat = (mode === 'storefront' || mode === 'hybrid') && data.latitude ? parseFloat(data.latitude) : null;
+  const rawLng = (mode === 'storefront' || mode === 'hybrid') && data.longitude ? parseFloat(data.longitude) : null;
+  const validCoords =
+    rawLat !== null &&
+    rawLng !== null &&
+    !isNaN(rawLat) &&
+    !isNaN(rawLng) &&
+    rawLat >= -90 &&
+    rawLat <= 90 &&
+    rawLng >= -180 &&
+    rawLng <= 180;
+  const lat = validCoords ? rawLat : null;
+  const lng = validCoords ? rawLng : null;
   const showAddress = mode === 'service_area' ? false : Boolean(data.show_street_address);
 
   // Format geo_point for update: WKT format 'POINT(lng lat)'
