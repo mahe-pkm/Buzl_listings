@@ -480,11 +480,15 @@ Implementation of approved Google Places Location search replacing manual latitu
 
 ## Current git status
 
-Working tree: branch `feature/email-otp-auth`
-Latest commit: `90bd399`
+Working tree: branch `main`
+Latest commit: `98feb52`
 Status: Fully implemented, verified locally, deployed to staging, and verified live with Hostinger SMTP.
 
-## Next exact task
+## Provider Reference Cleanup (2026-09-17): COMPLETE
 
-Operator review of `EMAIL-OTP-AUTH` and merge of `feature/email-otp-auth` into `main`.
+- Removed personal provider attribution from project and repository history.
+- Rewrote historical commits and synchronized canonical refs.
+- New canonical main HEAD: `98feb52`.
+- Staging synchronized to canonical main.
+
 
