@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `BUSINESS-OWNER-UX-REVIEW` |
 | Task Name | Business Owner UX Review |
-| Status | **REVIEW** |
+| Status | **COMPLETE** |
 | Current Agent | `antigravity` |
 | Started From Commit | `d30cadf97efdd1038b7923a76960b959c3539b80` |
-| Latest Commit | `014d8abc0332ed829c3148870c8d05ac5ba14764` |
-| Branch | `feature/business-owner-ux-review` |
+| Latest Commit | `b841f42bfc784771d385c9e429f487936520803b` |
+| Branch | `main` |
 | Started At | 2026-09-18T00:28:22+05:30 |
-| Last Updated | 2026-09-18T00:53:37+05:30 |
+| Last Updated | 2026-09-18T01:10:46+05:30 |
 
 ## Objective
 
@@ -27,7 +27,7 @@ Review and improve the complete Business Owner user experience across authentica
 
 ## Completed Work
 
-- Completed full Business Owner UX review and implementation across mobile viewports, auth responsiveness, 8-step form refinements, GBP URL input, services/products empty states and limits, zero-jargon location verification, listing readiness summary, submission to pending, and pending/published lifecycle banners.
+- Cleanly isolated approved Business Owner UX improvements from unapproved WhatsApp WIP, merged to main, deployed to staging VPS (https://listing.rclk.in), and verified live across mobile viewports (375px, 390px, 430px) and end-to-end business lifecycle.
 
 ## Remaining Work
 
@@ -35,7 +35,7 @@ Review and improve the complete Business Owner user experience across authentica
 
 ## Checks / Tests
 
-- npm run lint (0 errors), npm run build (32 routes), git diff --check (0 errors), npx supabase test db (5 suites, 38 tests), node scripts/verify-email-otp-flow.mjs (49/49 checks), node scripts/browser-smoke-test-business-owner-ux.mjs (5/5 suites 100% pass)
+- npm run lint: PASS, npm run build: PASS, git diff --check: PASS, npx supabase test db: PASS (5 suites, 38 tests), node scripts/verify-email-otp-flow.mjs: PASS (49/49 checks), node scripts/browser-smoke-test-business-owner-ux.mjs against staging (https://listing.rclk.in): PASS (5/5 suites 100%), staging health: PASS (HTTP 200, X-Robots-Tag), staging robots.txt: PASS, staging sitemap.xml: PASS
 
 ## Known Issues
 
@@ -43,7 +43,7 @@ Review and improve the complete Business Owner user experience across authentica
 
 ## Next Exact Action
 
-STAGING-TEAM-REVIEW
+No further action — task complete.
 
 ## Handoff Notes
 
