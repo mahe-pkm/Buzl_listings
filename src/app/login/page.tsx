@@ -236,9 +236,11 @@ function LoginForm() {
       </p>
 
       {/* Auth Method Selector Tabs */}
-      <div className="flex border-b border-[#DCE2E8] mb-5">
+      <div role="tablist" className="flex border-b border-[#DCE2E8] mb-5">
         <button
           type="button"
+          role="tab"
+          aria-selected={method === "otp"}
           onClick={() => {
             setMethod("otp");
             setErrorMessage(null);
@@ -254,6 +256,8 @@ function LoginForm() {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={method === "password"}
           onClick={() => {
             setMethod("password");
             setErrorMessage(null);
