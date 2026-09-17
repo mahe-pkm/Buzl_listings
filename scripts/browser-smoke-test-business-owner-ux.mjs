@@ -210,9 +210,9 @@ async function main() {
     const submitBtn = page.locator('button:has-text("Submit for Review")');
     assert(await submitBtn.isVisible(), 'Submit for Review button is visible for draft listing');
     await submitBtn.click();
-    await page.waitForTimeout(1000);
 
     // Verify submission toast
+    await page.waitForSelector('text=Your listing has been submitted for review', { timeout: 15000 });
     const submissionToast = page.locator('text=Your listing has been submitted for review');
     assert(await submissionToast.isVisible(), 'Toast confirms "Your listing has been submitted for review."');
 
@@ -267,9 +267,9 @@ async function main() {
     const publishBtn = adminPage.locator('button:has-text("Publish Listing")');
     assert(await publishBtn.isVisible(), 'Admin sees "Publish Listing" button');
     await publishBtn.click();
-    await adminPage.waitForTimeout(2000);
 
     // Verify Published Listing banner
+    await adminPage.waitForSelector('text=Published Listing', { timeout: 15000 });
     const publishedBanner = adminPage.locator('text=Published Listing');
     assert(await publishedBanner.isVisible(), 'Published Listing banner is visible');
     const publicLinkBtn = adminPage.locator('a:has-text("View Public Listing")');
