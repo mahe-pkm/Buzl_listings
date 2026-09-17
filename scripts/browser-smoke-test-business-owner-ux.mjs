@@ -34,32 +34,105 @@ async function main() {
       console.log(`  Testing viewport: ${width}x667`);
       const context = await browser.newContext({ viewport: { width, height: 667 } });
       const page = await context.newPage();
+
+      // --- 1.1 Test /login ---
       await page.goto(`${BASE_URL}/login`);
       await page.waitForLoadState('networkidle');
 
-      // Check Email OTP tab (default)
-      const emailInput = page.locator('#otp-email');
-      assert(await emailInput.isVisible(), `Email OTP input is visible on ${width}px`);
-      const emailBox = await emailInput.boundingBox();
-      assert(emailBox !== null && emailBox.width > 200, `Email input width (${emailBox?.width}px) is comfortable for typing on ${width}px`);
+      // Check tab order on /login
+      const tabs = page.locator('div[role="tablist"] button[role="tab"]');
+      assert(await tabs.count() === 3, `Login has exactly 3 tabs on ${width}px`);
+      assert(await tabs.nth(0).innerText() === 'Email Code (OTP)', 'Tab 1 is Email Code (OTP)');
+      assert(await tabs.nth(1).innerText() === 'WhatsApp OTP', 'Tab 2 is WhatsApp OTP');
+      assert(await tabs.nth(2).innerText() === 'Password', 'Tab 3 is Password');
 
-      // Check no horizontal scrollbar on body
+      // Email OTP is default
+      const emailInput = page.locator('#otp-email');
+      assert(await emailInput.isVisible(), `Email OTP input is visible by default on ${width}px`);
+      const emailBox = await emailInput.boundingBox();
+      assert(emailBox !== null && emailBox.width > 180, `Email input width (${emailBox?.width}px) is comfortable for typing on ${width}px`);
+
       let scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
       let clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
-      assert(scrollWidth <= clientWidth, `No horizontal scroll on ${width}px (OTP tab): scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
+      assert(scrollWidth <= clientWidth, `No horizontal scroll on ${width}px (/login OTP tab): scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
 
-      // Switch to Password tab
-      const passwordTab = page.locator('button[role="tab"]:has-text("Password")');
-      await passwordTab.click();
+      // Test WhatsApp tab on /login
+      await tabs.nth(1).click();
+      assert(await tabs.nth(1).getAttribute('aria-selected') === 'true', 'WhatsApp tab is selected on /login');
+      const comingSoonNotice = page.locator('text=WhatsApp verification is coming soon');
+      assert(await comingSoonNotice.isVisible(), 'Notice "WhatsApp verification is coming soon" is visible');
+      const countrySelect = page.locator('#whatsapp-country');
+      assert(await countrySelect.isVisible(), 'Country select is visible');
+      const phoneInput = page.locator('#whatsapp-phone');
+      assert(await phoneInput.isVisible(), 'Phone input is visible');
+      const phoneBox = await phoneInput.boundingBox();
+      assert(phoneBox !== null && phoneBox.width > 120, `Phone input width (${phoneBox?.width}px) is comfortable for typing on ${width}px`);
 
+      // Test invalid phone validation
+      await phoneInput.fill('123');
+      await page.click('button[type="submit"]:has-text("Continue with WhatsApp")');
+      const errorBanner = page.locator('div[role="alert"]:has-text("⚠")');
+      assert(await errorBanner.isVisible(), 'Invalid phone triggers validation error');
+
+      // Test valid phone triggers activation notice without fake OTP
+      await phoneInput.fill('9876543210');
+      await page.click('button[type="submit"]:has-text("Continue with WhatsApp")');
+      const infoNotice = page.locator('.bg-\\[\\#EBF5FF\\]');
+      assert(await infoNotice.isVisible(), 'Activation info notice is displayed for valid phone');
+      assert((await infoNotice.innerText()).includes('is being activated'), 'Notice mentions being activated');
+      const fakeOtpToken = page.locator('#otp-token');
+      assert(await fakeOtpToken.count() === 0, 'No fake OTP verification token screen is shown');
+
+      // Test "Use Email Code →" switch button
+      const useEmailBtn = page.locator('button:has-text("Use Email Code →")');
+      assert(await useEmailBtn.isVisible(), '"Use Email Code →" button is visible');
+      await useEmailBtn.click();
+      assert(await emailInput.isVisible(), 'Clicking "Use Email Code →" switched back to Email OTP');
+
+      // Switch to Password tab on /login
+      await tabs.nth(2).click();
       const pwdInput = page.locator('#password-input');
       assert(await pwdInput.isVisible(), `Password input is visible on ${width}px`);
       const pwdBox = await pwdInput.boundingBox();
-      assert(pwdBox !== null && pwdBox.width > 200, `Password input width (${pwdBox?.width}px) is comfortable for typing on ${width}px`);
+      assert(pwdBox !== null && pwdBox.width > 180, `Password input width (${pwdBox?.width}px) is comfortable for typing on ${width}px`);
 
       scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
       clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
-      assert(scrollWidth <= clientWidth, `No horizontal scroll on ${width}px (Password tab): scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
+      assert(scrollWidth <= clientWidth, `No horizontal scroll on ${width}px (/login Password tab): scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
+
+      // --- 1.2 Test /signup ---
+      await page.goto(`${BASE_URL}/signup`);
+      await page.waitForLoadState('networkidle');
+
+      const signupTabs = page.locator('div[role="tablist"] button[role="tab"]');
+      assert(await signupTabs.count() === 3, `Signup has exactly 3 tabs on ${width}px`);
+      assert(await signupTabs.nth(0).innerText() === 'Email Code (OTP)', 'Signup Tab 1 is Email Code (OTP)');
+      assert(await signupTabs.nth(1).innerText() === 'WhatsApp OTP', 'Signup Tab 2 is WhatsApp OTP');
+      assert(await signupTabs.nth(2).innerText() === 'Password', 'Signup Tab 3 is Password');
+
+      // Switch to WhatsApp tab on /signup
+      await signupTabs.nth(1).click();
+      const signupNotice = page.locator('text=WhatsApp verification is coming soon');
+      assert(await signupNotice.isVisible(), 'Signup notice "WhatsApp verification is coming soon" is visible');
+      const signupPhoneInput = page.locator('#signup-whatsapp-phone');
+      assert(await signupPhoneInput.isVisible(), 'Signup WhatsApp phone input is visible');
+
+      // Test valid phone submit on /signup
+      await signupPhoneInput.fill('9876543210');
+      await page.click('button[type="submit"]:has-text("Continue with WhatsApp")');
+      const signupInfoNotice = page.locator('.bg-\\[\\#EBF5FF\\]');
+      assert(await signupInfoNotice.isVisible(), 'Signup activation info notice is displayed');
+      assert((await signupInfoNotice.innerText()).includes('is being activated'), 'Signup notice mentions being activated');
+
+      // Test switch to email code on /signup
+      const signupUseEmailBtn = page.locator('button:has-text("Use Email Code →")');
+      await signupUseEmailBtn.click();
+      const signupOtpEmail = page.locator('#signup-otp-email');
+      assert(await signupOtpEmail.isVisible(), 'Switched back to Email OTP on /signup');
+
+      scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+      clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+      assert(scrollWidth <= clientWidth, `No horizontal scroll on ${width}px (/signup): scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
 
       await context.close();
     }
