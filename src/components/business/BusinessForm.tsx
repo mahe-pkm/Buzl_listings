@@ -34,6 +34,7 @@ interface BusinessFormProps {
   categories: Category[];
   initialData?: BusinessFormData;
   businessId?: string;
+  businessSlug?: string;
   currentPublicationStatus?: PublicationStatus;
   currentVerificationStatus?: VerificationStatus;
   isAdmin?: boolean;
@@ -50,7 +51,7 @@ const DEFAULT_HOURS = [
 ];
 
 const STEPS = [
-  { id: 1, label: 'Identity' },
+  { id: 1, label: 'Business Details' },
   { id: 2, label: 'Contact' },
   { id: 3, label: 'Category & Services' },
   { id: 4, label: 'Products' },
@@ -66,6 +67,7 @@ export default function BusinessForm({
   categories,
   initialData,
   businessId,
+  businessSlug,
   currentPublicationStatus = 'draft',
   currentVerificationStatus = 'unverified',
   isAdmin = false,
@@ -645,7 +647,11 @@ export default function BusinessForm({
 
       const transRes = await transitionPublication(businessId, nextStatus);
       if (transRes.success) {
-        setSuccessMsg(`Listing status successfully updated to ${nextStatus}.`);
+        setSuccessMsg(
+          nextStatus === 'pending'
+            ? 'Your listing has been submitted for review.'
+            : `Listing status successfully updated to ${nextStatus}.`
+        );
         router.refresh();
       } else {
         setErrorMsg(transRes.error || `Failed to transition status to ${nextStatus}.`);
@@ -679,9 +685,54 @@ export default function BusinessForm({
 
   return (
     <div className="space-y-6">
+      {/* Pending Review Banner */}
+      {currentPublicationStatus === 'pending' && (
+        <div className="p-4 rounded-[8px] bg-[#FFF8E6] border border-[#FEE5A5] text-xs space-y-1.5">
+          <div className="flex items-center gap-2 text-[#9A6700] font-bold">
+            <span className="w-2 h-2 rounded-full bg-[#D99B18]" />
+            <span>Pending Review</span>
+          </div>
+          <p className="text-[#7A5200] leading-relaxed">
+            Your listing has been submitted and is currently under review by our moderation team. Our team verifies your business details and category citations before activating the public listing.
+          </p>
+          <p className="text-[11px] text-[#9A6700]">
+            You can continue updating your business details below; any saved edits will be included in the review.
+          </p>
+        </div>
+      )}
+
+      {/* Published Listing Banner */}
+      {currentPublicationStatus === 'published' && (
+        <div className="p-4 rounded-[8px] bg-[#F0FDF4] border border-[#BBF7D0] text-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2 text-[#166534] font-bold">
+              <span className="w-2 h-2 rounded-full bg-[#16A34A]" />
+              <span>Published Listing</span>
+            </div>
+            <p className="text-[#15803D]">
+              Your business listing is live on the Buzl public directory.
+            </p>
+          </div>
+          {businessSlug && (
+            <a
+              href={`/business/${businessSlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#16A34A] hover:bg-[#15803D] text-white font-semibold text-xs transition-colors shadow-xs"
+            >
+              <span>View Public Listing</span>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          )}
+        </div>
+      )}
+
       {/* Step Navigation Bar */}
       <div className="bg-white rounded-[8px] border border-[#DCE2E8] p-3 shadow-xs">
-        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+        {/* Desktop Step Navigation */}
+        <div className="hidden lg:flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
           {STEPS.map((step) => {
             const isCurrent = activeStep === step.id;
             const isDone = activeStep > step.id;
@@ -720,6 +771,22 @@ export default function BusinessForm({
             );
           })}
         </div>
+
+        {/* Mobile & Tablet Compact Step Header */}
+        <div className="lg:hidden space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-bold text-[#004AAD]">Step {activeStep} of 8</span>
+            <span className="font-semibold text-[#2A3547]">
+              {STEPS.find((s) => s.id === activeStep)?.label}
+            </span>
+          </div>
+          <div className="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+            <div
+              className="bg-[#004AAD] h-full transition-all duration-300 rounded-full"
+              style={{ width: `${(activeStep / 8) * 100}%` }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Notifications */}
@@ -749,20 +816,20 @@ export default function BusinessForm({
 
       {/* Form Content Steps */}
       <div className="bg-white rounded-[8px] border border-[#DCE2E8] p-6 shadow-xs">
-        {/* Step 1: Business Identity */}
+        {/* Step 1: Business Details */}
         {activeStep === 1 && (
           <div className="space-y-5">
             <div>
-              <h2 className="text-base font-bold text-[#2A3547]">Step 1: Business Identity</h2>
+              <h2 className="text-base font-bold text-[#2A3547]">Step 1: Business Details</h2>
               <p className="text-xs text-[#5D6776] mt-1">
-                Provide canonical naming and foundational identification for your listing.
+                Enter your registered business name and basic details.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label htmlFor="canonical_name" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  Canonical Business Name <span className="text-[#E36B5D]">*</span>
+                  Business Name <span className="text-[#E36B5D]">*</span>
                 </label>
                 <input
                   id="canonical_name"
@@ -775,7 +842,7 @@ export default function BusinessForm({
                   className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
                 />
                 <p className="text-[11px] text-[#7D8795] mt-1">
-                  The official citation name. Used to derive your stable URL slug.
+                  The registered name of your business as known to customers.
                 </p>
               </div>
 
@@ -819,9 +886,9 @@ export default function BusinessForm({
         {activeStep === 2 && (
           <div className="space-y-5">
             <div>
-              <h2 className="text-base font-bold text-[#2A3547]">Step 2: Contact Information (NAP)</h2>
+              <h2 className="text-base font-bold text-[#2A3547]">Step 2: Contact Information</h2>
               <p className="text-xs text-[#5D6776] mt-1">
-                Canonical contact channels. Note: Business contact email is private by default and strictly independent of your login account.
+                Official business contact details. Note: Business contact email is private by default and strictly independent of your login account.
               </p>
             </div>
 
@@ -889,10 +956,10 @@ export default function BusinessForm({
                 />
               </div>
 
-              {/* Google Business Profile URL */}
+              {/* Google Business Profile Link */}
               <div className="md:col-span-2">
                 <label htmlFor="google_business_profile_url" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  Google Business Profile URL (Optional)
+                  Google Business Profile Link <span className="text-[11px] font-normal text-[#7D8795]">(Optional)</span>
                 </label>
                 <div className="relative">
                   <input
@@ -901,7 +968,7 @@ export default function BusinessForm({
                     type="url"
                     value={formData.google_business_profile_url}
                     onChange={(e) => updateField('google_business_profile_url', e.target.value)}
-                    placeholder="https://maps.google.com/?cid=... or https://g.page/..."
+                    placeholder="https://maps.app.goo.gl/... or https://google.com/maps/place/..."
                     className="w-full pl-9 pr-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -911,7 +978,7 @@ export default function BusinessForm({
                   </div>
                 </div>
                 <p className="text-[11px] text-[#7D8795] mt-1">
-                  Link to your Google Business Profile. Displayed on your public listing as &quot;View on Google&quot;.
+                  Paste the link to your business on Google. This will appear as &quot;View on Google&quot; on your public listing.
                 </p>
               </div>
 
@@ -988,16 +1055,16 @@ export default function BusinessForm({
               <div className="pt-2 border-t border-[#DCE2E8]">
                 <div className="flex items-center justify-between mb-1">
                   <label className="block text-xs font-semibold text-[#2A3547]">
-                    Services Offered
+                    What services does your business offer?
                   </label>
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                     (formData.services || []).length >= 20 ? 'bg-[#FDECEE] text-[#C93B2B]' : 'bg-[#F2F5FA] text-[#004AAD]'
                   }`}>
-                    {(formData.services || []).length}/20 Services
+                    {(formData.services || []).length} / 20 Services
                   </span>
                 </div>
                 <p className="text-[11px] text-[#7D8795] mb-3">
-                  Add up to 20 services with optional descriptions.
+                  Add up to 20 services with optional descriptions to showcase what you offer.
                 </p>
 
                 {(formData.services || []).length < 20 ? (
@@ -1034,6 +1101,13 @@ export default function BusinessForm({
                 ) : (
                   <div className="p-3 mb-4 rounded-[8px] bg-[#FFF6DF] border border-[#FFE7A8] text-xs text-[#9A6700] font-medium">
                     Maximum limit of 20 services reached.
+                  </div>
+                )}
+
+                {/* Empty State when 0 services */}
+                {(formData.services || []).length === 0 && (
+                  <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-dashed border-[#DCE2E8] text-center text-xs text-[#7D8795]">
+                    No services added yet. Add key services above to highlight your offerings for customers.
                   </div>
                 )}
 
@@ -1100,15 +1174,15 @@ export default function BusinessForm({
           <div className="space-y-5">
             <div>
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-bold text-[#2A3547]">Step 4: Products & Offerings</h2>
+                <h2 className="text-base font-bold text-[#2A3547]">Step 4: Products & Offerings (Optional)</h2>
                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                   (formData.products || []).length >= 20 ? 'bg-[#FDECEE] text-[#C93B2B]' : 'bg-[#F2F5FA] text-[#004AAD]'
                 }`}>
-                  {(formData.products || []).length}/20 Products
+                  {(formData.products || []).length} / 20 Products
                 </span>
               </div>
               <p className="text-xs text-[#5D6776] mt-1">
-                Showcase up to 20 key products or inventory items on your public business profile.
+                Products are optional showcase items. Highlight key products, physical goods, or featured inventory on your public listing.
               </p>
             </div>
 
@@ -1199,6 +1273,16 @@ export default function BusinessForm({
             ) : (
               <div className="p-3 rounded-[8px] bg-[#FFF6DF] border border-[#FFE7A8] text-xs text-[#9A6700] font-medium">
                 Maximum limit of 20 products reached.
+              </div>
+            )}
+
+            {/* Empty State when 0 products */}
+            {(formData.products || []).length === 0 && (
+              <div className="p-5 rounded-[8px] bg-[#F8FAFC] border border-dashed border-[#DCE2E8] text-center space-y-1.5">
+                <p className="text-xs font-semibold text-[#2A3547]">No products added yet</p>
+                <p className="text-[11px] text-[#7D8795]">
+                  Products are completely optional. If your business sells physical goods or featured items, you can add them above.
+                </p>
               </div>
             )}
 
@@ -1686,26 +1770,13 @@ export default function BusinessForm({
                     </div>
                   </div>
 
-                  {/* Verified Internal Coordinates Display */}
-                  <div className="mt-3 p-3 rounded-[6px] bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-between text-xs text-[#5D6776]">
-                    <div>
-                      <span className="font-semibold text-[#2A3547]">Geospatial Coordinates: </span>
-                      {formData.latitude && formData.longitude ? (
-                        <span className="font-mono text-[#004AAD]">
-                          {formData.latitude}, {formData.longitude}
-                        </span>
-                      ) : (
-                        <span className="text-[#94A3B8] italic">
-                          Not attached yet. Search and select a location via Google Places above.
-                        </span>
-                      )}
+                  {/* Location Verified Display */}
+                  {formData.latitude && formData.longitude && (
+                    <div className="mt-3 p-3 rounded-[6px] bg-[#F0FDF4] border border-[#BBF7D0] flex items-center gap-2 text-xs text-[#166534] font-medium">
+                      <span className="text-[#16A34A] font-bold">✓</span>
+                      <span>Location verified — Map location saved</span>
                     </div>
-                    {formData.latitude && formData.longitude && (
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-[#DCFCE7] text-[#166534] font-semibold">
-                        PostGIS Ready
-                      </span>
-                    )}
-                  </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 pt-2">
@@ -1930,15 +2001,109 @@ export default function BusinessForm({
           </div>
         )}
 
-        {/* Step 8: Preview, Duplicate Warning & Submit */}
+        {/* Step 8: Preview & Submit */}
         {activeStep === 8 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-base font-bold text-[#2A3547]">Step 8: Public-Safe Preview & Publication</h2>
+              <h2 className="text-base font-bold text-[#2A3547]">Step 8: Preview & Submit</h2>
               <p className="text-xs text-[#5D6776] mt-1">
-                Inspect how your business is rendered publicly, verify details, and manage publication state.
+                Review your listing details, verify readiness, and submit your listing for moderation.
               </p>
             </div>
+
+            {/* Listing Readiness Summary Card */}
+            {(() => {
+              const hasName = Boolean(formData.canonical_name.trim());
+              const hasPhone = Boolean(formData.primary_phone.replace(/[^0-9]/g, '').length >= 7);
+              const hasCategory = Boolean(formData.primary_category_id);
+              const hasCommonLocation = Boolean(formData.city.trim() && formData.state.trim() && formData.country.trim());
+              const hasLocationSpecifics =
+                formData.location_mode === 'service_area'
+                  ? formData.service_areas.length > 0
+                  : Boolean(
+                      formData.address_line_1.trim() &&
+                      formData.locality.trim() &&
+                      formData.postal_code.trim() &&
+                      formData.latitude &&
+                      formData.longitude
+                    );
+              const hasLocation = hasCommonLocation && hasLocationSpecifics;
+              const hasServices = (formData.services || []).length > 0;
+              const hasLogo = (formData.media || []).some((m) => m.kind === 'logo');
+              const hasGbp = Boolean(formData.google_business_profile_url?.trim());
+
+              const isReadyToSubmit = hasName && hasPhone && hasCategory && hasLocation;
+
+              return (
+                <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
+                      Listing Readiness Summary
+                    </h3>
+                    <span
+                      className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+                        isReadyToSubmit
+                          ? 'bg-[#DCFCE7] text-[#166534]'
+                          : 'bg-[#FEF3C7] text-[#92400E]'
+                      }`}
+                    >
+                      {isReadyToSubmit ? 'Ready for Review' : 'Incomplete Requirements'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-1 text-xs">
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={hasName ? 'text-[#16A34A] font-bold' : 'text-[#DC2626] font-bold'}>
+                        {hasName ? '✓' : '✗'}
+                      </span>
+                      <span className="text-[#2A3547]">Business Name</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={hasPhone ? 'text-[#16A34A] font-bold' : 'text-[#DC2626] font-bold'}>
+                        {hasPhone ? '✓' : '✗'}
+                      </span>
+                      <span className="text-[#2A3547]">Contact Phone</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={hasCategory ? 'text-[#16A34A] font-bold' : 'text-[#DC2626] font-bold'}>
+                        {hasCategory ? '✓' : '✗'}
+                      </span>
+                      <span className="text-[#2A3547]">Category</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={hasLocation ? 'text-[#16A34A] font-bold' : 'text-[#DC2626] font-bold'}>
+                        {hasLocation ? '✓' : '✗'}
+                      </span>
+                      <span className="text-[#2A3547]">Location Details</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={hasServices ? 'text-[#16A34A] font-bold' : 'text-[#94A3B8] font-bold'}>
+                        {hasServices ? '✓' : '○'}
+                      </span>
+                      <span className="text-[#2A3547]">Services ({ (formData.services || []).length })</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={hasLogo ? 'text-[#16A34A] font-bold' : 'text-[#94A3B8] font-bold'}>
+                        {hasLogo ? '✓' : '○'}
+                      </span>
+                      <span className="text-[#2A3547]">Business Logo</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={hasGbp ? 'text-[#16A34A] font-bold' : 'text-[#94A3B8] font-bold'}>
+                        {hasGbp ? '✓' : '○'}
+                      </span>
+                      <span className="text-[#2A3547]">Google Business Profile</span>
+                    </div>
+                  </div>
+
+                  {!isReadyToSubmit && (
+                    <p className="text-[11px] text-[#B45309] font-medium pt-1">
+                      Please complete all required sections (marked with ✗) before submitting for review.
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Non-blocking Duplicate Warning Alert */}
             {duplicateNotice && (

@@ -192,7 +192,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F5FA] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F2F5FA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center mb-3">
           <div className="w-10 h-10 rounded-xl bg-[#004AAD] flex items-center justify-center text-white font-bold text-xl tracking-wider shadow-sm">
@@ -208,7 +208,7 @@ export default function SignupPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm">
+        <div className="bg-white p-6 sm:p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm">
           {/* Method Selector Tabs */}
           <div role="tablist" className="flex border-b border-[#DCE2E8] mb-5">
             <button

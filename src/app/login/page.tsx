@@ -227,7 +227,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm">
+    <div className="bg-white p-6 sm:p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm">
       <h2 className="text-xl font-bold text-[#2A3547] text-center mb-1">
         Sign in to your account
       </h2>
@@ -484,7 +484,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-[#F2F5FA] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F2F5FA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center mb-3">
           <div className="w-10 h-10 rounded-xl bg-[#004AAD] flex items-center justify-center text-white font-bold text-xl tracking-wider shadow-sm">
@@ -500,7 +500,7 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Suspense fallback={<div className="bg-white p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm text-center text-xs text-[#5D6776]">Loading sign in...</div>}>
+        <Suspense fallback={<div className="bg-white p-6 sm:p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm text-center text-xs text-[#5D6776]">Loading sign in...</div>}>
           <LoginForm />
         </Suspense>
       </div>

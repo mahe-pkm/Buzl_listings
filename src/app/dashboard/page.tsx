@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                     <th className="py-3 px-4">Category</th>
                     <th className="py-3 px-4">Mode</th>
                     <th className="py-3 px-4">Location</th>
-                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Listing Status</th>
                     <th className="py-3 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -144,7 +144,16 @@ export default async function DashboardPage() {
                         <td className="py-3.5 px-4">
                           <StatusBadge status={b.publication_status} type="publication" />
                         </td>
-                        <td className="py-3.5 px-6 text-right">
+                        <td className="py-3.5 px-6 text-right flex items-center justify-end gap-3">
+                          {b.publication_status === 'published' && (
+                            <Link
+                              href={`/business/${b.slug}`}
+                              target="_blank"
+                              className="text-xs font-semibold text-[#087C3C] hover:underline"
+                            >
+                              View Listing ↗
+                            </Link>
+                          )}
                           <Link
                             href={`/dashboard/businesses/${b.id}/edit`}
                             className="text-xs font-semibold text-[#004AAD] hover:underline"

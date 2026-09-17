@@ -43,7 +43,7 @@ export default function BusinessPreviewCard({ data, categories }: BusinessPrevie
           <span className="text-xs font-semibold uppercase tracking-wider">Public Listing Preview</span>
         </div>
         <span className="text-[11px] bg-white/15 px-2.5 py-0.5 rounded text-white/90">
-          Public-Safe Output
+          Public Listing Preview
         </span>
       </div>
 
