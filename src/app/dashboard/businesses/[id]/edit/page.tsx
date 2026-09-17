@@ -44,14 +44,47 @@ export default async function EditBusinessPage({ params }: EditPageProps) {
     sort_order: c.sort_order,
   }));
 
-  // Fetch services
+  // Fetch services (name + description)
   const { data: servicesData } = await supabase
     .from('business_services')
-    .select('service_name, sort_order')
+    .select('service_name, service_description, sort_order')
     .eq('business_id', id)
     .order('sort_order', { ascending: true });
 
-  const services = (servicesData || []).map((s) => s.service_name);
+  const services = (servicesData || []).map((s) => ({
+    service_name: s.service_name,
+    service_description: s.service_description || '',
+  }));
+
+  // Fetch products
+  const { data: productsData } = await supabase
+    .from('business_products')
+    .select('id, name, description, image_path, sort_order')
+    .eq('business_id', id)
+    .order('sort_order', { ascending: true });
+
+  const products = (productsData || []).map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description || '',
+    image_path: p.image_path || '',
+    sort_order: p.sort_order,
+  }));
+
+  // Fetch media
+  const { data: mediaData } = await supabase
+    .from('business_media')
+    .select('id, kind, storage_path, sort_order, caption')
+    .eq('business_id', id)
+    .order('sort_order', { ascending: true });
+
+  const media = (mediaData || []).map((m) => ({
+    id: m.id,
+    kind: m.kind as 'logo' | 'cover' | 'gallery',
+    storage_path: m.storage_path,
+    sort_order: m.sort_order,
+    caption: m.caption || '',
+  }));
 
   // Fetch service areas
   const { data: areasData } = await supabase
@@ -100,8 +133,11 @@ export default async function EditBusinessPage({ params }: EditPageProps) {
     business_contact_email: business.business_contact_email || '',
     show_email: Boolean(business.show_email),
     website_url: business.website_url || '',
+    google_business_profile_url: business.google_business_profile_url || '',
     primary_category_id: business.primary_category_id,
     services,
+    products,
+    media,
     location_mode: business.location_mode as LocationMode,
     city: business.city,
     state: business.state,

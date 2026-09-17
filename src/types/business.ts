@@ -15,7 +15,53 @@ export interface BusinessService {
   id?: string;
   business_id?: string;
   service_name: string;
+  service_description?: string | null;
   sort_order?: number;
+}
+
+export interface BusinessProduct {
+  id?: string;
+  business_id?: string;
+  name: string;
+  description?: string | null;
+  image_path?: string | null;
+  sort_order?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BusinessMedia {
+  id?: string;
+  business_id?: string;
+  kind: 'logo' | 'cover' | 'gallery';
+  storage_path: string;
+  mime_type?: string;
+  byte_size?: number;
+  sort_order?: number;
+  caption?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BusinessServiceInput {
+  service_name: string;
+  service_description?: string;
+}
+
+export interface BusinessProductInput {
+  id?: string;
+  name: string;
+  description?: string;
+  image_path?: string;
+  sort_order?: number;
+}
+
+export interface BusinessMediaInput {
+  id?: string;
+  kind: 'logo' | 'cover' | 'gallery';
+  storage_path: string;
+  sort_order?: number;
+  caption?: string;
 }
 
 export interface BusinessServiceArea {
@@ -68,6 +114,7 @@ export interface Business {
   instagram_url: string | null;
   linkedin_url: string | null;
   youtube_url: string | null;
+  google_business_profile_url: string | null;
   publication_status: PublicationStatus;
   verification_status: VerificationStatus;
   created_source: string;
@@ -81,6 +128,9 @@ export interface Business {
   created_at: string;
   updated_at: string;
   category?: Category;
+  services?: BusinessService[];
+  products?: BusinessProduct[];
+  media?: BusinessMedia[];
 }
 
 export interface BusinessFormData {
@@ -95,9 +145,12 @@ export interface BusinessFormData {
   business_contact_email: string;
   show_email: boolean;
   website_url: string;
+  google_business_profile_url: string;
   // Category & Services
   primary_category_id: string;
-  services: string[];
+  services: Array<BusinessServiceInput | string>;
+  // Products
+  products: BusinessProductInput[];
   // Location
   location_mode: LocationMode;
   city: string;
@@ -119,4 +172,6 @@ export interface BusinessFormData {
   instagram_url: string;
   linkedin_url: string;
   youtube_url: string;
+  // Media
+  media?: BusinessMediaInput[];
 }

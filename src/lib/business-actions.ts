@@ -283,6 +283,7 @@ export async function createDraftFromImport({
       business_contact_email: formData.business_contact_email?.trim() || null,
       show_email: formData.show_email ?? false,
       website_url: formData.website_url?.trim() || null,
+      google_business_profile_url: formData.google_business_profile_url?.trim() || null,
       facebook_url: formData.facebook_url?.trim() || null,
       instagram_url: formData.instagram_url?.trim() || null,
       linkedin_url: formData.linkedin_url?.trim() || null,
@@ -301,12 +302,23 @@ export async function createDraftFromImport({
     return { success: false, error: updateError.message, businessId };
   }
 
-  // 3. Insert Services
-  const cleanServices = (formData.services || []).filter((s) => s.trim().length > 0);
+  // 3. Insert Services (normalized, max 20)
+  const cleanServices = (formData.services || [])
+    .map((s) => {
+      if (typeof s === 'string') return { service_name: s.trim(), service_description: null };
+      return {
+        service_name: (s.service_name || '').trim(),
+        service_description: s.service_description ? s.service_description.trim() : null,
+      };
+    })
+    .filter((s) => s.service_name.length > 0)
+    .slice(0, 20);
+
   if (cleanServices.length > 0) {
-    const serviceRows = cleanServices.map((name, idx) => ({
+    const serviceRows = cleanServices.map((s, idx) => ({
       business_id: businessId,
-      service_name: name.trim(),
+      service_name: s.service_name,
+      service_description: s.service_description || null,
       sort_order: idx + 1,
     }));
     await supabase.from('business_services').insert(serviceRows);
@@ -379,6 +391,41 @@ export async function createBusiness(data: BusinessFormData) {
     }
   }
 
+  // Validate Google Business Profile URL if provided
+  const gbpUrl = data.google_business_profile_url?.trim() || null;
+  if (gbpUrl && !/^https?:\/\//i.test(gbpUrl)) {
+    return { success: false, error: 'Google Business Profile URL must be a valid http or https URL.' };
+  }
+
+  // Normalize and validate services (max 20)
+  const cleanServices = (data.services || [])
+    .map((s) => {
+      if (typeof s === 'string') return { service_name: s.trim(), service_description: null };
+      return {
+        service_name: (s.service_name || '').trim(),
+        service_description: s.service_description ? s.service_description.trim() : null,
+      };
+    })
+    .filter((s) => s.service_name.length > 0);
+
+  if (cleanServices.length > 20) {
+    return { success: false, error: 'A business cannot have more than 20 services.' };
+  }
+
+  // Normalize and validate products (max 20)
+  const cleanProducts = (data.products || [])
+    .map((p, idx) => ({
+      name: (p.name || '').trim(),
+      description: p.description ? p.description.trim() : null,
+      image_path: p.image_path ? p.image_path.trim() : null,
+      sort_order: typeof p.sort_order === 'number' ? p.sort_order : idx + 1,
+    }))
+    .filter((p) => p.name.length > 0);
+
+  if (cleanProducts.length > 20) {
+    return { success: false, error: 'A business cannot have more than 20 products.' };
+  }
+
   // 1. Call RPC create_business_for_current_user
   const lat = (mode === 'storefront' || mode === 'hybrid') && data.latitude ? parseFloat(data.latitude) : null;
   const lng = (mode === 'storefront' || mode === 'hybrid') && data.longitude ? parseFloat(data.longitude) : null;
@@ -420,6 +467,7 @@ export async function createBusiness(data: BusinessFormData) {
       business_contact_email: data.business_contact_email?.trim() || null,
       show_email: data.show_email ?? false,
       website_url: data.website_url?.trim() || null,
+      google_business_profile_url: gbpUrl,
       facebook_url: data.facebook_url?.trim() || null,
       instagram_url: data.instagram_url?.trim() || null,
       linkedin_url: data.linkedin_url?.trim() || null,
@@ -431,15 +479,45 @@ export async function createBusiness(data: BusinessFormData) {
     return { success: false, error: updateError.message, businessId };
   }
 
-  // 3. Insert Services
-  const cleanServices = (data.services || []).filter((s) => s.trim().length > 0);
+  // 3. Insert Services (name + description, max 20)
   if (cleanServices.length > 0) {
-    const serviceRows = cleanServices.map((name, idx) => ({
+    const serviceRows = cleanServices.map((s, idx) => ({
       business_id: businessId,
-      service_name: name.trim(),
+      service_name: s.service_name,
+      service_description: s.service_description,
       sort_order: idx + 1,
     }));
     await supabase.from('business_services').insert(serviceRows);
+  }
+
+  // 4. Insert Products (max 20)
+  if (cleanProducts.length > 0) {
+    const productRows = cleanProducts.map((p, idx) => ({
+      business_id: businessId,
+      name: p.name,
+      description: p.description,
+      image_path: p.image_path,
+      sort_order: typeof p.sort_order === 'number' ? p.sort_order : idx + 1,
+    }));
+    await supabase.from('business_products').insert(productRows);
+  }
+
+  // 5. Insert Media if provided
+  if (data.media && data.media.length > 0) {
+    const mediaRows = data.media
+      .filter((m) => m.storage_path?.trim())
+      .map((m, idx) => ({
+        business_id: businessId,
+        kind: m.kind,
+        storage_path: m.storage_path.trim(),
+        mime_type: 'image/jpeg',
+        byte_size: 1024,
+        sort_order: typeof m.sort_order === 'number' ? m.sort_order : idx + 1,
+        caption: m.caption?.trim() || null,
+      }));
+    if (mediaRows.length > 0) {
+      await supabase.from('business_media').insert(mediaRows);
+    }
   }
 
   // 4. Insert Service Areas if applicable
@@ -503,6 +581,41 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
     }
   }
 
+  // Validate Google Business Profile URL if provided
+  const gbpUrl = data.google_business_profile_url?.trim() || null;
+  if (gbpUrl && !/^https?:\/\//i.test(gbpUrl)) {
+    return { success: false, error: 'Google Business Profile URL must be a valid http or https URL.' };
+  }
+
+  // Normalize and validate services (max 20)
+  const cleanServices = (data.services || [])
+    .map((s) => {
+      if (typeof s === 'string') return { service_name: s.trim(), service_description: null };
+      return {
+        service_name: (s.service_name || '').trim(),
+        service_description: s.service_description ? s.service_description.trim() : null,
+      };
+    })
+    .filter((s) => s.service_name.length > 0);
+
+  if (cleanServices.length > 20) {
+    return { success: false, error: 'A business cannot have more than 20 services.' };
+  }
+
+  // Normalize and validate products (max 20)
+  const cleanProducts = (data.products || [])
+    .map((p, idx) => ({
+      name: (p.name || '').trim(),
+      description: p.description ? p.description.trim() : null,
+      image_path: p.image_path ? p.image_path.trim() : null,
+      sort_order: typeof p.sort_order === 'number' ? p.sort_order : idx + 1,
+    }))
+    .filter((p) => p.name.length > 0);
+
+  if (cleanProducts.length > 20) {
+    return { success: false, error: 'A business cannot have more than 20 products.' };
+  }
+
   const lat = (mode === 'storefront' || mode === 'hybrid') && data.latitude ? parseFloat(data.latitude) : null;
   const lng = (mode === 'storefront' || mode === 'hybrid') && data.longitude ? parseFloat(data.longitude) : null;
   const showAddress = mode === 'service_area' ? false : Boolean(data.show_street_address);
@@ -525,6 +638,7 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
       business_contact_email: data.business_contact_email?.trim() || null,
       show_email: data.show_email ?? false,
       website_url: data.website_url?.trim() || null,
+      google_business_profile_url: gbpUrl,
       city: data.city.trim(),
       state: data.state.trim(),
       country: data.country?.trim() || 'India',
@@ -546,16 +660,45 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
     return { success: false, error: updateError.message };
   }
 
-  // 2. Sync Services (delete existing for this business and re-insert)
+  // 2. Sync Services (name + description, max 20)
   await supabase.from('business_services').delete().eq('business_id', businessId);
-  const cleanServices = (data.services || []).filter((s) => s.trim().length > 0);
   if (cleanServices.length > 0) {
-    const serviceRows = cleanServices.map((name, idx) => ({
+    const serviceRows = cleanServices.map((s, idx) => ({
       business_id: businessId,
-      service_name: name.trim(),
+      service_name: s.service_name,
+      service_description: s.service_description,
       sort_order: idx + 1,
     }));
     await supabase.from('business_services').insert(serviceRows);
+  }
+
+  // 2.5 Sync Products (max 20)
+  await supabase.from('business_products').delete().eq('business_id', businessId);
+  if (cleanProducts.length > 0) {
+    const productRows = cleanProducts.map((p, idx) => ({
+      business_id: businessId,
+      name: p.name,
+      description: p.description,
+      image_path: p.image_path,
+      sort_order: typeof p.sort_order === 'number' ? p.sort_order : idx + 1,
+    }));
+    await supabase.from('business_products').insert(productRows);
+  }
+
+  // 2.8 Sync Media captions and sort orders
+  if (data.media && data.media.length > 0) {
+    for (const m of data.media) {
+      if (m.id) {
+        await supabase
+          .from('business_media')
+          .update({
+            caption: m.caption ? m.caption.trim().slice(0, 200) : null,
+            sort_order: typeof m.sort_order === 'number' ? m.sort_order : 0,
+          })
+          .eq('id', m.id)
+          .eq('business_id', businessId);
+      }
+    }
   }
 
   // 3. Sync Service Areas

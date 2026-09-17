@@ -367,11 +367,23 @@ Product review with Balaji approved the following scope additions. All changes a
 - Email OTP provider and configuration
 - WhatsApp OTP provider and configuration
 
+## Business Profile Expansion (2026-09-17): COMPLETE
+
+Implementation of approved Boss review additions:
+- **Services:** expanded to `service_name` + `service_description`, max 20 per business enforced by database trigger `trg_enforce_business_services_limit` and server actions.
+- **Products:** new `public.business_products` table with name, description, image, and sort_order. Max 20 per business enforced by database trigger `trg_enforce_business_products_limit`. Full RLS isolation (`products_manager_or_admin`) and prevent-reassignment trigger.
+- **Media Architecture & Gallery:** `public.business_media` updated with partial unique index `business_media_singleton_kind_idx` for single active logo and single active cover per business, while gallery allows unlimited items with captions and sort orders. Storage bucket `business-media` configured with 5MB max file size, MIME whitelist, and RLS policies for public CDN read and manager-only upload/delete.
+- **Google Business Profile URL:** `google_business_profile_url` added to `businesses` with `^https?://` constraint and update permissions. Stored separately from `place_id`. Exposed publicly as "View on Google".
+- **Business Form & Preview Card:** Form updated to 8 structured steps (Identity, Contact, Category & Services, Products, Media & Gallery, Location, Hours & Social, Preview & Submit). Live upload, delete, captioning, and reordering.
+- **Public Business Page:** Rendered with cover photo banner, logo avatar, "View on Google" action button, service descriptions, products grid with images, and photo gallery with captions.
+- **Automated Tests:** pgTAP test suite `business_profile_expansion_runtime.sql` (20 tests) passing (4/4 test files, 26/26 tests passing).
+- **Quality & Security:** `npm run lint` (0 errors), `npm run build` (0 errors, 21 static/dynamic pages), independent Security Reviewer subagent (PASS).
+
 ## Current git status
 
-Working tree: documented on branch `docs/boss-review-scope-update`
-Base commit: `cb4efbc`
+Working tree: branch `feature/business-profile-expansion`
+Base commit: `b6edbc5`
 
 ## Next exact task
 
-BUSINESS-PROFILE-EXPANSION — implement the approved business profile additions (Gallery, Products max 20, Services name + description max 20, GBP URL, Logo/Cover). Do not start until documentation is reviewed and merged.
+Review and commit `feature/business-profile-expansion`. Prepare review package.

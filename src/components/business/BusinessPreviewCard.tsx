@@ -1,6 +1,7 @@
 'use client';
 
 import { BusinessFormData, Category } from '@/types/business';
+import { getMediaPublicUrl } from '@/lib/media-utils';
 
 interface BusinessPreviewCardProps {
   data: BusinessFormData;
@@ -11,8 +12,27 @@ const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 
 export default function BusinessPreviewCard({ data, categories }: BusinessPreviewCardProps) {
   const selectedCategory = categories.find((c) => c.id === data.primary_category_id);
-  const activeServices = (data.services || []).filter((s) => s.trim().length > 0);
+  const activeServices = (data.services || [])
+    .map((s) => {
+      if (typeof s === 'string') {
+        return { service_name: s.trim(), service_description: '' };
+      }
+      return {
+        service_name: (s?.service_name || '').trim(),
+        service_description: (s?.service_description || '').trim(),
+      };
+    })
+    .filter((s) => s.service_name.length > 0);
+
+  const activeProducts = (data.products || []).filter((p) => p?.name && p.name.trim().length > 0);
   const activeAreas = (data.service_areas || []).filter((a) => a.trim().length > 0);
+
+  const logoMedia = (data.media || []).find((m) => m.kind === 'logo');
+  const coverMedia = (data.media || []).find((m) => m.kind === 'cover');
+  const galleryMedia = (data.media || []).filter((m) => m.kind === 'gallery');
+
+  const logoUrl = getMediaPublicUrl(logoMedia?.storage_path);
+  const coverUrl = getMediaPublicUrl(coverMedia?.storage_path);
 
   return (
     <div className="bg-white rounded-[12px] border border-[#DCE2E8] shadow-sm overflow-hidden">
@@ -27,27 +47,43 @@ export default function BusinessPreviewCard({ data, categories }: BusinessPrevie
         </span>
       </div>
 
+      {/* Cover Image Banner (if available) */}
+      {coverUrl && (
+        <div className="w-full h-44 sm:h-56 bg-[#E2E8F0] overflow-hidden border-b border-[#DCE2E8]">
+          <img src={coverUrl} alt="Cover preview" className="w-full h-full object-cover" />
+        </div>
+      )}
+
       <div className="p-6 space-y-6">
         {/* Header Section */}
         <div className="border-b border-[#DCE2E8] pb-5">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            {selectedCategory && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded bg-[#ECF4FF] text-[#004AAD] border border-[#BEDBFE]">
-                {selectedCategory.name}
-              </span>
+          <div className="flex items-start gap-4">
+            {logoUrl && (
+              <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#DCE2E8] bg-white shrink-0 p-1">
+                <img src={logoUrl} alt="Logo preview" className="w-full h-full object-contain" />
+              </div>
             )}
-            <span className="text-xs font-medium px-2.5 py-1 rounded bg-[#F2F5FA] text-[#5D6776] border border-[#DCE2E8] capitalize">
-              {data.location_mode.replace('_', ' ')}
-            </span>
-            {data.year_established && (
-              <span className="text-xs text-[#7D8795]">
-                Est. {data.year_established}
-              </span>
-            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                {selectedCategory && (
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded bg-[#ECF4FF] text-[#004AAD] border border-[#BEDBFE]">
+                    {selectedCategory.name}
+                  </span>
+                )}
+                <span className="text-xs font-medium px-2.5 py-1 rounded bg-[#F2F5FA] text-[#5D6776] border border-[#DCE2E8] capitalize">
+                  {data.location_mode.replace('_', ' ')}
+                </span>
+                {data.year_established && (
+                  <span className="text-xs text-[#7D8795]">
+                    Est. {data.year_established}
+                  </span>
+                )}
+              </div>
+              <h2 className="text-2xl font-bold text-[#2A3547] truncate">
+                {data.canonical_name || 'Business Name'}
+              </h2>
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-[#2A3547]">
-            {data.canonical_name || 'Business Name'}
-          </h2>
           {data.description && (
             <p className="mt-2.5 text-sm text-[#5D6776] leading-relaxed line-clamp-3">
               {data.description}
@@ -94,6 +130,21 @@ export default function BusinessPreviewCard({ data, categories }: BusinessPrevie
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                   <span className="truncate">{data.website_url}</span>
+                </div>
+              )}
+              {data.google_business_profile_url && (
+                <div className="flex items-center gap-2 text-[#EA4335] font-medium truncate">
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                  <a
+                    href={data.google_business_profile_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline truncate"
+                  >
+                    View on Google
+                  </a>
                 </div>
               )}
             </div>
@@ -161,18 +212,90 @@ export default function BusinessPreviewCard({ data, categories }: BusinessPrevie
         {/* Services Section */}
         {activeServices.length > 0 && (
           <div>
-            <h3 className="text-xs font-bold text-[#7D8795] uppercase tracking-wider mb-2.5">
-              Services Offered
-            </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex items-center justify-between mb-2.5">
+              <h3 className="text-xs font-bold text-[#7D8795] uppercase tracking-wider">
+                Services Offered ({activeServices.length}/20)
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {activeServices.map((service, idx) => (
-                <span
+                <div
                   key={idx}
-                  className="px-3 py-1 rounded-[6px] text-xs font-medium bg-[#ECF4FF] text-[#004AAD] border border-[#BEDBFE]"
+                  className="p-2.5 rounded-[6px] bg-[#ECF4FF] border border-[#BEDBFE] text-xs"
                 >
-                  {service}
-                </span>
+                  <span className="font-semibold text-[#004AAD]">{service.service_name}</span>
+                  {service.service_description && (
+                    <p className="mt-1 text-[#5D6776] leading-relaxed line-clamp-2">
+                      {service.service_description}
+                    </p>
+                  )}
+                </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Products Section */}
+        {activeProducts.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-2.5">
+              <h3 className="text-xs font-bold text-[#7D8795] uppercase tracking-wider">
+                Products & Offerings ({activeProducts.length}/20)
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {activeProducts.map((product, idx) => {
+                const prodImg = getMediaPublicUrl(product.image_path);
+                return (
+                  <div
+                    key={idx}
+                    className="p-3 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] flex gap-3 text-xs"
+                  >
+                    {prodImg && (
+                      <div className="w-14 h-14 rounded overflow-hidden bg-[#E2E8F0] shrink-0">
+                        <img src={prodImg} alt={product.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-[#2A3547] block truncate">{product.name}</span>
+                      {product.description && (
+                        <p className="mt-1 text-[#5D6776] leading-relaxed line-clamp-2">
+                          {product.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Gallery Section */}
+        {galleryMedia.length > 0 && (
+          <div>
+            <h3 className="text-xs font-bold text-[#7D8795] uppercase tracking-wider mb-2.5">
+              Photo Gallery ({galleryMedia.length} Photos)
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {galleryMedia.map((media, idx) => {
+                const img = getMediaPublicUrl(media.storage_path);
+                return (
+                  <div
+                    key={idx}
+                    className="aspect-square rounded-[8px] overflow-hidden bg-[#E2E8F0] border border-[#DCE2E8] relative group"
+                  >
+                    {img && (
+                      <img src={img} alt={media.caption || `Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                    )}
+                    {media.caption && (
+                      <div className="absolute inset-x-0 bottom-0 bg-black/60 p-1 text-[10px] text-white truncate">
+                        {media.caption}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

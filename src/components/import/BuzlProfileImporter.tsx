@@ -802,11 +802,14 @@ export default function BuzlProfileImporter({
                   </h2>
                 </div>
                 <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-1">
-                  {formData.services.map((srv, idx) => (
-                    <span key={idx} className="bg-[#ECF4FF] text-[#004AAD] border border-[#BEDBFE] px-2.5 py-1 rounded-full text-xs font-medium">
-                      {srv}
-                    </span>
-                  ))}
+                  {formData.services.map((srv, idx) => {
+                    const name = typeof srv === 'string' ? srv : srv.service_name;
+                    return (
+                      <span key={idx} className="bg-[#ECF4FF] text-[#004AAD] border border-[#BEDBFE] px-2.5 py-1 rounded-full text-xs font-medium">
+                        {name}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
 
