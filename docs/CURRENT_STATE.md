@@ -519,5 +519,26 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - Staging sitemap (`/sitemap.xml`): HTTP 200, empty `<urlset>`.
   - Automated staging browser smoke test (`scripts/browser-smoke-test-business-owner-ux.mjs` against `https://listing.rclk.in`): 5/5 suites PASS (100%) across desktop and mobile viewports (375px, 390px, 430px).
 
+## WhatsApp UI Staging Preview (2026-09-18): COMPLETE
+
+- **Task**: `WHATSAPP-UI-PREVIEW`
+- **Branch**: `main` (merged from `feature/whatsapp-ui-preview`)
+- **Status**: `COMPLETE` (Live delivery remains paused on `feature/whatsapp-otp-auth` pending operator Meta credentials)
+- **Scope**: Expose WhatsApp OTP interface on staging login and signup for stakeholder review without enabling live delivery.
+- **Key Deliverables**:
+  - **Reused Foundation**: Shared provider-neutral phone normalization (`src/lib/whatsapp/phone.ts`) and types (`src/lib/whatsapp/types.ts`).
+  - **Auth Tabs Structure**: Updated tab order to `[ Email Code (OTP) ]` (default), `[ WhatsApp OTP ]`, `[ Password ]` across both `/login` and `/signup`.
+  - **Explanatory Availability Notice**: Clear notice banner titled "WhatsApp verification is coming soon" explaining OTP delivery is being activated with a direct "Use Email Code →" switch button.
+  - **Input Controls**: Country code dropdown with common calling codes (+91 India default) and phone input field, optimized for mobile with `min-w-0` to eliminate horizontal overflow.
+  - **No Fake OTP Screens**: Client-side validation ensures phone format correctness; valid numbers present an activation notification pointing to Email OTP / Password, strictly avoiding fake OTP token entry screens.
+  - **Brand Tokens**: Built using Buzl primary `#004AAD`, slate text `#2A3547`, and neutral styling without dominant third-party greens.
+- **Verification**:
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (32 routes)
+  - `npx supabase test db`: PASS (5 suites, 38 tests)
+  - `node scripts/verify-email-otp-flow.mjs`: PASS (49/49 checks)
+  - `scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (100% across 375px, 390px, 430px viewports and desktop)
+
+
 
 
