@@ -8,11 +8,11 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ### Business Owner UX Review — 2026-09-18
 
-- **Feature Branch**: `feature/business-owner-ux-review` based on `main @ d30cadf`.
+- **Feature Branch**: `feature/business-owner-ux-review` merged to `main @ ed82816`.
 - **Authentication & Onboarding UX**:
-  - Fully responsive mobile layout for 375px/390px viewports (0 horizontal overflow; `scrollWidth = clientWidth`).
-  - Added `min-w-0` to phone inputs and updated container padding (`p-6 sm:p-8`, `px-4 sm:px-6 lg:px-8`) for comfortable typing (173px+ width).
-  - Clear friendly messaging across authentication tabs ("WhatsApp OTP", "Email Code (OTP)", "Password").
+  - Fully responsive mobile layout for 375px/390px/430px viewports (0 horizontal overflow; `scrollWidth = clientWidth`).
+  - Padded cards with `p-6 sm:p-8`, `px-4 sm:px-6 lg:px-8`, and input containers for comfortable typing (293px+ width).
+  - Clean responsive messaging across authentication tabs ("Email Code (OTP)", "Password").
 - **Business Form & Onboarding Polish (`BusinessForm.tsx`)**:
   - **Step Bar**: Dual responsive layout (desktop 8-step indicator; mobile/tablet compact `Step X of 8: Label` with visual progress bar).
   - **Step 1 (Business Details)**: Renamed to `Step 1: Business Details`, input label `Business Name *`, helper text: `The registered name of your business as known to customers.`
@@ -32,12 +32,11 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
   - Replaced preview badge `Public-Safe Output` with `Public Listing Preview`.
 - **Zero Jargon Purge**:
   - Removed developer terminology (`PostGIS`, `place_id`, `RPC`, `Supabase`, `Meta Cloud API`, `Auth Hook`, `GoTrue`, `canonical_name`, `provider adapter`) from all owner-facing views.
-- **Automated Verification**:
-  - Automated browser smoke test (`scripts/browser-smoke-test-business-owner-ux.mjs`): 5/5 suites pass (100%).
-  - `npm run lint`: 0 errors.
-  - `npm run build`: 32 routes compiled cleanly.
-  - `npx supabase test db`: 5 suites, 38 tests pass.
-  - `node scripts/verify-email-otp-flow.mjs`: 49/49 checks pass.
+- **Verification & Staging Deployment**:
+  - Local verification: `npm run lint` (0 errors), `npm run build` (32 routes), `git diff --check` (0 errors), `npx supabase test db` (5 suites, 38 tests), `node scripts/verify-email-otp-flow.mjs` (49/49 checks).
+  - Deployed to staging VPS (`https://listing.rclk.in`) on commit `ed82816`.
+  - Staging browser smoke test (`scripts/browser-smoke-test-business-owner-ux.mjs`): 5/5 suites pass (100%) against staging.
+  - Staging guards verified: `/api/health` (HTTP 200, `X-Robots-Tag: noindex, nofollow, noarchive`), `/robots.txt` (HTTP 200, Disallow /), `/sitemap.xml` (HTTP 200, empty urlset).
 
 ### Email OTP Authentication — 2026-09-17
 

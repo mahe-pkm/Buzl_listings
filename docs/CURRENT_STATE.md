@@ -481,37 +481,43 @@ Implementation of approved Google Places Location search replacing manual latitu
 ## Current git status
 
 Working tree: branch `main`
-Latest commit: `98feb52`
-Status: Fully implemented, verified locally, deployed to staging, and verified live with Hostinger SMTP.
+Latest commit: `ed82816`
+Status: Fully implemented, verified locally, merged to main, deployed to staging VPS, and verified live on staging.
 
 ## Provider Reference Cleanup (2026-09-17): COMPLETE
 
 - Removed personal provider attribution from project and repository history.
 - Rewrote historical commits and synchronized canonical refs.
-- New canonical main HEAD: `98feb52`.
+- New canonical main HEAD: `d30cadf`.
 - Staging synchronized to canonical main.
 
 ## Business Owner UX Review (2026-09-18): COMPLETE
 
 - **Task**: `BUSINESS-OWNER-UX-REVIEW`
-- **Branch**: `feature/business-owner-ux-review`
-- **Status**: `REVIEW_READY`
+- **Branch**: `main` (merged from `feature/business-owner-ux-review`)
+- **Status**: `COMPLETE`
 - **Scope**: Polished end-to-end business owner experience across authentication, onboarding, 8-step business form, preview, listing readiness, and dashboard management.
 - **Key Deliverables**:
-  - **Auth UI Responsiveness**: Eliminated horizontal scroll on 375px/390px viewports, padded cards with `p-6 sm:p-8`, and ensured comfortable phone input typing target (173px+ width).
+  - **Auth UI Responsiveness**: Eliminated horizontal scroll on 375px/390px/430px viewports, padded cards with `p-6 sm:p-8`, and ensured comfortable input typing targets (293px+ width).
   - **Google Business Profile Link**: Added dedicated owner-editable GBP URL field in Step 2 with copy: `Paste the link to your business on Google. This will appear as "View on Google" on your public listing.`
   - **Services & Products UX**: Updated Step 3 to `What services does your business offer?` with counter `X / 20 Services` and empty state card; updated Step 4 to `Step 4: Products & Offerings (Optional)` with counter `X / 20 Products` and friendly empty state.
   - **Zero Jargon Purge**: Replaced `PostGIS Ready` and `Geospatial Coordinates` in Step 6 with `✓ Location verified — Map location saved`. Replaced `Public-Safe Output` badge with `Public Listing Preview`. Replaced Topbar `Canonical Slug:` with `Listing URL:`.
   - **Listing Readiness Summary**: Added checklist card at top of Step 8 showing completed required sections (Name, Phone, Category, Location) and optional items (Services, Logo, GBP) before submission.
   - **Lifecycle Banners**: Added persistent banners for *Pending Review* (explaining moderation review and allowing ongoing edits) and *Published Listing* (providing direct `View Public Listing ↗` link to `/business/${slug}`).
   - **Table Actions**: Added `View Listing ↗` action for published businesses in `BusinessTableView` and dashboard recent listings.
-- **Verification**:
+- **Local Verification**:
   - `npm run lint`: PASS (0 errors)
   - `npm run build`: PASS (all 32 routes compiled cleanly)
   - `git diff --check`: PASS (0 whitespace errors)
   - `npx supabase test db`: PASS (5 suites, 38 tests)
   - `node scripts/verify-email-otp-flow.mjs`: PASS (49/49 checks)
-  - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (all 5 suites)
-- **Deployment Status**: Not deployed to staging (awaiting staging team review).
+- **Staging Deployment & Verification**:
+  - Deployed to staging VPS (`https://listing.rclk.in`) on commit `ed82816`.
+  - App container rebuilt and restarted cleanly (`buzl-listing-app-1`).
+  - Staging health check (`/api/health`): HTTP 200, `X-Robots-Tag: noindex, nofollow, noarchive`.
+  - Staging robots.txt (`/robots.txt`): HTTP 200, `User-Agent: *\nDisallow: /`.
+  - Staging sitemap (`/sitemap.xml`): HTTP 200, empty `<urlset>`.
+  - Automated staging browser smoke test (`scripts/browser-smoke-test-business-owner-ux.mjs` against `https://listing.rclk.in`): 5/5 suites PASS (100%) across desktop and mobile viewports (375px, 390px, 430px).
+
 
 
