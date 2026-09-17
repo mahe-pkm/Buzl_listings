@@ -78,6 +78,7 @@ export default function BusinessForm({
   const [pubStatus, setPubStatus] = useState<PublicationStatus>(currentPublicationStatus);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPubStatus(currentPublicationStatus);
   }, [currentPublicationStatus]);
 

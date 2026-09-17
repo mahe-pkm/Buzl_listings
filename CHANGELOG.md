@@ -6,6 +6,23 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### WhatsApp UI Staging Preview — 2026-09-18
+
+- **Feature Branch**: `feature/whatsapp-ui-preview` merged to `main`.
+- **Stakeholder UI Preview**:
+  - Exposing WhatsApp OTP authentication interface on `/login` and `/signup` on staging.
+  - Added dedicated WhatsApp tab between "Email Code (OTP)" (default) and "Password".
+  - Clear availability notice banner: "WhatsApp verification is coming soon — WhatsApp OTP delivery is being activated. For now, use Email Code (OTP) or Password to continue." with direct "Use Email Code →" switch link.
+  - Country code dropdown with common calling codes (+91 India default) and phone input field.
+  - Client-side phone formatting and validation; triggers activation information message without displaying fake OTP token screens while live provider delivery is pending.
+  - Fully mobile-responsive across 375px, 390px, and 430px viewports (0 horizontal overflow).
+- **Automated Verification**:
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (32 routes compiled)
+  - `npx supabase test db`: PASS (5 suites, 38 tests)
+  - `node scripts/verify-email-otp-flow.mjs`: PASS (49/49 checks)
+  - `scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (100% across desktop and mobile viewports)
+
 ### Business Owner UX Review — 2026-09-18
 
 - **Feature Branch**: `feature/business-owner-ux-review` merged to `main @ ed82816`.
