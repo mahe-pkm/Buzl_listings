@@ -20,6 +20,28 @@ async function main() {
   console.log(`Base URL: ${BASE_URL}`);
   console.log('==================================================\n');
 
+  let ownerEmail = process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
+  let ownerPassword = process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
+  let adminEmail = process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
+  let adminPassword = process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!';
+
+  try {
+    const credRes = await fetch(`${BASE_URL}/api/internal/demo-credentials`);
+    if (credRes.ok) {
+      const credData = await credRes.json();
+      if (credData.accounts?.owner?.password) {
+        ownerEmail = credData.accounts.owner.email;
+        ownerPassword = credData.accounts.owner.password;
+      }
+      if (credData.accounts?.admin?.password) {
+        adminEmail = credData.accounts.admin.email;
+        adminPassword = credData.accounts.admin.password;
+      }
+    }
+  } catch {
+    // fallback to fixture defaults
+  }
+
   const browser = await chromium.launch({
     executablePath: CHROME_PATH,
     headless: true,
@@ -150,9 +172,6 @@ async function main() {
 
     const passwordTab = page.locator('button[role="tab"]:has-text("Password")');
     await passwordTab.click();
-
-    const ownerEmail = process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
-    const ownerPassword = process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
 
     await page.fill('#password-email', ownerEmail);
     await page.fill('#password-input', ownerPassword);
@@ -320,8 +339,8 @@ async function main() {
     await adminPage.waitForLoadState('networkidle');
     const adminPwdTab = adminPage.locator('button[role="tab"]:has-text("Password")');
     await adminPwdTab.click();
-    await adminPage.fill('#password-email', process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test');
-    await adminPage.fill('#password-input', process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!');
+    await adminPage.fill('#password-email', adminEmail);
+    await adminPage.fill('#password-input', adminPassword);
     await adminPage.click('button[type="submit"]:has-text("Sign in")');
     await adminPage.waitForURL('**/admin/**');
 
