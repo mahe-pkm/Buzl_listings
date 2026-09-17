@@ -13,6 +13,27 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 - The remaining verification is intentionally limited to the real-browser staging Owner flow: draft → submit → pending, including owner publish denial, pending visibility for Listing Manager/Admin, and anonymous pending invisibility.
 - Completed the real-browser staging moderation verification. The isolated active Listing Manager test persona can access the pending queue and publish the verification listing; the Onboarding Member and Business Owner remain unable to publish, and Admin access remains available.
 
+### Business Profile Expansion Staging Deployment — 2026-09-17
+
+- **Feature Branch Merged**: `feature/business-profile-expansion` merged cleanly into `main` (`b656802`).
+- **Database Migration Applied**: Migration `20260917190000_business_profile_expansion.sql` applied to isolated staging Supabase (`buzl-listing-db-1`).
+  - Added `service_description` column and max 20 limit trigger on `business_services`.
+  - Created `public.business_products` table with RLS and max 20 limit trigger.
+  - Added partial unique index for singleton logo and cover in `business_media`.
+  - Configured `business-media` storage bucket with manager-only write and public CDN read policies.
+  - Added `google_business_profile_url` column to `businesses`.
+  - Updated `get_published_business_by_slug` to safely project products, gallery, and GBP URL.
+- **Staging App Rebuilt & Deployed**: Rebuilt and deployed Next.js container `buzl-listing-app-1` on Hostinger staging VPS (`213.210.37.204`) serving `https://listing.rclk.in`.
+- **Infrastructure Safety**: Unrelated Supabase stack (`supabase-db`, `supabase-kong`, `buzl-backend-prod`) completely untouched with uninterrupted 12-day uptime.
+- **Staging Verification**: 37/37 automated Playwright browser smoke tests passing on live staging:
+  - Owner services (name + description, max 20 limit)
+  - Owner products (name + description, max 20 limit)
+  - Logo, Cover, and Gallery upload to Supabase storage bucket
+  - Google Business Profile URL persistence and "View on Google" rendering
+  - Public listing rendering with zero coordinate or private address leaks for service-area listings
+  - Security isolation: Owner denied admin routes; Member denied user management; Anonymous redirected to login.
+- **Staging Protection Guards**: Verified `/api/health` 200 OK, `APP_ENV=staging`, `X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt` Disallow: /, and empty `sitemap.xml`.
+
 ### Boss Review Scope Update — 2026-09-17
 
 Documentation-only. No code, migration, or deployment changes.
