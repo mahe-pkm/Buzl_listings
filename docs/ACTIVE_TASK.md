@@ -7,76 +7,60 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `BUSINESS-PROFILE-EXPANSION-DEPLOY` |
-| Task Name | Business Profile Expansion Staging Deployment |
-| Status | **COMPLETE** |
+| Task ID | `GOOGLE-PLACES-LOCATION` |
+| Task Name | Google Places Location Integration |
+| Status | **RESUMED** |
 | Current Agent | `antigravity` |
-| Started From Commit | `b6edbc511bcf7047913cf673e44ca6469bfd648b` |
-| Latest Commit | `b656802f81a4e6d9cc8e8c61daa288a280701149` |
-| Branch | `main` |
-| Started At | 2026-09-17T18:29:00+05:30 |
-| Last Updated | 2026-09-17T19:25:00+05:30 |
+| Started From Commit | `c8f67b8aa29c0b3248512d4970903cb32a8649e0` |
+| Latest Commit | `25f20efad7720a4e83cc05ac50624e93946473f7` |
+| Branch | `feature/google-places-location` |
+| Started At | 2026-09-17T19:26:22+05:30 |
+| Last Updated | 2026-09-17T20:33:12+05:30 |
 
 ## Objective
 
-Implement, integrate, and deploy to staging the approved business profile additions from the Boss review:
-1. Services: name + description, max 20 per business, ordering, DB-side limit enforcement.
-2. Products: name, description, image, max 20 per business, ordering, DB-side limit enforcement.
-3. Gallery: Supabase Storage for images, PostgreSQL metadata, display order, upload/delete, no count limit, RLS.
-4. Logo & Cover: integrate with media architecture, distinct roles (logo, cover, gallery).
-5. Google Business Profile URL: collected, validated external URL, stored separately from place_id, displayed as "View on Google".
-6. Business Create/Edit UX: multi-section updates supporting all above features, preview, public display.
-7. Deploy to staging (`https://listing.rclk.in`) and verify end-to-end browser smoke test.
+Replace manual latitude/longitude entry in the business create/edit UX with Google Places search while preserving coordinates internally for PostGIS/geospatial functionality.
 
 ## Allowed Files
 
-- `supabase/migrations/*`
-- `supabase/tests/*`
-- `src/lib/*`
-- `src/components/*`
-- `src/app/*`
-- `scripts/*`
-- `docs/ACTIVE_TASK.md`
-- `docs/CURRENT_STATE.md`
-- `CHANGELOG.md`
+- src/*, supabase/*, docs/*, scripts/*
 
 ## Completed Work
 
-- Merged `feature/business-profile-expansion` into `main` (`b656802`).
-- Pushed `main` to `origin/main`.
-- Applied migration `20260917190000_business_profile_expansion.sql` to isolated staging database `buzl-listing-db-1`.
-- Built and restarted `buzl-listing-app-1` on staging VPS (`213.210.37.204`).
-- Unrelated Supabase stack (`supabase-db`, `supabase-kong`, `buzl-backend-prod`) untouched and verified intact (12-day uptime).
-- Automated browser smoke test (`scripts/staging-profile-expansion-smoke.mjs`): 37/37 checks passed.
-  - Owner service editing with descriptions & 20 limit
-  - Owner product addition with descriptions & 20 limit
-  - Logo, Cover, and Gallery upload to Supabase storage
-  - Google Business Profile URL persistence and rendering
-  - Admin publication workflow
-  - Member access isolation
-  - Public listing rendering: services, descriptions, products, logo, cover, "View on Google"
-  - Privacy protections: no coordinates or street address leaks for service-area listings
-  - Staging protection headers: `X-Robots-Tag`, `robots.txt`, empty sitemap, `/api/health` 200 OK.
+- Google Places autocomplete and details provider abstraction with server-only proxy routes
+- database migration with place_id column, index, and RPC
+- BusinessForm Step 6 integration removing manual lat/lng entry
+- PostGIS coordinate preservation
+- legacy listing compatibility
+- 100% test coverage and independent security review. Commit: 7529ef4.
 
 ## Remaining Work
 
-- None.
+- Receive live API key from approved integration configuration
+- merge feature/google-places-location into main
+- staging deployment.
 
 ## Checks / Tests
 
-- Database tests: PASS (4/4 test files, 26/26 tests)
-- Lint: PASS (0 errors)
-- Build: PASS (0 errors)
-- Security Review: PASS (6/6 items)
-- Staging Smoke Test: PASS (37/37 checks)
+- npx supabase test db: PASS (38/38)
+- npm run lint: PASS (0 errors)
+- npm run build: PASS
+- verify-google-places-flow: PASS
+- browser-smoke-test-places: PASS
+- git diff --check: PASS
+- Security Review: PASS
 
 ## Known Issues
 
-- None
+- —
 
 ## Next Exact Action
 
-Task complete. Ready for next instructions.
+Await approved Google Places API key or operator approval to merge into main.
+
+## Handoff Notes
+
+Feature implementation, testing, verification, and commit complete; awaiting live API key or operator review before merge.
 
 ## Agent Handoff Rule
 
