@@ -7,27 +7,27 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `WHATSAPP-UI-PREVIEW` |
-| Task Name | WhatsApp UI Preview |
-| Status | **COMPLETE** |
+| Task ID | `STAGING-TEAM-REVIEW` |
+| Task Name | Staging Team Review |
+| Status | **IN_PROGRESS** |
 | Current Agent | `antigravity` |
-| Started From Commit | `aba3e981767d683fe35d6e9b6b0f89b7439e6823` |
-| Latest Commit | `d0a284a64b2ae0029f5a9f6d765b6947f374e2af` |
+| Started From Commit | `42c06d2b318ba31c02851cab19bca4c828505c77` |
+| Latest Commit | `42c06d2b318ba31c02851cab19bca4c828505c77` |
 | Branch | `main` |
-| Started At | 2026-09-18T01:19:27+05:30 |
-| Last Updated | 2026-09-18T01:30:31+05:30 |
+| Started At | 2026-09-18T01:32:35+05:30 |
+| Last Updated | 2026-09-18T01:32:35+05:30 |
 
 ## Objective
 
-Expose WhatsApp OTP interface on staging login and signup for stakeholder review with plain-language availability notice while live Meta credentials remain pending.
+Run structured product review of the complete Buzl Listing staging experience across WhatsApp UI, owner journey, admin moderation, public listing, mobile viewports, privacy, and indexing guards. Capture feedback and generate docs/STAGING_TEAM_REVIEW.md.
 
 ## Allowed Files
 
-- src/lib/whatsapp/types.ts, src/lib/whatsapp/phone.ts, src/app/login/page.tsx, src/app/signup/page.tsx, scripts/browser-smoke-test-business-owner-ux.mjs, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
+- —
 
 ## Completed Work
 
-- Exposed WhatsApp OTP UI tab on /login and /signup on staging with explanatory coming soon notice, country selector, phone input, formatting validation, and zero horizontal scroll on mobile. Reused provider-neutral types and phone utilities. Verified across 375px/390px/430px viewports locally and live on staging VPS. Merged to main and deployed to staging.
+- —
 
 ## Remaining Work
 
@@ -35,7 +35,7 @@ Expose WhatsApp OTP interface on staging login and signup for stakeholder review
 
 ## Checks / Tests
 
-- npm run lint PASS (0 errors), npm run build PASS (32 routes), npx supabase test db PASS (5 suites, 38 tests), node scripts/verify-email-otp-flow.mjs PASS (49/49 checks), Playwright browser smoke tests PASS (100% on staging VPS), staging health check PASS (HTTP 200)
+- —
 
 ## Known Issues
 
@@ -43,7 +43,7 @@ Expose WhatsApp OTP interface on staging login and signup for stakeholder review
 
 ## Next Exact Action
 
-No further action — task complete.
+—
 
 ## Handoff Notes
 

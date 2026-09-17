@@ -539,6 +539,20 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `node scripts/verify-email-otp-flow.mjs`: PASS (49/49 checks)
   - `scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (100% across 375px, 390px, 430px viewports and desktop)
 
+## Staging Team Review (2026-09-18): COMPLETE
 
-
-
+- **Task**: `STAGING-TEAM-REVIEW`
+- **Branch**: `main`
+- **Status**: `COMPLETE`
+- **Scope**: Comprehensive product, security, mobile, and UX review of the staging deployment (`https://listing.rclk.in`) on commit `42c06d2`.
+- **Review Artifact**: `docs/STAGING_TEAM_REVIEW.md`
+- **Key Findings & Verification**:
+  - **Staging Indexing Defense**: `/api/health` returns `X-Robots-Tag: noindex, nofollow, noarchive`; `/robots.txt` disallows all crawlers; `/sitemap.xml` provides empty `<urlset>`.
+  - **Auth & WhatsApp UI**: Email OTP default active tab; WhatsApp UI tab properly positioned with explanatory coming soon banner, country selector, and input validation without fake token screens; Password login fallback operational.
+  - **Owner Journey (8 Steps)**: Traversal verified from details, contact/GBP URL, services, products, media, location, hours/social, to preview. Step 8 Listing Readiness checklist confirmed; creation and review submission triggers pending review toast and persistent pending banner.
+  - **Admin Moderation & RBAC**: Pending list review, single-click publish, status badges, and direct `View Public Listing ↗` link verified.
+  - **Public Directory & Invariant Privacy**: Verified public listing presentation including NAP, Google CTA, services, and products. Strict zero-data-leakage verified: no `place_id`, no `latitude`/`longitude`, no `PostGIS`, no `member_id`, no `auth email`/`phone`, and service-area private addresses shielded.
+  - **Mobile Viewports**: 375px, 390px, and 430px viewports verified with zero horizontal overflow (`scrollWidth === clientWidth`) and comfortable touch target widths.
+  - **Review Audit Suite**: `scripts/staging-team-review-audit.mjs` executed against staging with 34/34 checks passing (100%).
+- **Product Decisions Cataloged**: 9 architectural product decisions surfaced and documented in `docs/STAGING_TEAM_REVIEW.md` (Product price/URL, gallery image caps, edit re-review behavior, claim listing, website generation, and multi-method OTP).
+- **Decision Verdict**: **APPROVED / GO** (0 blocking bugs).
