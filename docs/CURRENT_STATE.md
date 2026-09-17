@@ -459,20 +459,32 @@ Implementation of approved Google Places Location search replacing manual latitu
   - Linting (`npm run lint`): Clean with 0 errors.
   - Whitespace / formatting (`git diff --check`): Clean.
   - Independent security review (`Independent Security Reviewer`): Verdict **PASS_WITH_NOTES** (0 critical / 0 high vulnerabilities).
-- **Configuration Required for Live Staging SMTP**:
-  - `SMTP_HOST`: Staging SMTP server host (e.g. Brevo, SendGrid, Amazon SES, Postmark)
-  - `SMTP_PORT`: Staging SMTP port (e.g. 587)
-  - `SMTP_USER`: Staging SMTP username
-  - `SMTP_PASS`: Staging SMTP password
-  - `SMTP_ADMIN_EMAIL`: Sender address (e.g. `noreply@buzl.in` or `auth@listing.rclk.in`)
-  - `SMTP_SENDER_NAME`: Sender display name (`Buzl Listing`)
+- **Live Staging GoTrue & Hostinger SMTP Deployment (2026-09-17)**:
+  - Configured live Hostinger SMTP credentials in `/opt/buzl-listing/.env`:
+    - `SMTP_HOST=smtp.hostinger.com`
+    - `SMTP_PORT=465` (SSL)
+    - `SMTP_USER=listing@rclk.in`
+    - `SMTP_ADMIN_EMAIL=listing@rclk.in`
+    - `SMTP_SENDER_NAME=Buzl Listing`
+    - `SMTP_PASS` configured securely server-side only.
+  - Deployed public branded verification template to `/public/templates/magic_link.html` served directly at `https://listing.rclk.in/templates/magic_link.html`.
+  - Configured `buzl-listing-auth-1` with:
+    - `GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: https://listing.rclk.in/templates/magic_link.html`
+    - `GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: "Your Buzl Verification Code"`
+    - `GOTRUE_MAILER_OTP_EXP: 600` (10 minutes)
+    - `GOTRUE_MAILER_OTP_LENGTH: 6` (6-digit numeric token)
+  - Deployed updated web application container (`buzl-listing-app-1`) on staging VPS (`213.210.37.204`).
+  - Staging verification:
+    - Live external SMTP delivery confirmed via Hostinger IMAP (`listing@rclk.in`): Real email received from `"Buzl Listing" <listing@rclk.in>` with Subject `"Your Buzl Verification Code"` containing the live 6-digit OTP token.
+    - Browser smoke tests passed on `https://listing.rclk.in`: Dual tabs UI, Password login regression (Admin redirect to `/admin/businesses`), OTP request stage, 60s cooldown timer, invalid OTP rejection, and brute-force attempt countdown.
 
 ## Current git status
 
 Working tree: branch `feature/email-otp-auth`
-Base commit: `e735192`
-Status: Fully implemented and verified locally; awaiting live SMTP credentials from the integration provider for external staging deployment.
+Latest commit: `90bd399`
+Status: Fully implemented, verified locally, deployed to staging, and verified live with Hostinger SMTP.
 
 ## Next exact task
 
-Awaiting SMTP credentials from the integration provider to configure staging GoTrue service, or operator review to merge `feature/email-otp-auth`.
+Operator review of `EMAIL-OTP-AUTH` and merge of `feature/email-otp-auth` into `main`.
+
