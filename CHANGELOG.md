@@ -6,6 +6,39 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Business Owner UX Review — 2026-09-18
+
+- **Feature Branch**: `feature/business-owner-ux-review` based on `main @ d30cadf`.
+- **Authentication & Onboarding UX**:
+  - Fully responsive mobile layout for 375px/390px viewports (0 horizontal overflow; `scrollWidth = clientWidth`).
+  - Added `min-w-0` to phone inputs and updated container padding (`p-6 sm:p-8`, `px-4 sm:px-6 lg:px-8`) for comfortable typing (173px+ width).
+  - Clear friendly messaging across authentication tabs ("WhatsApp OTP", "Email Code (OTP)", "Password").
+- **Business Form & Onboarding Polish (`BusinessForm.tsx`)**:
+  - **Step Bar**: Dual responsive layout (desktop 8-step indicator; mobile/tablet compact `Step X of 8: Label` with visual progress bar).
+  - **Step 1 (Business Details)**: Renamed to `Step 1: Business Details`, input label `Business Name *`, helper text: `The registered name of your business as known to customers.`
+  - **Step 2 (Contact Information)**: Prominent owner-editable `Google Business Profile Link (Optional)` with clear copy: `Paste the link to your business on Google. This will appear as "View on Google" on your public listing.`
+  - **Step 3 (Services Offered)**: Updated to `What services does your business offer?`, counter `X / 20 Services`, and friendly empty state card when 0 services exist.
+  - **Step 4 (Products & Offerings)**: Header changed to `Step 4: Products & Offerings (Optional)`, counter `X / 20 Products`, copy explaining products are optional showcase items, and friendly empty state card.
+  - **Step 6 (Location Verification)**: Replaced technical jargon (`PostGIS Ready`, `Geospatial Coordinates`) with `✓ Location verified — Map location saved`.
+  - **Step 8 (Preview & Submit)**: Renamed to `Step 8: Preview & Submit`. Added **Listing Readiness Summary** card displaying live status of required sections (Name, Phone, Category, Location) and optional items (Services, Logo, Google Business Profile).
+  - **Submission Feedback**: Upgraded toast notification to `Your listing has been submitted for review.`
+  - **Lifecycle Banners**:
+    - *Pending Review*: Explains moderation review policy and informs owners that ongoing edits are included in review.
+    - *Published Listing*: Informs owners the listing is live with direct `View Public Listing ↗` action.
+- **Dashboard & Preview Enhancements**:
+  - Renamed table header `Publication` / `Status` → `Listing Status` across `BusinessTableView` and dashboard home.
+  - Added `View Listing ↗` action link for published businesses.
+  - Replaced Topbar subtitle `Canonical Slug:` with `Listing URL:`.
+  - Replaced preview badge `Public-Safe Output` with `Public Listing Preview`.
+- **Zero Jargon Purge**:
+  - Removed developer terminology (`PostGIS`, `place_id`, `RPC`, `Supabase`, `Meta Cloud API`, `Auth Hook`, `GoTrue`, `canonical_name`, `provider adapter`) from all owner-facing views.
+- **Automated Verification**:
+  - Automated browser smoke test (`scripts/browser-smoke-test-business-owner-ux.mjs`): 5/5 suites pass (100%).
+  - `npm run lint`: 0 errors.
+  - `npm run build`: 32 routes compiled cleanly.
+  - `npx supabase test db`: 5 suites, 38 tests pass.
+  - `node scripts/verify-email-otp-flow.mjs`: 49/49 checks pass.
+
 ### Email OTP Authentication — 2026-09-17
 
 - **Feature Branch**: `feature/email-otp-auth` based on `main @ e735192`.

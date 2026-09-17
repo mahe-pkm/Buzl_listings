@@ -31,7 +31,7 @@ export default async function NewBusinessPage() {
     <>
       <Topbar
         title="Add New Business Listing"
-        subtitle="Complete the guided 6-step form to create your citation record."
+        subtitle="Complete the structured business details to create a draft listing"
       />
 
       <main className="p-6 max-w-5xl">

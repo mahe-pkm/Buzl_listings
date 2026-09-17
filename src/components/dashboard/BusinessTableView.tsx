@@ -81,7 +81,7 @@ export default function BusinessTableView({ businesses, isAdmin = false, moderat
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Mode</th>
                 <th className="py-3 px-4">Location</th>
-                <th className="py-3 px-4">Publication</th>
+                <th className="py-3 px-4">Listing Status</th>
                 <th className="py-3 px-4">Verification</th>
                 <th className="py-3 px-4">Updated</th>
                 <th className="py-3 px-6 text-right">{isAdmin ? 'Moderation Actions' : 'Actions'}</th>
@@ -136,15 +136,30 @@ export default function BusinessTableView({ businesses, isAdmin = false, moderat
                           }}
                         />
                       ) : (
-                        <Link
-                          href={`/dashboard/businesses/${b.id}/edit`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-[#004AAD] hover:underline"
-                        >
-                          Edit
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </Link>
+                        <div className="flex items-center justify-end gap-3">
+                          {b.publication_status === 'published' && (
+                            <Link
+                              href={`/business/${b.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline"
+                            >
+                              <span>View Listing</span>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </Link>
+                          )}
+                          <Link
+                            href={`/dashboard/businesses/${b.id}/edit`}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#004AAD] hover:underline"
+                          >
+                            Edit
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </div>
                       )}
                     </td>
                   </tr>

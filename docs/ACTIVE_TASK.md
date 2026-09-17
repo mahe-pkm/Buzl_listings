@@ -7,56 +7,47 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `PROVIDER-REFERENCE-CLEANUP` |
-| Task Name | Provider Reference Cleanup |
-| Status | **COMPLETE** |
+| Task ID | `BUSINESS-OWNER-UX-REVIEW` |
+| Task Name | Business Owner UX Review |
+| Status | **REVIEW** |
 | Current Agent | `antigravity` |
-| Started From Commit | `98feb527f3a1fda3d0716a00010a729ced6a5837` |
-| Latest Commit | `98feb527f3a1fda3d0716a00010a729ced6a5837` |
-| Branch | `main` |
-| Started At | 2026-09-17T23:08:00+05:30 |
-| Last Updated | 2026-09-17T23:17:00+05:30 |
+| Started From Commit | `d30cadf97efdd1038b7923a76960b959c3539b80` |
+| Latest Commit | `014d8abc0332ed829c3148870c8d05ac5ba14764` |
+| Branch | `feature/business-owner-ux-review` |
+| Started At | 2026-09-18T00:28:22+05:30 |
+| Last Updated | 2026-09-18T00:53:37+05:30 |
 
 ## Objective
 
-Removed personal provider attribution from project and repository history.
+Review and improve the complete Business Owner user experience across authentication, onboarding, business creation/editing, preview, submission, and post-submission dashboard.
 
 ## Allowed Files
 
-- `docs/ACTIVE_TASK.md`
-- `docs/CURRENT_STATE.md`
-- `CHANGELOG.md`
+- src/**, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
 
 ## Completed Work
 
-- Removed personal provider attribution from project and repository history.
-- Verified 0 occurrences across current workspace, Git local history, and remote GitHub branches.
-- Synchronized staging VPS and verified clean deployment.
+- Completed full Business Owner UX review and implementation across mobile viewports, auth responsiveness, 8-step form refinements, GBP URL input, services/products empty states and limits, zero-jargon location verification, listing readiness summary, submission to pending, and pending/published lifecycle banners.
 
 ## Remaining Work
 
-- Ready for subsequent tasks
+- —
 
 ## Checks / Tests
 
-- git log grep audit: PASS (0 occurrences)
-- git reachable commit audit: PASS (0 occurrences)
-- git remote refs audit: PASS (0 occurrences)
-- staging VPS audit: PASS (0 occurrences)
-- deployed public content audit: PASS (0 occurrences)
-- lint: PASS, build: PASS
+- npm run lint (0 errors), npm run build (32 routes), git diff --check (0 errors), npx supabase test db (5 suites, 38 tests), node scripts/verify-email-otp-flow.mjs (49/49 checks), node scripts/browser-smoke-test-business-owner-ux.mjs (5/5 suites 100% pass)
 
 ## Known Issues
 
-- None
+- —
 
 ## Next Exact Action
 
-Ready for next planned task
+STAGING-TEAM-REVIEW
 
 ## Handoff Notes
 
-Removed personal provider attribution from project and repository history. Staging synchronized.
+—
 
 ## Agent Handoff Rule
 

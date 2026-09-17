@@ -171,17 +171,13 @@ export default function PlacesLocationSearch({
               ✓
             </span>
             <div>
-              <p className="text-xs font-bold text-[#166534]">
-                Location Verified & Coordinates Attached
+              <p className="text-xs font-bold text-[#166534] flex items-center gap-1.5">
+                <span>Location verified</span>
+                <span className="text-[11px] font-normal text-[#15803D]">— Map location saved</span>
               </p>
               {currentAddressSummary && (
                 <p className="text-xs text-[#15803D] mt-0.5 font-medium leading-relaxed">
                   {currentAddressSummary}
-                </p>
-              )}
-              {selectedPlaceId && (
-                <p className="text-[10px] text-[#166534]/70 mt-1 font-mono">
-                  Place ID: {selectedPlaceId}
                 </p>
               )}
             </div>
