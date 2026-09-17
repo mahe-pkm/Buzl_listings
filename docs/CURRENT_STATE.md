@@ -410,16 +410,19 @@ Implementation of approved Google Places Location search replacing manual latitu
     - Enhanced production guard in `getPlacesProvider()` to check `NODE_ENV === 'production'` alongside `APP_ENV === 'production'`.
 - **Live Provider State**:
   - Offline/Mock Provider: 100% verified across 8 representative mock locations in India and UK.
-  - Live Google Provider: Code is fully implemented and tested with safe error handling (`NOT_CONFIGURED` returned safely when key is absent, zero secret leakage). Awaiting actual `GOOGLE_PLACES_API_KEY` to be saved in `.env.local` with `GOOGLE_PLACES_MOCK=false`.
+  - Live Google Provider: Fully verified with real Google Maps Platform API key (`GOOGLE_PLACES_MOCK=false`):
+    - Autocomplete tested across all required locations (Chennai, Anna Nagar, Coimbatore, Munnar, Bengaluru, London): 100% PASS with Status `OK` and accurate predictions.
+    - Place details lookup and address normalization verified for all required locations (coordinates, postal codes, locality, district, country codes).
+    - Browser smoke test (`scripts/browser-smoke-test-places.mjs`) verified in Chromium with live Google Places: place search, auto-fill, PostGIS badge, listing creation, DB persistence (`ChIJm3EiiAdkUjoR4oGVuHcQoL0`), and pre-populated edit page all passed 100%.
 
 ## Current git status
 
 Working tree: branch `feature/google-places-location`
 Base commit: `c8f67b8`
-Status: Tested, hardened, verified, security approved, ready for live key verification / operator review
+Status: Fully tested, live Google verified, security approved, ready for merge into main
 
 ## Next exact task
 
-1. Save actual live Google Places API key (`GOOGLE_PLACES_API_KEY`) in `.env.local` and set `GOOGLE_PLACES_MOCK=false`.
-2. Run live Google autocomplete & details queries to verify Google network responses.
-3. Operator review & merge `feature/google-places-location` into `main`.
+1. Operator review & merge `feature/google-places-location` into `main`.
+2. Apply Supabase migration `20260917200000_google_places_location.sql` to staging database.
+3. Deploy updated Buzl Listing to staging (`https://listing.rclk.in`) with server-side `GOOGLE_PLACES_API_KEY`.
