@@ -21,7 +21,8 @@ const demoAccounts = {
 export async function GET() {
   if (
     isProductionEnvironment() ||
-    !isStagingEnvironment() ||
+    isStagingEnvironment() ||
+    process.env.NODE_ENV !== "development" ||
     Object.values(demoAccounts).some(({ email, password }) => !email || !password)
   ) {
     return new NextResponse(null, { status: 404 });

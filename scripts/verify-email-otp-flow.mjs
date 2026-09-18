@@ -1,4 +1,4 @@
-﻿import fs from 'node:fs';
+import fs from 'node:fs';
 import path from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { loadLocalFixtureEnvironment } from './lib/local-fixture-env.mjs';
@@ -337,10 +337,11 @@ async function main() {
   // TEST 9: Password Login Regression
   // ----------------------------------------------------
   console.log('\n--- 9. Testing Password Login Regression ---');
-  const client5 = createClient(SUPABASE_URL, ANON_KEY, { auth: { persistSession: false } });
+  const ownerPwd = process.env.LOCAL_FIXTURE_OWNER_PASSWORD;
+  if (!ownerPwd) throw new Error('LOCAL_FIXTURE_OWNER_PASSWORD is required');
   const { data: pwdData, error: pwdErr } = await client5.auth.signInWithPassword({
     email: 'owner@buzl.test',
-    password: process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'password123',
+    password: ownerPwd,
   });
   assert(!pwdErr, 'Existing password login succeeds with correct credentials');
   assert(pwdData.user?.id === ownerBefore.user.id, 'Password login returned exact same owner UID');

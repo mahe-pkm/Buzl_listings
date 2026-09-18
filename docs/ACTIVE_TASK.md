@@ -7,27 +7,27 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `INTERNAL-DASHBOARD-PHASE-A` |
-| Task Name | Internal Dashboard Phase A Navigation & Moderation Queue Discoverability |
-| Status | **COMPLETE** |
+| Task ID | `CATEGORY-MANAGEMENT` |
+| Task Name | Internal Dashboard Phase B Category Management |
+| Status | **REVIEW** |
 | Current Agent | `antigravity` |
-| Started From Commit | `faf716a9cb37bd4a527f3bf52414e0647080e8d0` |
-| Latest Commit | `3324d6b25736b66b182b05d127866549d7550059` |
-| Branch | `main` |
-| Started At | 2026-09-18T09:40:13+05:30 |
-| Last Updated | 2026-09-18T10:21:21+05:30 |
+| Started From Commit | `e5917ab7433adc345f7bcb4cadcaf1d0a1693a41` |
+| Latest Commit | `e5917ab7433adc345f7bcb4cadcaf1d0a1693a41` |
+| Branch | `feature/category-management` |
+| Started At | 2026-09-18T10:25:52+05:30 |
+| Last Updated | 2026-09-18T11:02:29+05:30 |
 
 ## Objective
 
-Expose Moderation Queue in role-aware navigation with pending-review count badge across Admin and Listing Manager, hide from unauthorized roles, and verify permissions.
+Build internal Category Management system for Platform Admin (manage taxonomy) and Listing Manager / Onboarding Member (read-only reference), preserve database protections, prevent unsafe deactivation of published categories, ensure credential hygiene, and verify via browser and DB tests. Zero DB migrations.
 
 ## Allowed Files
 
-- src/components/dashboard/Sidebar.tsx, src/app/dashboard/layout.tsx, src/app/admin/layout.tsx, src/app/review/layout.tsx, src/app/review/businesses/page.tsx, src/lib/business-actions.ts, scripts/browser-smoke-test-internal-navigation.mjs, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
+- src/app/admin/categories/**, src/components/categories/**, src/lib/category-actions.ts, src/components/dashboard/Sidebar.tsx, src/app/api/internal/demo-credentials/route.ts, scripts/**, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
 
 ## Completed Work
 
-- Merged feature/internal-dashboard-navigation to main, deployed to staging VPS, verified 12/12 browser test suites on https://listing.rclk.in, verified indexing guards and role protections across Admin, Listing Manager, Onboarding Member, Business Owner. Zero DB migrations. Production containers untouched.
+- Built internal Category Management system (/admin/categories, CategoryManagementView, category-actions.ts, Sidebar navigation, middleware routing), fixed website URL auto-normalization bug, hardened staging credentials, and created automated pgTAP runtime tests and 13 Playwright browser smoke test suites.
 
 ## Remaining Work
 
@@ -35,7 +35,7 @@ Expose Moderation Queue in role-aware navigation with pending-review count badge
 
 ## Checks / Tests
 
-- npm run lint (PASS), npm run build (PASS), npx supabase test db (PASS), scripts/browser-smoke-test-internal-navigation.mjs (12/12 PASS locally and on live staging https://listing.rclk.in), staging health /api/health (200 OK), indexing guards X-Robots-Tag / robots.txt / sitemap.xml (PASS)
+- npm run lint (0 errors), npm run build (33 routes compiled), npx supabase test db (6 suites, 43 tests pass), node scripts/browser-smoke-test-category-management.mjs (13/13 suites pass, 100%), regression tests pass (internal navigation, admin users, business owner UX).
 
 ## Known Issues
 
@@ -43,7 +43,7 @@ Expose Moderation Queue in role-aware navigation with pending-review count badge
 
 ## Next Exact Action
 
-No further action — task complete.
+Perform staging deployment review, deploy to staging VPS, run remote staging smoke tests, and merge feature/category-management into main.
 
 ## Handoff Notes
 

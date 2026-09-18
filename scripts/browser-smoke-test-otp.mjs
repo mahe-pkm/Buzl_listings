@@ -1,4 +1,4 @@
-﻿import { chromium } from "playwright";
+import { chromium } from "playwright";
 import { loadLocalFixtureEnvironment } from "./lib/local-fixture-env.mjs";
 
 loadLocalFixtureEnvironment();
@@ -121,7 +121,8 @@ async function main() {
     assert(true, "Switched to Password tab");
 
     await pwdEmail.fill("owner@buzl.test");
-    await page.fill("#password-input", process.env.LOCAL_FIXTURE_OWNER_PASSWORD || "password123");
+    if (!process.env.LOCAL_FIXTURE_OWNER_PASSWORD) throw new Error("LOCAL_FIXTURE_OWNER_PASSWORD is required");
+    await page.fill("#password-input", process.env.LOCAL_FIXTURE_OWNER_PASSWORD);
     await page.click('button:has-text("Sign In with Password")');
 
     await page.waitForURL("**/dashboard**", { timeout: 15000 });
