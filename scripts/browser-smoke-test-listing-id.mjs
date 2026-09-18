@@ -31,13 +31,9 @@ async function loginWithPassword(page, email, password) {
 }
 
 async function logout(page) {
-  await page.goto(`${BASE_URL}/dashboard`);
+  await page.goto(`${BASE_URL}/auth/logout`);
+  await page.waitForURL((url) => url.pathname.includes('/login') || url.pathname === '/', { timeout: 10000 });
   await page.waitForLoadState('networkidle');
-  const userMenuBtn = page.locator('button[aria-label="User menu"]');
-  await userMenuBtn.click();
-  const signoutBtn = page.locator('button:has-text("Sign Out")');
-  await signoutBtn.click();
-  await page.waitForURL((url) => url.pathname.includes('/login'));
 }
 
 async function runTests() {
@@ -159,10 +155,9 @@ async function runTests() {
     console.log('3. User Management: Associated Businesses');
     console.log('======================================');
     await page.goto(`${BASE_URL}/admin/users`);
-    await page.waitForLoadState('networkidle');
-
-    const ownerLink = page.locator('a:has-text("owner@buzl.test")');
-    await ownerLink.click();
+    const ownerRow = page.locator(`table tbody tr:has-text("${ownerEmail}")`);
+    const ownerManageBtn = ownerRow.locator('a:has-text("Manage")');
+    await ownerManageBtn.click();
     await page.waitForLoadState('networkidle');
 
     const assocBadges = page.locator('span.font-mono:has-text("BZL-")');
@@ -196,8 +191,9 @@ async function runTests() {
     const ownerSearchResults = await page.locator('table tbody tr').count();
     assert(ownerSearchResults === 1, `Search by Listing ID in member table works`);
 
-    const manageLink = page.locator('a:has-text("Manage →")').first();
+    const manageLink = page.locator('table tbody tr a:has-text("Edit")').first();
     await manageLink.click();
+    await page.waitForURL((url) => url.pathname.includes('/edit'), { timeout: 15000 });
     await page.waitForLoadState('networkidle');
 
     const readOnlyBadge = page.getByTestId('listing-code-badge');

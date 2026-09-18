@@ -6,6 +6,42 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Admin & Member Operational Dashboard Phase 1 (ADMIN-AND-MEMBER-DASHBOARD-P1) — 2026-09-18
+
+- **Feature Branch**: `feature/admin-member-dashboard-p1`.
+- **Status**: Complete & Verified locally; ready for operator review.
+- **Scope**: Implemented role-aware operational dashboard experience on `/dashboard` for Platform Admin, Listing Manager, and Onboarding Member, while preserving the exact Business Owner dashboard experience. 100% existing schema, zero new database migrations, zero charting/analytics dependencies.
+- **Role-Aware Operational Views (`/dashboard`, `src/app/dashboard/page.tsx`)**:
+  - **Platform Admin (`AdminDashboardView.tsx`)**:
+    - 6 primary operational KPI cards: Total Listings, Pending Review, Published Listings, Draft Listings, Verified Listings, and Unverified Listings (with secondary Suspended indicator).
+    - Quick Actions grid (6 real routes): All Listings (`/admin/businesses`), Moderation Queue (`/review/businesses`), Categories (`/admin/categories`), Users (`/admin/users`), Import Buzl Profile (`/admin/businesses/import`), Add Business (`/dashboard/businesses/new`).
+    - Pending Review Widget: Bounded table showing business name, monospace Listing ID (`BZL-XXXXXX`), category, location, and submitted/updated date with "View Moderation Queue →" CTA.
+    - Needs Attention Widget: Data-quality inspector detecting missing address/coordinates on storefront/hybrid listings, missing service areas on service-area/hybrid listings, missing logos, missing Google Business Profile URLs, and unverified status.
+    - Recent Platform Listings: Recent system-wide businesses with publication & verification badges and "Manage →" links.
+    - Top Categories Overview: Category usage overview by listing count leveraging existing taxonomy metrics.
+  - **Listing Manager (`ListingManagerDashboardView.tsx`)**:
+    - 4 operational KPIs: Pending Review, Published, Suspended, Unverified.
+    - Quick Actions: Moderation Queue, Listings, Add Business, Import Buzl Profile, Categories.
+    - Users and system governance controls are strictly hidden.
+    - Widgets: Pending Review, Listings Requiring Attention, Recent Listings.
+  - **Onboarding Member (`OnboardingMemberDashboardView.tsx`)**:
+    - 4 onboarding KPIs: Draft Listings, Pending Review, Published Listings, Listings Requiring Completion.
+    - Quick Actions: Add Business, Import Buzl Profile, My Listings, Categories.
+    - Moderation Queue and direct publication/suspension controls are strictly hidden.
+    - Widgets: Incomplete Draft Listings, Recently Submitted, My Recent Listings.
+  - **Business Owner (`OwnerDashboardView.tsx`)**:
+    - Preserved exact existing Business Owner UX with owner's managed listings, Total Businesses, Published, Pending Review, and Drafts cards.
+    - Zero exposure to platform statistics, moderation queue, user management, or internal operations.
+- **Server Data Access & Performance (`src/lib/dashboard-data.ts`)**:
+  - Exact head count queries running in parallel with 0 payload overhead.
+  - Single joined relational queries for media, services, and service areas via PostgREST relationships avoiding N+1 loops.
+  - Strict privacy protections: zero UUIDs or sensitive credentials exposed in visible dashboard widgets.
+- **Automated Verification**:
+  - Dedicated smoke test `scripts/browser-smoke-test-dashboard-p1.mjs` verifying Admin KPIs, Quick Actions, Pending Reviews, Needs Attention, Recent Listings, Category Overview, Listing Manager moderation/governance isolation, Onboarding Member draft focus, Owner isolation, Listing ID rendering, and mobile responsive viewports (375px, 390px, 430px) passes 100%.
+  - 100% pass across all regression suites: Category Management, Internal Navigation, Admin User Management, Business Owner UX, Listing ID system, and 63 pgTAP tests.
+- **Database Migrations**: None (0 schema changes).
+
+
 ### Internal Dashboard Phase B: Category Management — 2026-09-18
 
 - **Feature Branch**: `feature/category-management`.

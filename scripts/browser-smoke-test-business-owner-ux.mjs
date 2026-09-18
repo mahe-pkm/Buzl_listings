@@ -20,10 +20,11 @@ async function main() {
   console.log(`Base URL: ${BASE_URL}`);
   console.log('==================================================\n');
 
-  const ownerEmail = process.env.STAGING_OWNER_EMAIL || process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
-  const ownerPassword = process.env.STAGING_OWNER_PASSWORD || process.env.LOCAL_FIXTURE_OWNER_PASSWORD;
-  const adminEmail = process.env.STAGING_ADMIN_EMAIL || process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
-  const adminPassword = process.env.STAGING_ADMIN_PASSWORD || process.env.LOCAL_FIXTURE_ADMIN_PASSWORD;
+  const isStaging = BASE_URL.includes('rclk.in');
+  const ownerEmail = isStaging ? (process.env.STAGING_OWNER_EMAIL || 'owner@buzl.test') : (process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test');
+  const ownerPassword = isStaging ? process.env.STAGING_OWNER_PASSWORD : (process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!');
+  const adminEmail = isStaging ? (process.env.STAGING_ADMIN_EMAIL || 'admin@buzl.test') : (process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test');
+  const adminPassword = isStaging ? process.env.STAGING_ADMIN_PASSWORD : (process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!');
 
   if (!ownerPassword || !adminPassword) {
     throw new Error('Test credentials missing. Please set credentials in environment or .env.fixtures.local');

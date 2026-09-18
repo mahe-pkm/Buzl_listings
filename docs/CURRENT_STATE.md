@@ -729,11 +729,11 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `node scripts/browser-smoke-test-business-owner-ux.mjs` (staging): PASS (5/5 suites pass, 100%)
 - **Database Migrations**: NONE (0 database schema changes required).
 
-## Internal Dashboard Phase C: Listing ID System (2026-09-18): IMPLEMENTED & VERIFIED LOCALLY
+### Internal Dashboard Phase C: Listing ID System (2026-09-18): MERGED & VERIFIED LIVE
 
 - **Task**: LISTING-ID-SYSTEM
-- **Branch**: eature/listing-id-system
-- **Status**: REVIEW_READY
+- **Branch**: feature/listing-id-system (merged to main at commit `c6a3558`)
+- **Status**: COMPLETE
 - **Scope**: Implemented a permanent human-readable Buzl Listing ID system (e.g., BZL-000001) using a PostgreSQL sequence allocator (MAXVALUE 999999) to ensure uniqueness, monotonicity, and immutability.
 - **Key Deliverables**:
   - **Database Migration (`20260918140000_listing_id_system.sql`)**: 
@@ -749,16 +749,59 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
     - Business edit form (`BusinessForm.tsx`) presents a read-only badge with a one-click copy button for existing listings.
     - Admin `ManageUserForm` displays `listing_code` badges in the associated businesses list.
     - Internal dashboard routing preserves listing URL and query parameters.
-  - **Smoke Testing (rowser-smoke-test-listing-id.mjs)**:
+  - **Smoke Testing (`browser-smoke-test-listing-id.mjs`)**:
     - Dedicated Playwright smoke test script verifies rendering, searchability, and copy functionality across Admin, Listing Manager, and Business Owner personas, including mobile viewport tests and staging fixture invariants.
 - **Verification Results**:
-  - 
-pm run lint: PASS (0 errors)
-  - 
-pm run build: PASS (all 33 routes compiled cleanly)
-  - git diff --check: PASS
-  - 
-px supabase test db: PASS (7 suites, 63 tests pass)
-  - 
-ode scripts/browser-smoke-test-listing-id.mjs (local): PASS (All suites passed)
-- **Database Migrations**: 1 new migration added (20260918140000_listing_id_system.sql).
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (all 33 routes compiled cleanly)
+  - `git diff --check`: PASS
+  - `npx supabase test db`: PASS (7 suites, 63 tests pass)
+  - `node scripts/browser-smoke-test-listing-id.mjs` (local & staging): PASS (All suites passed)
+- **Database Migrations**: 1 new migration added (`20260918140000_listing_id_system.sql`).
+
+## Admin and Member Operational Dashboard Phase 1 (2026-09-18): IMPLEMENTED & VERIFIED LOCALLY
+
+- **Task**: ADMIN-AND-MEMBER-DASHBOARD-P1
+- **Branch**: `feature/admin-member-dashboard-p1`
+- **Status**: REVIEW_READY
+- **Scope**: Implemented first useful operational dashboard on `/dashboard` for Platform Admin, Buzl Listing Manager, and Buzl Onboarding Member, while strictly preserving the current Business Owner experience. Built entirely on existing schema with zero new migrations and zero external charting dependencies.
+- **Key Deliverables**:
+  - **Role-Aware Dashboard Routing (`src/app/dashboard/page.tsx`)**:
+    - Dispatches to specialized server views based on authenticated user role and permission preset.
+    - Preserves Business Owner isolation: Business Owners only see their own listings and owner KPI cards (`OwnerDashboardView.tsx`).
+  - **Platform Admin View (`src/components/dashboard/AdminDashboardView.tsx`)**:
+    - 6 operational KPI cards: Total Listings, Pending Review, Published Listings, Draft Listings, Verified Listings, and Unverified Listings (with secondary Suspended indicator).
+    - Quick Actions grid linking directly to active routes: All Listings, Moderation Queue, Categories, Users, Import Buzl Profile, and Add Business.
+    - Moderation Preview widget for pending listings with monospace `BZL-` badges.
+    - Needs Attention widget surfacing data-quality issues: missing address/coordinates on storefront/hybrid, missing service areas on service-area/hybrid, missing logo, missing Google Business Profile, and unverified status.
+    - Recent Listings widget and Category Overview widget.
+  - **Listing Manager View (`src/components/dashboard/ListingManagerDashboardView.tsx`)**:
+    - 4 operational KPIs: Pending Review, Published, Suspended, Unverified.
+    - Quick Actions focused on review, listings, import, categories (user governance excluded).
+    - Dedicated widgets: Pending Review queue, Listings Requiring Attention, Recent Listings.
+  - **Onboarding Member View (`src/components/dashboard/OnboardingMemberDashboardView.tsx`)**:
+    - 4 onboarding KPIs: Draft Listings, Pending Review, Published Listings, Listings Requiring Completion.
+    - Quick Actions for onboarding, drafting, import, and category reference (moderation queue excluded).
+    - Dedicated widgets: Incomplete Draft Listings, Recently Submitted, My Recent Listings.
+  - **Reusable Widget System (`src/components/dashboard/widgets/`)**:
+    - `KpiCard.tsx`, `QuickActionsWidget.tsx`, `PendingReviewWidget.tsx`, `NeedsAttentionWidget.tsx`, `RecentListingsWidget.tsx`, `CategoryOverviewWidget.tsx`.
+    - Monospace `BZL-XXXXXX` badges for Listing IDs.
+    - Strict data privacy: no internal UUIDs or contact emails exposed.
+    - Mobile-responsive layouts tested across 375px, 390px, 430px viewports with zero horizontal overflow.
+  - **Efficient Data Access Layer (`src/lib/dashboard-data.ts`)**:
+    - Parallel exact head queries for KPI counts (0 byte body payload).
+    - PostgREST relational single-query fetching for listings with services, service areas, and media (no N+1 loops).
+    - Category listing distribution metrics powered by `listCategories()`.
+- **Verification Results**:
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (all 33 routes compiled cleanly with Turbopack)
+  - `git diff --check`: PASS
+  - `npx supabase test db`: PASS (7 suites, 63 tests pass)
+  - `node scripts/browser-smoke-test-dashboard-p1.mjs`: PASS (5 suites, 17 assertions pass)
+  - Regression Suites:
+    - `node scripts/browser-smoke-test-category-management.mjs`: PASS (13/13 suites pass)
+    - `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass)
+    - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass)
+    - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass)
+    - `node scripts/browser-smoke-test-listing-id.mjs`: PASS (6/6 suites pass)
+- **Database Migrations**: NONE (0 schema changes required).

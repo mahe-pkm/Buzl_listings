@@ -7,56 +7,52 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `LISTING-ID-SYSTEM` |
-| Task Name | Permanent Buzl Listing ID System |
-| Status | **COMPLETE** |
+| Task ID | `ADMIN-AND-MEMBER-DASHBOARD-P1` |
+| Task Name | Admin and Member Operational Dashboard Phase 1 |
+| Status | **REVIEW** |
 | Current Agent | `antigravity` |
-| Started From Commit | `9236892b2ae7ad971f0f3a9aaf08be08cbf69296` |
-| Latest Commit | `9236892b2ae7ad971f0f3a9aaf08be08cbf69296` |
-| Branch | `feature/listing-id-system` |
-| Started At | 2026-09-18T12:59:11+05:30 |
-| Last Updated | 2026-09-18T13:50:00+05:30 |
+| Started From Commit | `58be4debe97dc415095c3222fe5d02a28e62415a` |
+| Latest Commit | `6d0b5652cd305295a2322d587a3eb121a99b0b1a` |
+| Branch | `feature/admin-member-dashboard-p1` |
+| Started At | 2026-09-18T14:29:38+05:30 |
+| Last Updated | 2026-09-18T15:21:10+05:30 |
 
 ## Objective
 
-Implement permanent human-readable Buzl Listing ID system (BZL-000001) with database sequence, backfill, immutability, UI integration, pgTAP and browser tests.
+Implement the first useful operational dashboard experience for Platform Admin, Buzl Listing Manager, and Buzl Onboarding Member while preserving current Business Owner experience using existing schema.
 
 ## Allowed Files
 
-- supabase/migrations/**, supabase/tests/**, src/**, scripts/**, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
+- src/app/dashboard/*, src/components/dashboard/*, src/lib/*, scripts/*, docs/*
 
 ## Completed Work
 
-- Database sequence and constraints implemented
-- Database trigger functions to enforce code allocation and immutability
-- 63 pgTAP tests added to verify listing ID creation and backfill behavior
-- Listing code added to `src/types/business.ts` and `BusinessManagerQueryResult`
-- Updated dashboard queries and UI to render the badge
-- Updated business form and ManageUserForm to display listing IDs
-- Smoke test script created for verification
+- Implemented operational dashboard phase 1 for Platform Admin, Listing Manager, and Onboarding Member while strictly preserving existing Business Owner UX. Added reusable widgets (KpiCard, QuickActions, PendingReview, NeedsAttention, RecentListings, CategoryOverview), optimized server data-fetching layer with head count queries and relational PostgREST fetches, updated smoke test fixtures and created scripts/browser-smoke-test-dashboard-p1.mjs.
 
 ## Remaining Work
 
-- Playwright smoke test pending local run confirmation
-- Final git commit
+- —
 
 ## Checks / Tests
 
-- TypeScript build passed
-- pgTAP tests passed
-- ESLint passed
+- npm run lint: PASS (0 errors)
+- npm run build: PASS (all 33 routes Turbopack)
+- git diff --check: PASS
+- npx supabase test db: PASS (7 suites, 63 tests pass)
+- browser-smoke-test-dashboard-p1.mjs: PASS (5 suites, 17 assertions pass)
+- 5 regression smoke tests: PASS (100%).
 
 ## Known Issues
 
-- None
+- —
 
 ## Next Exact Action
 
-- Awaiting user review
+Operator review of operational dashboard phase 1 before any staging deployment or merge to main.
 
 ## Handoff Notes
 
-- Do NOT merge to main, deploy staging, or deploy production per user rules
+—
 
 ## Agent Handoff Rule
 
