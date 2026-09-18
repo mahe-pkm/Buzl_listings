@@ -12,6 +12,7 @@ const presetSchema = z.enum(["onboarding_member", "listing_manager"]).nullable()
 export type ManagedUser = {
   id: string;
   email: string | undefined;
+  phone: string | null;
   fullName: string | null;
   role: "admin" | "buzl_member" | "business_owner";
   memberId: string | null;
@@ -19,6 +20,18 @@ export type ManagedUser = {
   permissionPreset: "onboarding_member" | "listing_manager" | null;
   providers: string[];
   lastSignInAt: string | null;
+  createdAt: string;
+};
+
+export type UserAssociatedBusiness = {
+  id: string;
+  canonical_name: string;
+  slug: string;
+  city: string;
+  state: string;
+  publication_status: string;
+  verification_status: string;
+  managerRole: string;
 };
 
 async function requireAdmin() {
@@ -57,6 +70,7 @@ export async function listManagedUsers(): Promise<ManagedUser[]> {
     return {
       id: user.id,
       email: user.email,
+      phone: user.phone ?? null,
       fullName: profile?.full_name ?? null,
       role,
       memberId: profile?.member_id ?? null,
@@ -64,6 +78,7 @@ export async function listManagedUsers(): Promise<ManagedUser[]> {
       permissionPreset: presetSchema.safeParse(profile?.permission_preset ?? null).data ?? null,
       providers: Array.isArray(user.app_metadata?.providers) ? user.app_metadata.providers.filter((value): value is string => typeof value === "string") : [],
       lastSignInAt: user.last_sign_in_at ?? null,
+      createdAt: user.created_at,
     };
   }).sort((a, b) => (a.email ?? "").localeCompare(b.email ?? ""));
 }
@@ -90,16 +105,40 @@ export async function inviteManagedUser(formData: FormData) {
 }
 
 export async function updateManagedUser(formData: FormData) {
-  await requireAdmin();
+  const currentUser = await requireAdmin();
   const id = z.string().uuid().parse(text(formData, "id"));
   const role = roleSchema.parse(text(formData, "role"));
   const status = statusSchema.parse(text(formData, "accountStatus"));
   const preset = role === "buzl_member" ? presetSchema.parse(text(formData, "permissionPreset") || null) : null;
   const memberId = role === "buzl_member" ? z.string().max(80).parse(text(formData, "memberId")) || null : null;
   const fullName = z.string().min(1).max(120).parse(text(formData, "fullName"));
+
+  // 1. Admin Self-Protection: Administrators cannot demote or deactivate their own active account
+  if (id === currentUser.id && (role !== "admin" || status !== "active")) {
+    throw new Error("Administrators cannot demote or deactivate their own active account.");
+  }
+
   const admin = createAdminClient();
   const { data: existing, error: existingError } = await admin.auth.admin.getUserById(id);
   if (existingError || !existing.user) throw new Error("User not found.");
+
+  // 2. Last Active Admin Protection: Ensure platform never has 0 active admins
+  const isTargetAdmin = existing.user.app_metadata?.role === "admin";
+  if (isTargetAdmin && (role !== "admin" || status !== "active")) {
+    const { data: allUsers } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const otherAdminIds = (allUsers?.users || [])
+      .filter((u) => u.id !== id && u.app_metadata?.role === "admin")
+      .map((u) => u.id);
+
+    const { data: otherActiveAdminProfiles } = otherAdminIds.length
+      ? await admin.from("profiles").select("id").in("id", otherAdminIds).eq("account_status", "active")
+      : { data: [] };
+
+    if (!otherActiveAdminProfiles || otherActiveAdminProfiles.length === 0) {
+      throw new Error("Cannot demote or deactivate the last active administrator.");
+    }
+  }
+
   const { error: roleError } = await admin.auth.admin.updateUserById(id, {
     app_metadata: { ...existing.user.app_metadata, role },
     ban_duration: status === "suspended" ? "876000h" : "none",
@@ -114,6 +153,43 @@ export async function updateManagedUser(formData: FormData) {
     if (error) throw new Error("Account saved but existing sessions could not be revoked.");
   }
   revalidateUsers();
+}
+
+type BusinessManagerQueryResult = {
+  role: string | null;
+  business: {
+    id: string;
+    canonical_name: string;
+    slug: string;
+    city: string | null;
+    state: string | null;
+    publication_status: string;
+    verification_status: string;
+  } | null;
+};
+
+export async function getUserBusinesses(userId: string): Promise<UserAssociatedBusiness[]> {
+  await requireAdmin();
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("business_managers")
+    .select("role, business:businesses(id, canonical_name, slug, city, state, publication_status, verification_status)")
+    .eq("user_id", userId);
+
+  if (error || !data) return [];
+  const rows = data as unknown as BusinessManagerQueryResult[];
+  return rows
+    .filter((row): row is BusinessManagerQueryResult & { business: NonNullable<BusinessManagerQueryResult["business"]> } => Boolean(row.business))
+    .map((row) => ({
+      id: row.business.id,
+      canonical_name: row.business.canonical_name,
+      slug: row.business.slug,
+      city: row.business.city ?? "",
+      state: row.business.state ?? "",
+      publication_status: row.business.publication_status,
+      verification_status: row.business.verification_status,
+      managerRole: row.role || "owner",
+    }));
 }
 
 export async function resetManagedUserPassword(formData: FormData) {
