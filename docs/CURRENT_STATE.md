@@ -695,7 +695,7 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
     - Server-side normalization in `business-actions.ts` before inserting or updating listings in PostgreSQL.
   - **Staging Credential Hygiene & Security Gate 0 (PASS)**:
     - Rotated fixture passwords on staging VPS container using bcrypt.
-    - Disabled `/api/internal/demo-credentials` on staging and production (returns HTTP 404).
+    - Enabled `/api/internal/demo-credentials` on staging for prototype testing while strictly blocking production (HTTP 404).
     - Removed fallback plaintext passwords across all test scripts in `scripts/`.
   - **Category Taxonomy Management UI (`/admin/categories`, `CategoryManagementView.tsx`)**:
     - Summary metrics cards: Total, Active, Inactive, Top-Level, and In Use.
