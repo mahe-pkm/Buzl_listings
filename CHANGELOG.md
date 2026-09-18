@@ -8,8 +8,9 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ### Admin & Member Operational Dashboard Phase 1 (ADMIN-AND-MEMBER-DASHBOARD-P1) — 2026-09-18
 
-- **Feature Branch**: `feature/admin-member-dashboard-p1`.
-- **Status**: Complete & Verified locally; ready for operator review.
+- **Feature Branch**: `feature/admin-member-dashboard-p1` (Merged to `main` at `522cfe9`).
+- **Feature Commit**: `6d0b565`, **Review Commit**: `95d1229`, **Merge Commit**: `522cfe9`, **Main HEAD**: `522cfe9`, **Staging HEAD**: `522cfe9`.
+- **Status**: COMPLETE & Verified Live on Staging (`https://listing.rclk.in`).
 - **Scope**: Implemented role-aware operational dashboard experience on `/dashboard` for Platform Admin, Listing Manager, and Onboarding Member, while preserving the exact Business Owner dashboard experience. 100% existing schema, zero new database migrations, zero charting/analytics dependencies.
 - **Role-Aware Operational Views (`/dashboard`, `src/app/dashboard/page.tsx`)**:
   - **Platform Admin (`AdminDashboardView.tsx`)**:

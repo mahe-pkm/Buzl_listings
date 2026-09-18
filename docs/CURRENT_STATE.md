@@ -759,11 +759,17 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `node scripts/browser-smoke-test-listing-id.mjs` (local & staging): PASS (All suites passed)
 - **Database Migrations**: 1 new migration added (`20260918140000_listing_id_system.sql`).
 
-## Admin and Member Operational Dashboard Phase 1 (2026-09-18): IMPLEMENTED & VERIFIED LOCALLY
+## Admin and Member Operational Dashboard Phase 1 (2026-09-18): MERGED & VERIFIED LIVE
 
 - **Task**: ADMIN-AND-MEMBER-DASHBOARD-P1
-- **Branch**: `feature/admin-member-dashboard-p1`
-- **Status**: REVIEW_READY
+- **Branch**: `feature/admin-member-dashboard-p1` (merged to `main` at `522cfe9`)
+- **Status**: COMPLETE
+- **Commits**:
+  - Feature Commit: `6d0b565`
+  - Review Commit: `95d1229`
+  - Merge Commit: `522cfe9`
+  - Main HEAD: `522cfe9`
+  - Staging HEAD: `522cfe9`
 - **Scope**: Implemented first useful operational dashboard on `/dashboard` for Platform Admin, Buzl Listing Manager, and Buzl Onboarding Member, while strictly preserving the current Business Owner experience. Built entirely on existing schema with zero new migrations and zero external charting dependencies.
 - **Key Deliverables**:
   - **Role-Aware Dashboard Routing (`src/app/dashboard/page.tsx`)**:
@@ -792,16 +798,23 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
     - Parallel exact head queries for KPI counts (0 byte body payload).
     - PostgREST relational single-query fetching for listings with services, service areas, and media (no N+1 loops).
     - Category listing distribution metrics powered by `listCategories()`.
+- **Staging Deployment & Verification**:
+  - Pulled `main` on Hostinger staging VPS (`213.210.37.204`) at `/opt/buzl-listing/app` (HEAD: `522cfe9`).
+  - Built image `buzl-listing-app` via `docker compose -p buzl-listing -f docker-compose.yml -f docker-compose.app.yml build app`.
+  - Recreated container `buzl-listing-app-1` cleanly without touching unrelated containers.
+  - Staging Health endpoint `https://listing.rclk.in/api/health` confirmed HTTP 200 `{"status":"ok"}`.
+  - Staging Demo Credentials endpoint `https://listing.rclk.in/api/internal/demo-credentials` confirmed HTTP 200.
+  - Staging Indexing Guards confirmed (`X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow: /`, empty sitemap).
 - **Verification Results**:
   - `npm run lint`: PASS (0 errors)
   - `npm run build`: PASS (all 33 routes compiled cleanly with Turbopack)
   - `git diff --check`: PASS
   - `npx supabase test db`: PASS (7 suites, 63 tests pass)
-  - `node scripts/browser-smoke-test-dashboard-p1.mjs`: PASS (5 suites, 17 assertions pass)
-  - Regression Suites:
-    - `node scripts/browser-smoke-test-category-management.mjs`: PASS (13/13 suites pass)
-    - `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass)
-    - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass)
-    - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass)
-    - `node scripts/browser-smoke-test-listing-id.mjs`: PASS (6/6 suites pass)
+  - `node scripts/browser-smoke-test-dashboard-p1.mjs` (Local & Live Staging): PASS (5 suites, 17 assertions pass, 100%)
+  - Regression Suites (Local & Live Staging):
+    - `node scripts/browser-smoke-test-category-management.mjs`: PASS (13/13 suites pass, 100%)
+    - `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass, 100%)
+    - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass, 100%)
+    - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass, 100%)
+    - `node scripts/browser-smoke-test-listing-id.mjs`: PASS (6/6 suites pass, 100%)
 - **Database Migrations**: NONE (0 schema changes required).
