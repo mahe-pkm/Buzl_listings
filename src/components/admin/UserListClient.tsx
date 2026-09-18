@@ -374,7 +374,7 @@ export default function UserListClient({ initialUsers }: UserListClientProps) {
                   <td className="py-3.5 px-4 whitespace-nowrap">{getStatusBadge(user.accountStatus)}</td>
 
                   {/* Last Sign-in */}
-                  <td className="py-3.5 px-4 whitespace-nowrap text-xs text-[#5D6776]">
+                  <td className="py-3.5 px-4 whitespace-nowrap text-xs text-[#5D6776]" suppressHydrationWarning>
                     {user.lastSignInAt
                       ? new Date(user.lastSignInAt).toLocaleString(undefined, {
                           month: 'short',
@@ -471,7 +471,7 @@ export default function UserListClient({ initialUsers }: UserListClientProps) {
 
               {/* Card Footer: Last Sign In & Action Link */}
               <div className="flex items-center justify-between pt-2 border-t border-[#F2F5FA] text-xs">
-                <div className="text-[#5D6776]">
+                <div className="text-[#5D6776]" suppressHydrationWarning>
                   Sign-in:{' '}
                   {user.lastSignInAt
                     ? new Date(user.lastSignInAt).toLocaleDateString(undefined, {
