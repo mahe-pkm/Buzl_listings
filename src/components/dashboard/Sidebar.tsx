@@ -10,6 +10,15 @@ interface SidebarProps {
   isAdmin?: boolean;
   isBuzlMember?: boolean;
   memberId?: string | null;
+  canModerate?: boolean;
+  permissionPreset?: string | null;
+  pendingReviewCount?: number;
+}
+
+function formatPendingBadge(count?: number): string | null {
+  if (!count || count <= 0) return null;
+  if (count > 99) return '99+';
+  return String(count);
 }
 
 export default function Sidebar({
@@ -18,11 +27,22 @@ export default function Sidebar({
   isAdmin = false,
   isBuzlMember = false,
   memberId = null,
+  canModerate = false,
+  permissionPreset = null,
+  pendingReviewCount = 0,
 }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isInternal = isAdmin || isBuzlMember || role === 'admin' || role === 'buzl_member';
+  const isListingManager = isBuzlMember && permissionPreset === 'listing_manager';
+  const isOnboardingMember = isBuzlMember && permissionPreset === 'onboarding_member';
+
+  const listingsLabel = isListingManager
+    ? 'Listings'
+    : isOnboardingMember
+    ? 'My Listings'
+    : 'My Businesses';
 
   const navItems = [
     {
@@ -34,28 +54,51 @@ export default function Sidebar({
         </svg>
       ),
       active: pathname === '/dashboard',
+      badge: null,
     },
-    {
-      label: 'My Businesses',
-      href: '/dashboard/businesses',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      ),
-      active: pathname.startsWith('/dashboard/businesses') && pathname !== '/dashboard/businesses/new',
-    },
-    {
-      label: 'Add Business',
-      href: '/dashboard/businesses/new',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-      ),
-      active: pathname === '/dashboard/businesses/new',
-    },
+    ...(!isAdmin
+      ? [
+          {
+            label: listingsLabel,
+            href: '/dashboard/businesses',
+            icon: (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            ),
+            active: pathname.startsWith('/dashboard/businesses') && pathname !== '/dashboard/businesses/new',
+            badge: null,
+          },
+          {
+            label: 'Add Business',
+            href: '/dashboard/businesses/new',
+            icon: (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            ),
+            active: pathname === '/dashboard/businesses/new',
+            badge: null,
+          },
+        ]
+      : []),
   ];
+
+  const moderationBadge = formatPendingBadge(pendingReviewCount);
+
+  const moderationItem = canModerate
+    ? {
+        label: 'Moderation Queue',
+        href: '/review/businesses',
+        icon: (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+        ),
+        active: pathname.startsWith('/review/businesses'),
+        badge: moderationBadge,
+      }
+    : null;
 
   const internalItems = [
     ...(isAdmin
@@ -68,7 +111,20 @@ export default function Sidebar({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             ),
-            active: pathname.startsWith('/admin/businesses') && pathname !== '/admin/businesses/import',
+            active: pathname === '/admin/businesses' || (pathname.startsWith('/admin/businesses') && pathname !== '/admin/businesses/import'),
+            badge: null,
+          },
+          ...(moderationItem ? [moderationItem] : []),
+          {
+            label: 'Import Buzl Profile',
+            href: '/admin/businesses/import',
+            icon: (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            ),
+            active: pathname === '/admin/businesses/import',
+            badge: null,
           },
           {
             label: 'Users',
@@ -79,6 +135,7 @@ export default function Sidebar({
               </svg>
             ),
             active: pathname.startsWith('/admin/users') && pathname !== '/admin/users/new',
+            badge: null,
           },
           {
             label: 'Add User',
@@ -89,19 +146,23 @@ export default function Sidebar({
               </svg>
             ),
             active: pathname === '/admin/users/new',
+            badge: null,
           },
         ]
-      : []),
-    {
-      label: 'Import Buzl Profile',
-      href: '/admin/businesses/import',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-        </svg>
-      ),
-      active: pathname === '/admin/businesses/import',
-    },
+      : [
+          ...(moderationItem ? [moderationItem] : []),
+          {
+            label: 'Import Buzl Profile',
+            href: '/admin/businesses/import',
+            icon: (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            ),
+            active: pathname === '/admin/businesses/import',
+            badge: null,
+          },
+        ]),
   ];
 
   const sidebarContent = (
@@ -117,16 +178,26 @@ export default function Sidebar({
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm font-medium transition-colors ${
+                className={`flex items-center justify-between px-3 py-2.5 rounded-[8px] text-sm font-medium transition-colors ${
                   item.active
                     ? 'bg-[#ECF4FF] text-[#004AAD]'
                     : 'text-[#5D6776] hover:bg-[#F2F5FA] hover:text-[#2A3547]'
                 }`}
               >
-                <span className={item.active ? 'text-[#004AAD]' : 'text-[#7D8795]'}>
-                  {item.icon}
-                </span>
-                {item.label}
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={`shrink-0 ${item.active ? 'text-[#004AAD]' : 'text-[#7D8795]'}`}>
+                    {item.icon}
+                  </span>
+                  <span className="truncate">{item.label}</span>
+                </div>
+                {item.badge && (
+                  <span
+                    data-testid="pending-review-badge"
+                    className="ml-2 shrink-0 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF6DF] text-[#9A6700] border border-[#FFE7A8]"
+                  >
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -143,16 +214,26 @@ export default function Sidebar({
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-[8px] text-sm font-medium transition-colors ${
                     item.active
                       ? 'bg-[#ECF4FF] text-[#004AAD]'
                       : 'text-[#5D6776] hover:bg-[#F2F5FA] hover:text-[#2A3547]'
                   }`}
                 >
-                  <span className={item.active ? 'text-[#004AAD]' : 'text-[#7D8795]'}>
-                    {item.icon}
-                  </span>
-                  {item.label}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={`shrink-0 ${item.active ? 'text-[#004AAD]' : 'text-[#7D8795]'}`}>
+                      {item.icon}
+                    </span>
+                    <span className="truncate">{item.label}</span>
+                  </div>
+                  {item.badge && (
+                    <span
+                      data-testid="pending-review-badge"
+                      className="ml-2 shrink-0 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF6DF] text-[#9A6700] border border-[#FFE7A8]"
+                    >
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               ))}
             </nav>
@@ -176,7 +257,15 @@ export default function Sidebar({
                   : 'bg-[#ECF4FF] text-[#004AAD] border-[#BEDBFE]'
               }`}
             >
-              {role === 'admin' || isAdmin ? 'Admin' : role === 'buzl_member' || isBuzlMember ? 'Buzl Member' : 'Owner'}
+              {role === 'admin' || isAdmin
+                ? 'Admin'
+                : role === 'buzl_member' || isBuzlMember
+                ? permissionPreset === 'listing_manager'
+                  ? 'Listing Manager'
+                  : permissionPreset === 'onboarding_member'
+                  ? 'Onboarding Member'
+                  : 'Buzl Member'
+                : 'Owner'}
             </span>
           </div>
           {memberId ? (

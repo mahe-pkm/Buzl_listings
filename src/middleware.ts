@@ -75,7 +75,7 @@ export async function middleware(request: NextRequest) {
     if (isReviewRoute) {
       const { data: reviewProfile } = await supabase.from('profiles').select('permission_preset').eq('id', user.id).maybeSingle();
       const canReview = role === 'admin' || (role === 'buzl_member' && reviewProfile?.permission_preset === 'listing_manager');
-      if (!canReview) return NextResponse.redirect(new URL(role === 'buzl_member' ? '/admin/businesses/import' : '/dashboard', request.url));
+      if (!canReview) return NextResponse.redirect(new URL('/dashboard', request.url));
     } else if (isImportRoute) {
       if (!isInternalUser) {
         return NextResponse.redirect(new URL("/dashboard", request.url));

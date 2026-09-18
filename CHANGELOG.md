@@ -6,6 +6,35 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Internal Dashboard Phase A: Navigation & Moderation Queue Discoverability — 2026-09-18
+
+- **Feature Branch**: `feature/internal-dashboard-navigation`
+- **Scope**: Expose Moderation Queue in role-aware navigation with pending-review count badge, add protected `/review` layout shell, fix Listing Manager review/edit discoverability bug, and preserve all RBAC security invariants.
+- **Role-Aware Navigation & Discoverability (`Sidebar.tsx`)**:
+  - Moderation Queue (`/review/businesses`) exposed to Platform Admins and Listing Managers with live pending-review count badge.
+  - Tailored views per role:
+    - *Platform Admin*: Overview, All Listings (Admin), Moderation Queue, Import Buzl Profile, Users, Add User.
+    - *Listing Manager*: Overview, Listings, Add Business, Moderation Queue, Import Buzl Profile (Users hidden).
+    - *Onboarding Member*: Overview, My Listings, Add Business, Import Buzl Profile (Moderation Queue and Users hidden).
+    - *Business Owner*: Overview, My Businesses, Add Business (Internal sections hidden).
+- **Pending Review Count Badge & Data Access (`business-actions.ts`, `Sidebar.tsx`)**:
+  - Implemented `getPendingReviewCount()` querying `publication_status = 'pending'` using `{ count: 'exact', head: true }`.
+  - Zero row payloads; authorized internal callers only (`isAdmin` or `listing.publish`); safe error logging without credential leaks.
+  - Formatted badge: hidden on `0`, exact count for `1–99`, `99+` for `100+`, rendered in compact Buzl amber pill badge styling.
+- **Protected Review Layout (`src/app/review/layout.tsx`)**:
+  - Layout shell rendering the standard sidebar navigation.
+  - Enforces server-side authentication redirecting unauthenticated users to `/login?redirect=/review/businesses`.
+  - Enforces server-side moderation authorization redirecting unauthorized users (Onboarding Members, Business Owners) to `/dashboard`.
+- **Edit Permission Bug Fix (`BusinessTableView.tsx`, `AdminBusinessRowActions.tsx`)**:
+  - Decoupled `canEdit` from deletion permissions in `BusinessTableView.tsx`.
+  - Explicitly passed `edit: user.permissions.includes('listing.edit')` from authenticated context.
+  - Listing Managers can now view listings and edit listing details directly from the moderation queue.
+- **Targeted Cache Revalidation (`business-actions.ts`)**:
+  - Added targeted revalidation for `/review/businesses` on `transitionPublication`, `setVerification`, `deleteBusiness`, `createBusiness`, `updateBusiness`, and `createDraftFromImport`.
+- **Automated Verification (`scripts/browser-smoke-test-internal-navigation.mjs`)**:
+  - 12 comprehensive test suites validating Admin navigation, Listing Manager navigation, Onboarding Member navigation, Business Owner navigation, Direct URL RBAC denial, Listing Manager capabilities, explicit edit authorization, badge formatting, count freshness after record creation/deletion, and mobile responsiveness across 375px, 390px, and 430px viewports.
+- **Database Migrations**: None (0 schema changes).
+
 ### Platform Admin User Management UX — 2026-09-18
 
 - **Feature Branch**: `feature/admin-user-management-ux` merged into `main` (`8fc99dd`).

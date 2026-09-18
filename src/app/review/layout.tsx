@@ -3,18 +3,22 @@ import { redirect } from 'next/navigation';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { getPendingReviewCount } from '@/lib/business-actions';
 
-export default async function DashboardLayout({
+export default async function ReviewLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const user = await getSessionUser();
   if (!user) {
-    redirect('/login');
+    redirect('/login?redirect=/review/businesses');
   }
 
   const canModerate = user.isAdmin || user.permissions.includes('listing.publish');
-  const pendingReviewCount = canModerate ? await getPendingReviewCount() : 0;
+  if (!canModerate) {
+    redirect('/dashboard');
+  }
+
+  const pendingReviewCount = await getPendingReviewCount();
 
   return (
     <div className="flex min-h-screen bg-[#F2F5FA]">

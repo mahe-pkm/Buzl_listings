@@ -359,6 +359,7 @@ export async function createDraftFromImport({
   revalidatePath('/dashboard/businesses');
   revalidatePath('/admin/businesses');
   revalidatePath('/admin/businesses/import');
+  revalidatePath('/review/businesses');
 
   return {
     success: true,
@@ -556,6 +557,7 @@ export async function createBusiness(data: BusinessFormData) {
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/businesses');
   revalidatePath('/admin/businesses');
+  revalidatePath('/review/businesses');
 
   return { success: true, businessId };
 }
@@ -752,6 +754,7 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
   revalidatePath('/dashboard/businesses');
   revalidatePath(`/dashboard/businesses/${businessId}/edit`);
   revalidatePath('/admin/businesses');
+  revalidatePath('/review/businesses');
 
   return { success: true, businessId };
 }
@@ -776,6 +779,7 @@ export async function transitionPublication(businessId: string, nextStatus: Publ
   revalidatePath('/dashboard/businesses');
   revalidatePath(`/dashboard/businesses/${businessId}/edit`);
   revalidatePath('/admin/businesses');
+  revalidatePath('/review/businesses');
 
   return { success: true };
 }
@@ -800,6 +804,7 @@ export async function setVerification(businessId: string, nextStatus: Verificati
   revalidatePath('/dashboard/businesses');
   revalidatePath(`/dashboard/businesses/${businessId}/edit`);
   revalidatePath('/admin/businesses');
+  revalidatePath('/review/businesses');
 
   return { success: true };
 }
@@ -820,6 +825,35 @@ export async function deleteBusiness(businessId: string) {
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/businesses');
   revalidatePath('/admin/businesses');
+  revalidatePath('/review/businesses');
 
   return { success: true };
+}
+
+export async function getPendingReviewCount(): Promise<number> {
+  try {
+    const user = await getSessionUser();
+    if (!user || (!user.isAdmin && !user.permissions.includes('listing.publish'))) {
+      return 0;
+    }
+
+    const supabase = await createClient();
+    const { count, error } = await supabase
+      .from('businesses')
+      .select('id', { count: 'exact', head: true })
+      .eq('publication_status', 'pending');
+
+    if (error) {
+      console.error('[business-actions:getPendingReviewCount] Failed to query pending review count:', error.message);
+      return 0;
+    }
+
+    return count ?? 0;
+  } catch (err) {
+    console.error(
+      '[business-actions:getPendingReviewCount] Unexpected error querying pending review count:',
+      err instanceof Error ? err.message : 'Unknown error'
+    );
+    return 0;
+  }
 }

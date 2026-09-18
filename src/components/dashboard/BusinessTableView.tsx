@@ -24,13 +24,19 @@ export interface BusinessTableRow {
 interface BusinessTableViewProps {
   businesses: BusinessTableRow[];
   isAdmin?: boolean;
-  moderationPermissions?: { publish: boolean; suspend: boolean; verify: boolean; delete: boolean };
+  moderationPermissions?: {
+    publish: boolean;
+    suspend: boolean;
+    verify: boolean;
+    delete: boolean;
+    edit?: boolean;
+  };
 }
 
 export default function BusinessTableView({ businesses, isAdmin = false, moderationPermissions }: BusinessTableViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const canEdit = !isAdmin || moderationPermissions?.delete !== false;
+  const canEdit = moderationPermissions ? Boolean(moderationPermissions.edit) : true;
 
   const filteredList = useMemo(() => {
     return businesses.filter((b) => {
