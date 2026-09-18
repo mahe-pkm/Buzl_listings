@@ -7,43 +7,54 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `ADMIN-USER-MANAGEMENT-UX` |
-| Task Name | Admin User Management UX |
-| Status | **COMPLETE** |
+| Task ID | `ADMIN-INTERNAL-DASHBOARD-AUDIT` |
+| Task Name | Admin and Buzl Member Dashboard Capability Audit |
+| Status | **REVIEW_READY** |
 | Current Agent | `antigravity` |
-| Started From Commit | `2c828805bf9e6d33f11ab7934edf4819709b0492` |
-| Latest Commit | `f7f8a4a7e63b90cb92c918ba8c7be70f1c3c0362` |
+| Started From Commit | `79b5ba03805ddd841e54f833eaec8455425b1ab5` |
+| Latest Commit | `79b5ba03805ddd841e54f833eaec8455425b1ab5` |
 | Branch | `main` |
-| Started At | 2026-09-18T08:31:32+05:30 |
-| Last Updated | 2026-09-18T09:28:38+05:30 |
+| Started At | 2026-09-18T09:34:09+05:30 |
+| Last Updated | 2026-09-18T09:38:00+05:30 |
 
 ## Objective
 
-—
+Comprehensive read-only product, UX, and permission audit of Platform Admin and Buzl Member dashboards, role model, category management, listing management, moderation, and quality tools.
 
 ## Allowed Files
 
-- —
+- `docs/INTERNAL_DASHBOARD_CAPABILITY_AUDIT.md`
+- `docs/ADMIN_BUZL_MEMBER_FEATURE_MATRIX.md`
+- `docs/ACTIVE_TASK.md`
+- `docs/CURRENT_STATE.md`
 
 ## Completed Work
 
-- Platform Admin User Management UX merged to main, deployed to staging VPS (buzl-listing-app-1 rebuilt and active on https://listing.rclk.in), 9/9 browser smoke suites passing, indexing defense verified, zero migrations, zero disruption to other containers.
+- 1. Comprehensive architectural mapping of all internal routes (`/dashboard`, `/admin`, `/admin/businesses`, `/admin/businesses/import`, `/internal/businesses/import`, `/admin/users`, `/admin/users/new`, `/admin/users/[id]`, `/review/businesses`).
+- 2. Role and permission matrix mapping (`admin`, `buzl_member` with `onboarding_member` vs `listing_manager` presets, and `business_owner`).
+- 3. Category Management audit: Identified as MISSING INTERNAL MANAGEMENT CAPABILITY (database schema, foreign keys, triggers, and admin RLS are 100% ready, but zero UI/actions exist).
+- 4. Moderation Queue audit: Identified `/review/businesses` as existing and functional, but missing from Sidebar Navigation.
+- 5. Created authoritative audit document `docs/INTERNAL_DASHBOARD_CAPABILITY_AUDIT.md`.
+- 6. Created comprehensive capability and priority matrix `docs/ADMIN_BUZL_MEMBER_FEATURE_MATRIX.md`.
+- 7. Zero runtime code modifications, zero database migrations (strictly read-only analysis).
 
 ## Remaining Work
 
-- —
+- Operator/stakeholder review of audit documents and approval of implementation roadmap.
 
 ## Checks / Tests
 
-- npm run lint (0 errors), npm run build (32 routes), git diff --check (clean), npx supabase test db (5 suites, 38 tests), node scripts/browser-smoke-test-admin-users.mjs (9 suites pass against staging https://listing.rclk.in, 100%), /api/health HTTP 200, X-Robots-Tag: noindex, robots.txt: Disallow /, sitemap.xml empty
+- Read-only inspection; working tree clean; git diff --check clean.
 
 ## Known Issues
 
-- —
+- Category Management currently requires direct SQL/migration intervention (P0).
+- Moderation Queue `/review/businesses` not linked in Sidebar Navigation (P0).
+- Admin index route `/admin` is a pure redirect to `/admin/businesses` rather than a unified overview (P1).
 
 ## Next Exact Action
 
-No further action — task complete.
+Await user review and approval of the audit and proposed implementation order before initiating Phase A/B tasks.
 
 ## Handoff Notes
 

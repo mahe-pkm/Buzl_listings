@@ -609,4 +609,18 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - Staging Indexing Guards: `X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow /`, `sitemap.xml`: empty `<urlset>`
   - Isolation & Zero Interruption: Zero database migrations; no touching of production containers (`buzl-backend-prod`, `buzl-postgres-prod`).
 
+## Admin and Buzl Member Dashboard Capability Audit (2026-09-18): COMPLETE & REVIEW_READY
 
+- **Task**: `ADMIN-INTERNAL-DASHBOARD-AUDIT`
+- **Branch**: `main`
+- **Status**: `REVIEW_READY`
+- **Scope**: Comprehensive read-only product, UX, and permission audit of Platform Admin and Buzl Member dashboards, role model, category management, listing management, moderation, and quality tools.
+- **Key Deliverables**:
+  - `docs/INTERNAL_DASHBOARD_CAPABILITY_AUDIT.md`: Authoritative audit document covering current architecture, role model, missing capabilities, category management proposal, and phased roadmap.
+  - `docs/ADMIN_BUZL_MEMBER_FEATURE_MATRIX.md`: Complete capability, permission, priority (P0-P3), and architecture dependency matrix across Admin, Listing Manager, Onboarding Member, and Business Owner roles.
+- **Key Findings**:
+  - **Category Management UI is MISSING (P0)**: Database table `public.categories`, RLS policies, foreign keys, and trigger `categories_prevent_published_deactivation` are 100% ready, but zero UI or server actions exist. All taxonomy changes currently require raw SQL.
+  - **Moderation Queue Navigation Blindspot (P0)**: Route `/review/businesses` exists with publication permissions for Listing Managers and Admins, but is completely missing from `Sidebar.tsx`.
+  - **Platform Admin Dashboard Overview is Missing (P1)**: `/admin` redirects to `/admin/businesses` rather than providing an administrative overview.
+- **Runtime Code Changes**: None (strictly read-only analysis).
+- **Database Migrations**: None.
