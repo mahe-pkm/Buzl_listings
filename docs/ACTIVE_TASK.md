@@ -7,47 +7,56 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `CATEGORY-MANAGEMENT` |
-| Task Name | Internal Dashboard Phase B Category Management |
-| Status | **COMPLETE** |
+| Task ID | `LISTING-ID-SYSTEM` |
+| Task Name | Permanent Buzl Listing ID System |
+| Status | **REVIEW_READY** |
 | Current Agent | `antigravity` |
-| Started From Commit | `e5917ab7433adc345f7bcb4cadcaf1d0a1693a41` |
-| Latest Commit | `96cb866f55b8ee23e5d0a4640a7cd7acd475be16` |
-| Branch | `main` |
-| Started At | 2026-09-18T10:25:52+05:30 |
-| Last Updated | 2026-09-18T12:34:54+05:30 |
+| Started From Commit | `9236892b2ae7ad971f0f3a9aaf08be08cbf69296` |
+| Latest Commit | `9236892b2ae7ad971f0f3a9aaf08be08cbf69296` |
+| Branch | `feature/listing-id-system` |
+| Started At | 2026-09-18T12:59:11+05:30 |
+| Last Updated | 2026-09-18T13:50:00+05:30 |
 
 ## Objective
 
-Build internal Category Management system for Platform Admin (manage taxonomy) and Listing Manager / Onboarding Member (read-only reference), preserve database protections, prevent unsafe deactivation of published categories, ensure credential hygiene, and verify via browser and DB tests. Zero DB migrations.
+Implement permanent human-readable Buzl Listing ID system (BZL-000001) with database sequence, backfill, immutability, UI integration, pgTAP and browser tests.
 
 ## Allowed Files
 
-- src/app/admin/categories/**, src/components/categories/**, src/lib/category-actions.ts, src/components/dashboard/Sidebar.tsx, src/app/api/internal/demo-credentials/route.ts, scripts/**, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
+- supabase/migrations/**, supabase/tests/**, src/**, scripts/**, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
 
 ## Completed Work
 
-- Implemented Category Management taxonomy UI (/admin/categories, CategoryManagementView, accessible Create/Edit modal, deactivation safety guard dialog), category-actions.ts server actions with ancestry cycle prevention and PostgreSQL trigger error catching, updated Sidebar navigation and middleware RBAC, fixed website URL auto-normalization on client & server, hardened staging credentials, created pgTAP tests and 13-suite Playwright browser smoke test.
+- Database sequence and constraints implemented
+- Database trigger functions to enforce code allocation and immutability
+- 63 pgTAP tests added to verify listing ID creation and backfill behavior
+- Listing code added to `src/types/business.ts` and `BusinessManagerQueryResult`
+- Updated dashboard queries and UI to render the badge
+- Updated business form and ManageUserForm to display listing IDs
+- Smoke test script created for verification
 
 ## Remaining Work
 
-- —
+- Playwright smoke test pending local run confirmation
+- Final git commit
 
 ## Checks / Tests
 
-- npm run lint: PASS (0 errors), npm run build: PASS (all 33 routes compiled), npx supabase test db: PASS (6 suites, 43 tests pass), node scripts/browser-smoke-test-category-management.mjs: PASS (13/13 suites pass, 100%), regression smoke tests: PASS.
+- TypeScript build passed
+- pgTAP tests passed
+- ESLint passed
 
 ## Known Issues
 
-- —
+- None
 
 ## Next Exact Action
 
-No further action — task complete.
+- Awaiting user review
 
 ## Handoff Notes
 
-—
+- Do NOT merge to main, deploy staging, or deploy production per user rules
 
 ## Agent Handoff Rule
 

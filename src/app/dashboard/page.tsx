@@ -15,7 +15,7 @@ export default async function DashboardPage() {
   // Fetch businesses managed by current user or all if admin
   const { data: businesses } = await supabase
     .from('businesses')
-    .select('id, canonical_name, slug, location_mode, city, state, publication_status, verification_status, updated_at, primary_category_id, categories(name)')
+    .select('id, listing_code, canonical_name, slug, location_mode, city, state, publication_status, verification_status, updated_at, primary_category_id, categories(name)')
     .order('updated_at', { ascending: false });
 
   const list = businesses || [];
@@ -130,9 +130,14 @@ export default async function DashboardPage() {
                     return (
                       <tr key={b.id} className="hover:bg-[#F2F5FA]/50 transition-colors">
                         <td className="py-3.5 px-6 font-semibold text-[#2A3547]">
-                          <Link href={`/dashboard/businesses/${b.id}/edit`} className="hover:text-[#004AAD]">
-                            {b.canonical_name}
-                          </Link>
+                          <div className="flex items-center gap-2">
+                            <Link href={`/dashboard/businesses/${b.id}/edit`} className="hover:text-[#004AAD]">
+                              {b.canonical_name}
+                            </Link>
+                            <span className="font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                              {b.listing_code}
+                            </span>
+                          </div>
                         </td>
                         <td className="py-3.5 px-4 text-[#5D6776]">{catName || '—'}</td>
                         <td className="py-3.5 px-4">

@@ -9,6 +9,7 @@ import { PublicationStatus, VerificationStatus } from '@/types/business';
 
 export interface BusinessTableRow {
   id: string;
+  listing_code: string;
   canonical_name: string;
   slug: string;
   location_mode: string;
@@ -43,6 +44,7 @@ export default function BusinessTableView({ businesses, isAdmin = false, moderat
       const matchesSearch =
         searchTerm.trim() === '' ||
         b.canonical_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        b.listing_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (b.categoryName && b.categoryName.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -104,12 +106,17 @@ export default function BusinessTableView({ businesses, isAdmin = false, moderat
                 return (
                   <tr key={b.id} className="hover:bg-[#F2F5FA]/50 transition-colors">
                     <td className="py-3.5 px-6 font-semibold text-[#2A3547]">
-                      {canEdit ? (
-                        <Link href={`/dashboard/businesses/${b.id}/edit`} className="hover:text-[#004AAD] block">
-                          {b.canonical_name}
-                        </Link>
-                      ) : b.canonical_name}
-                      <span className="text-[11px] text-[#7D8795] font-normal">
+                      <div className="flex items-center gap-2 mb-1">
+                        {canEdit ? (
+                          <Link href={`/dashboard/businesses/${b.id}/edit`} className="hover:text-[#004AAD] block">
+                            {b.canonical_name}
+                          </Link>
+                        ) : b.canonical_name}
+                        <span className="font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                          {b.listing_code}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-[#7D8795] font-normal block">
                         /business/{b.slug}
                       </span>
                     </td>
