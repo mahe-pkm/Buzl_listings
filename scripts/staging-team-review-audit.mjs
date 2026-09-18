@@ -192,38 +192,8 @@ async function run() {
     await ownerPage.fill('#year_established', '2023');
     await ownerPage.click('button:has-text("Next Step →")');
 
-    // Step 2: Contact Information & GBP Link
-    assert(await ownerPage.locator('h2:has-text("Step 2: Contact Information")').isVisible(), 'Step 2 is "Step 2: Contact Information"');
-    assert(await ownerPage.locator('label[for="google_business_profile_url"]:has-text("Google Business Profile Link")').isVisible(), 'Google Business Profile Link is visible');
-    await ownerPage.fill('#primary_phone', '+91 98765 43210');
-    await ownerPage.fill('#business_contact_email', 'contact@teamreview.test');
-    await ownerPage.fill('#google_business_profile_url', 'https://maps.app.goo.gl/teamReview123');
-    await ownerPage.click('button:has-text("Next Step →")');
-
-    // Step 3: Category & Services
-    assert(await ownerPage.locator('label:has-text("What services does your business offer?")').isVisible(), 'Step 3 asks "What services does your business offer?"');
-    assert(await ownerPage.locator('text=No services added yet').isVisible(), 'Friendly empty state when 0 services');
-    await ownerPage.fill('input[placeholder*="Service Name"]', 'Team Consultation');
-    await ownerPage.fill('textarea[placeholder*="Service Description"]', 'In-depth consultation for local business optimization.');
-    await ownerPage.click('button:has-text("+ Add Service")');
-    assert(await ownerPage.locator('text=Team Consultation').isVisible(), 'Service added successfully');
-    await ownerPage.click('button:has-text("Next Step →")');
-
-    // Step 4: Products & Offerings
-    assert(await ownerPage.locator('h2:has-text("Step 4: Products & Offerings (Optional)")').isVisible(), 'Step 4 is "Step 4: Products & Offerings (Optional)"');
-    assert(await ownerPage.locator('text=No products added yet').isVisible(), 'Friendly empty state when 0 products');
-    await ownerPage.fill('input[placeholder*="Ergonomic"]', 'Buzl Starter Pack');
-    await ownerPage.fill('textarea[placeholder*="Key specifications"]', 'Starter package for digital directory visibility.');
-    await ownerPage.click('button:has-text("+ Add Product")');
-    assert(await ownerPage.locator('text=Buzl Starter Pack').isVisible(), 'Product added successfully');
-    await ownerPage.click('button:has-text("Next Step →")');
-
-    // Step 5: Media & Photo Gallery
-    assert(await ownerPage.locator('h2:has-text("Step 5: Media & Photo Gallery")').isVisible(), 'Step 5 Media is visible');
-    await ownerPage.click('button:has-text("Next Step →")');
-
-    // Step 6: Location & Coverage Mode (Zero Jargon)
-    assert(await ownerPage.locator('h2:has-text("Step 6: Location & Coverage Mode")').isVisible(), 'Step 6 Location is visible');
+    // Step 2: Location & Coverage Mode (Zero Jargon)
+    assert(await ownerPage.locator('h2:has-text("Step 2: Location & Coverage Mode")').isVisible(), 'Step 2 Location is visible');
     assert(await ownerPage.locator('text=PostGIS').count() === 0, 'Zero instances of "PostGIS" jargon');
     assert(await ownerPage.locator('text=Geospatial Coordinates').count() === 0, 'Zero instances of "Geospatial Coordinates" jargon');
     const serviceAreaModeBtn = ownerPage.locator('button:has-text("Service-Area Only")');
@@ -233,6 +203,36 @@ async function run() {
     await ownerPage.fill('#country', 'India');
     await ownerPage.fill('input[placeholder="Enter coverage area..."]', 'South Delhi');
     await ownerPage.click('button:has-text("Add Area")');
+    await ownerPage.click('button:has-text("Next Step →")');
+
+    // Step 3: Contact Information & GBP Link
+    assert(await ownerPage.locator('h2:has-text("Step 3: Contact Information")').isVisible(), 'Step 3 is "Step 3: Contact Information"');
+    assert(await ownerPage.locator('label[for="google_business_profile_url"]:has-text("Google Business Profile Link")').isVisible(), 'Google Business Profile Link is visible');
+    await ownerPage.fill('#primary_phone', '+91 98765 43210');
+    await ownerPage.fill('#business_contact_email', 'contact@teamreview.test');
+    await ownerPage.fill('#google_business_profile_url', 'https://maps.app.goo.gl/teamReview123');
+    await ownerPage.click('button:has-text("Next Step →")');
+
+    // Step 4: Category & Services
+    assert(await ownerPage.locator('label:has-text("What services does your business offer?")').isVisible(), 'Step 4 asks "What services does your business offer?"');
+    assert(await ownerPage.locator('text=No services added yet').isVisible(), 'Friendly empty state when 0 services');
+    await ownerPage.fill('input[placeholder*="Service Name"]', 'Team Consultation');
+    await ownerPage.fill('textarea[placeholder*="Service Description"]', 'In-depth consultation for local business optimization.');
+    await ownerPage.click('button:has-text("+ Add Service")');
+    assert(await ownerPage.locator('text=Team Consultation').isVisible(), 'Service added successfully');
+    await ownerPage.click('button:has-text("Next Step →")');
+
+    // Step 5: Products & Offerings
+    assert(await ownerPage.locator('h2:has-text("Step 5: Products & Offerings (Optional)")').isVisible(), 'Step 5 is "Step 5: Products & Offerings (Optional)"');
+    assert(await ownerPage.locator('text=No products added yet').isVisible(), 'Friendly empty state when 0 products');
+    await ownerPage.fill('input[placeholder*="Ergonomic"]', 'Buzl Starter Pack');
+    await ownerPage.fill('textarea[placeholder*="Key specifications"]', 'Starter package for digital directory visibility.');
+    await ownerPage.click('button:has-text("+ Add Product")');
+    assert(await ownerPage.locator('text=Buzl Starter Pack').isVisible(), 'Product added successfully');
+    await ownerPage.click('button:has-text("Next Step →")');
+
+    // Step 6: Media & Photo Gallery
+    assert(await ownerPage.locator('h2:has-text("Step 6: Media & Photo Gallery")').isVisible(), 'Step 6 Media is visible');
     await ownerPage.click('button:has-text("Next Step →")');
 
     // Step 7: Hours & Social Links

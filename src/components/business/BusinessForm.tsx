@@ -52,11 +52,11 @@ const DEFAULT_HOURS = [
 
 const STEPS = [
   { id: 1, label: 'Business Details' },
-  { id: 2, label: 'Contact' },
-  { id: 3, label: 'Category & Services' },
-  { id: 4, label: 'Products' },
-  { id: 5, label: 'Media & Gallery' },
-  { id: 6, label: 'Location' },
+  { id: 2, label: 'Location' },
+  { id: 3, label: 'Contact' },
+  { id: 4, label: 'Category & Services' },
+  { id: 5, label: 'Products' },
+  { id: 6, label: 'Media & Gallery' },
   { id: 7, label: 'Hours & Social' },
   { id: 8, label: 'Preview & Submit' },
 ];
@@ -525,44 +525,6 @@ export default function BusinessForm({
     }
 
     if (activeStep === 2) {
-      const digits = formData.primary_phone.replace(/[^0-9]/g, '');
-      if (!digits || digits.length < 7 || digits.length > 20) {
-        setErrorMsg('Primary Phone must contain between 7 and 20 digits.');
-        return false;
-      }
-      if (formData.google_business_profile_url?.trim()) {
-        if (!/^https?:\/\//i.test(formData.google_business_profile_url.trim())) {
-          setErrorMsg('Google Business Profile URL must start with http:// or https://');
-          return false;
-        }
-      }
-      if (formData.website_url?.trim()) {
-        if (!/^https?:\/\//i.test(formData.website_url.trim())) {
-          setErrorMsg('Website URL must start with http:// or https://');
-          return false;
-        }
-      }
-    }
-
-    if (activeStep === 3) {
-      if (!formData.primary_category_id) {
-        setErrorMsg('Please select a Primary Category.');
-        return false;
-      }
-      if ((formData.services || []).length > 20) {
-        setErrorMsg('A business cannot have more than 20 services.');
-        return false;
-      }
-    }
-
-    if (activeStep === 4) {
-      if ((formData.products || []).length > 20) {
-        setErrorMsg('A business cannot have more than 20 products.');
-        return false;
-      }
-    }
-
-    if (activeStep === 6) {
       if (!formData.city.trim() || !formData.state.trim() || !formData.country.trim()) {
         setErrorMsg('City, State, and Country are required.');
         return false;
@@ -590,6 +552,44 @@ export default function BusinessForm({
           setErrorMsg('Please add at least one named service area (e.g. city district or coverage region).');
           return false;
         }
+      }
+    }
+
+    if (activeStep === 3) {
+      const digits = formData.primary_phone.replace(/[^0-9]/g, '');
+      if (!digits || digits.length < 7 || digits.length > 20) {
+        setErrorMsg('Primary Phone must contain between 7 and 20 digits.');
+        return false;
+      }
+      if (formData.google_business_profile_url?.trim()) {
+        if (!/^https?:\/\//i.test(formData.google_business_profile_url.trim())) {
+          setErrorMsg('Google Business Profile URL must start with http:// or https://');
+          return false;
+        }
+      }
+      if (formData.website_url?.trim()) {
+        if (!/^https?:\/\//i.test(formData.website_url.trim())) {
+          setErrorMsg('Website URL must start with http:// or https://');
+          return false;
+        }
+      }
+    }
+
+    if (activeStep === 4) {
+      if (!formData.primary_category_id) {
+        setErrorMsg('Please select a Primary Category.');
+        return false;
+      }
+      if ((formData.services || []).length > 20) {
+        setErrorMsg('A business cannot have more than 20 services.');
+        return false;
+      }
+    }
+
+    if (activeStep === 5) {
+      if ((formData.products || []).length > 20) {
+        setErrorMsg('A business cannot have more than 20 products.');
+        return false;
       }
     }
 
@@ -890,695 +890,11 @@ export default function BusinessForm({
           </div>
         )}
 
-        {/* Step 2: Contact / NAP */}
+        {/* Step 2: Location */}
         {activeStep === 2 && (
           <div className="space-y-5">
             <div>
-              <h2 className="text-base font-bold text-[#2A3547]">Step 2: Contact Information</h2>
-              <p className="text-xs text-[#5D6776] mt-1">
-                Official business contact details. Note: Business contact email is private by default and strictly independent of your login account.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="primary_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  Primary Phone <span className="text-[#E36B5D]">*</span>
-                </label>
-                <input
-                  id="primary_phone"
-                  name="primary_phone"
-                  type="text"
-                  value={formData.primary_phone}
-                  onChange={(e) => updateField('primary_phone', e.target.value)}
-                  placeholder="+91 98765 43210"
-                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
-                />
-                <p className="text-[11px] text-[#7D8795] mt-1">
-                  Primary citation phone displayed publicly.
-                </p>
-              </div>
-
-              <div>
-                <label htmlFor="alternate_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  Alternate Phone
-                </label>
-                <input
-                  id="alternate_phone"
-                  name="alternate_phone"
-                  type="text"
-                  value={formData.alternate_phone}
-                  onChange={(e) => updateField('alternate_phone', e.target.value)}
-                  placeholder="+91 11 2345 6789"
-                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="whatsapp_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  WhatsApp Number
-                </label>
-                <input
-                  id="whatsapp_phone"
-                  name="whatsapp_phone"
-                  type="text"
-                  value={formData.whatsapp_phone}
-                  onChange={(e) => updateField('whatsapp_phone', e.target.value)}
-                  placeholder="+91 98765 43210"
-                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="website_url" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  Official Website URL
-                </label>
-                <input
-                  id="website_url"
-                  name="website_url"
-                  type="url"
-                  value={formData.website_url}
-                  onChange={(e) => updateField('website_url', e.target.value)}
-                  placeholder="https://example.com"
-                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
-                />
-              </div>
-
-              {/* Google Business Profile Link */}
-              <div className="md:col-span-2">
-                <label htmlFor="google_business_profile_url" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  Google Business Profile Link <span className="text-[11px] font-normal text-[#7D8795]">(Optional)</span>
-                </label>
-                <div className="relative">
-                  <input
-                    id="google_business_profile_url"
-                    name="google_business_profile_url"
-                    type="url"
-                    value={formData.google_business_profile_url}
-                    onChange={(e) => updateField('google_business_profile_url', e.target.value)}
-                    placeholder="https://maps.app.goo.gl/... or https://google.com/maps/place/..."
-                    className="w-full pl-9 pr-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="w-4 h-4 text-[#EA4335]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    </svg>
-                  </div>
-                </div>
-                <p className="text-[11px] text-[#7D8795] mt-1">
-                  Paste the link to your business on Google. This will appear as &quot;View on Google&quot; on your public listing.
-                </p>
-              </div>
-
-              <div className="md:col-span-2 p-4 rounded-[8px] bg-[#F2F5FA] border border-[#DCE2E8] space-y-3">
-                <div>
-                  <label htmlFor="business_contact_email" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                    Business Contact Email (Optional)
-                  </label>
-                  <input
-                    id="business_contact_email"
-                    name="business_contact_email"
-                    type="email"
-                    value={formData.business_contact_email}
-                    onChange={(e) => updateField('business_contact_email', e.target.value)}
-                    placeholder="contact@business.com"
-                    className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                  />
-                  <p className="text-[11px] text-[#7D8795] mt-1">
-                    Strict privacy rule: Account login email is never exposed. Only enter an email intended for public communication.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="checkbox"
-                    id="show_email"
-                    checked={formData.show_email}
-                    onChange={(e) => updateField('show_email', e.target.checked)}
-                    className="w-4 h-4 rounded text-[#004AAD] border-[#DCE2E8] focus:ring-[#004AAD]"
-                  />
-                  <label htmlFor="show_email" className="text-xs font-medium text-[#2A3547] cursor-pointer">
-                    Show this business email on public listing page
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Category & Services */}
-        {activeStep === 3 && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-base font-bold text-[#2A3547]">Step 3: Primary Category & Services</h2>
-              <p className="text-xs text-[#5D6776] mt-1">
-                Select your single primary curated category and define services offered (up to 20).
-              </p>
-            </div>
-
-            <div className="space-y-5">
-              <div>
-                <label htmlFor="primary_category_id" className="block text-xs font-semibold text-[#2A3547] mb-1">
-                  Primary Category <span className="text-[#E36B5D]">*</span>
-                </label>
-                <select
-                  id="primary_category_id"
-                  name="primary_category_id"
-                  value={formData.primary_category_id}
-                  onChange={(e) => updateField('primary_category_id', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] bg-white focus:outline-none focus:border-[#004AAD]"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-[11px] text-[#7D8795] mt-1">
-                  Curated category for discovery and directory indexing.
-                </p>
-              </div>
-
-              {/* Services Section with Name + Description and Max 20 */}
-              <div className="pt-2 border-t border-[#DCE2E8]">
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-semibold text-[#2A3547]">
-                    What services does your business offer?
-                  </label>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    (formData.services || []).length >= 20 ? 'bg-[#FDECEE] text-[#C93B2B]' : 'bg-[#F2F5FA] text-[#004AAD]'
-                  }`}>
-                    {(formData.services || []).length} / 20 Services
-                  </span>
-                </div>
-                <p className="text-[11px] text-[#7D8795] mb-3">
-                  Add up to 20 services with optional descriptions to showcase what you offer.
-                </p>
-
-                {(formData.services || []).length < 20 ? (
-                  <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3 mb-4">
-                    <div>
-                      <input
-                        type="text"
-                        value={newServiceName}
-                        onChange={(e) => setNewServiceName(e.target.value)}
-                        placeholder="Service Name (e.g. Laptop Screen Replacement, SEO Audit)..."
-                        maxLength={120}
-                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                      />
-                    </div>
-                    <div>
-                      <textarea
-                        value={newServiceDesc}
-                        onChange={(e) => setNewServiceDesc(e.target.value)}
-                        placeholder="Service Description (optional, max 1000 characters)..."
-                        rows={2}
-                        maxLength={1000}
-                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleAddService}
-                      disabled={!newServiceName.trim()}
-                      className="px-4 py-2 rounded-[8px] bg-[#004AAD] text-white text-xs font-semibold hover:bg-[#003E91] disabled:opacity-50 transition-colors"
-                    >
-                      + Add Service
-                    </button>
-                  </div>
-                ) : (
-                  <div className="p-3 mb-4 rounded-[8px] bg-[#FFF6DF] border border-[#FFE7A8] text-xs text-[#9A6700] font-medium">
-                    Maximum limit of 20 services reached.
-                  </div>
-                )}
-
-                {/* Empty State when 0 services */}
-                {(formData.services || []).length === 0 && (
-                  <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-dashed border-[#DCE2E8] text-center text-xs text-[#7D8795]">
-                    No services added yet. Add key services above to highlight your offerings for customers.
-                  </div>
-                )}
-
-                {/* List of Added Services */}
-                {(formData.services || []).length > 0 && (
-                  <div className="space-y-2">
-                    {(formData.services || []).map((service, index) => {
-                      const name = typeof service === 'string' ? service : service.service_name;
-                      const desc = typeof service === 'string' ? '' : service.service_description;
-
-                      return (
-                        <div
-                          key={index}
-                          className="p-3 bg-[#F2F5FA] rounded-[8px] border border-[#DCE2E8] flex items-start justify-between gap-3"
-                        >
-                          <div className="flex-1 min-w-0">
-                            <span className="text-xs font-bold text-[#2A3547] block truncate">{name}</span>
-                            {desc && (
-                              <p className="text-[11px] text-[#5D6776] mt-1 leading-relaxed line-clamp-2">
-                                {desc}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button
-                              type="button"
-                              onClick={() => handleMoveService(index, 'up')}
-                              disabled={index === 0}
-                              title="Move Up"
-                              className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
-                            >
-                              ▲
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveService(index, 'down')}
-                              disabled={index === (formData.services || []).length - 1}
-                              title="Move Down"
-                              className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
-                            >
-                              ▼
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveService(index)}
-                              title="Delete"
-                              className="p-1 text-xs text-[#7D8795] hover:text-[#E36B5D] font-bold ml-1"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 4: Products */}
-        {activeStep === 4 && (
-          <div className="space-y-5">
-            <div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-bold text-[#2A3547]">Step 4: Products & Offerings (Optional)</h2>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                  (formData.products || []).length >= 20 ? 'bg-[#FDECEE] text-[#C93B2B]' : 'bg-[#F2F5FA] text-[#004AAD]'
-                }`}>
-                  {(formData.products || []).length} / 20 Products
-                </span>
-              </div>
-              <p className="text-xs text-[#5D6776] mt-1">
-                Products are optional showcase items. Highlight key products, physical goods, or featured inventory on your public listing.
-              </p>
-            </div>
-
-            {/* Product Add Box */}
-            {(formData.products || []).length < 20 ? (
-              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
-                <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
-                  Add New Product
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Product Name <span className="text-[#E36B5D]">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={newProductName}
-                      onChange={(e) => setNewProductName(e.target.value)}
-                      placeholder="e.g. Ergonomic Office Chair"
-                      maxLength={160}
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Product Image
-                    </label>
-                    {businessId ? (
-                      <div className="flex items-center gap-2">
-                        <input
-                          ref={productImgInputRef}
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp,image/avif"
-                          onChange={handleUploadProductImage}
-                          className="text-xs text-[#5D6776] file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#ECF4FF] file:text-[#004AAD] hover:file:bg-[#BEDBFE]"
-                        />
-                        {isUploadingProductImg && <span className="text-xs text-[#004AAD] animate-pulse">Uploading...</span>}
-                      </div>
-                    ) : (
-                      <input
-                        type="text"
-                        value={newProductImagePath}
-                        onChange={(e) => setNewProductImagePath(e.target.value)}
-                        placeholder="Image URL or save draft to upload files"
-                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                      />
-                    )}
-                    {newProductImagePath && (
-                      <div className="mt-2 flex items-center gap-2 text-xs text-emerald-700">
-                        <span>✓ Image attached</span>
-                        <button
-                          type="button"
-                          onClick={() => setNewProductImagePath('')}
-                          className="text-[#E36B5D] hover:underline"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Product Description (Optional)
-                    </label>
-                    <textarea
-                      value={newProductDesc}
-                      onChange={(e) => setNewProductDesc(e.target.value)}
-                      placeholder="Key specifications, features, or product details..."
-                      rows={2}
-                      maxLength={1000}
-                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleAddProduct}
-                  disabled={!newProductName.trim()}
-                  className="px-4 py-2 rounded-[8px] bg-[#004AAD] text-white text-xs font-semibold hover:bg-[#003E91] disabled:opacity-50 transition-colors"
-                >
-                  + Add Product
-                </button>
-              </div>
-            ) : (
-              <div className="p-3 rounded-[8px] bg-[#FFF6DF] border border-[#FFE7A8] text-xs text-[#9A6700] font-medium">
-                Maximum limit of 20 products reached.
-              </div>
-            )}
-
-            {/* Empty State when 0 products */}
-            {(formData.products || []).length === 0 && (
-              <div className="p-5 rounded-[8px] bg-[#F8FAFC] border border-dashed border-[#DCE2E8] text-center space-y-1.5">
-                <p className="text-xs font-semibold text-[#2A3547]">No products added yet</p>
-                <p className="text-[11px] text-[#7D8795]">
-                  Products are completely optional. If your business sells physical goods or featured items, you can add them above.
-                </p>
-              </div>
-            )}
-
-            {/* List of Current Products */}
-            {(formData.products || []).length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {(formData.products || []).map((product, idx) => {
-                  const imgUrl = getMediaPublicUrl(product.image_path);
-                  return (
-                    <div
-                      key={product.id || idx}
-                      className="p-3.5 rounded-[8px] bg-[#F2F5FA] border border-[#DCE2E8] flex gap-3 items-start justify-between"
-                    >
-                      <div className="flex gap-3 min-w-0">
-                        {imgUrl && (
-                          <div className="w-14 h-14 rounded overflow-hidden bg-[#E2E8F0] shrink-0 border border-[#DCE2E8]">
-                            <img src={imgUrl} alt={product.name} className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        <div className="min-w-0">
-                          <span className="text-xs font-bold text-[#2A3547] block truncate">{product.name}</span>
-                          {product.description && (
-                            <p className="text-[11px] text-[#5D6776] mt-1 line-clamp-2 leading-relaxed">
-                              {product.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => handleMoveProduct(idx, 'up')}
-                          disabled={idx === 0}
-                          className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
-                        >
-                          ▲
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveProduct(idx, 'down')}
-                          disabled={idx === (formData.products || []).length - 1}
-                          className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
-                        >
-                          ▼
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveProduct(idx)}
-                          className="p-1 text-xs text-[#7D8795] hover:text-[#E36B5D] font-bold ml-1"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Step 5: Media & Gallery */}
-        {activeStep === 5 && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-base font-bold text-[#2A3547]">Step 5: Media & Photo Gallery</h2>
-              <p className="text-xs text-[#5D6776] mt-1">
-                Upload your official business logo, banner cover photo, and photo gallery.
-              </p>
-            </div>
-
-            {!businessId && (
-              <div className="p-4 rounded-[8px] bg-[#ECF4FF] border border-[#BEDBFE] text-xs text-[#004AAD] flex items-center justify-between">
-                <span>Please save your business draft first to enable direct file uploads to storage.</span>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={isPending}
-                  className="px-3 py-1.5 rounded-[6px] bg-[#004AAD] text-white font-semibold text-xs hover:bg-[#003E91]"
-                >
-                  {isPending ? 'Saving...' : 'Save Draft to Enable Uploads'}
-                </button>
-              </div>
-            )}
-
-            {/* Logo & Cover Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              {/* Logo Card */}
-              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
-                    Business Logo
-                  </h3>
-                  {logoMedia && (
-                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                      Active
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] text-[#7D8795]">
-                  Square or circle emblem displayed next to your business name (max 5 MB).
-                </p>
-
-                {logoUrl ? (
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#DCE2E8] bg-white p-1 shrink-0">
-                      <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleRemoveLogo}
-                      className="text-xs font-semibold text-[#E36B5D] hover:underline"
-                    >
-                      Remove Logo
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <input
-                      ref={logoInputRef}
-                      type="file"
-                      disabled={!businessId || isUploadingLogo}
-                      accept="image/jpeg,image/png,image/webp,image/avif"
-                      onChange={handleUploadLogo}
-                      className="text-xs text-[#5D6776] file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#004AAD] file:text-white hover:file:bg-[#003E91] disabled:opacity-50"
-                    />
-                    {isUploadingLogo && <p className="text-xs text-[#004AAD]">Uploading logo...</p>}
-                  </div>
-                )}
-              </div>
-
-              {/* Cover Banner Card */}
-              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
-                    Cover Banner Photo
-                  </h3>
-                  {coverMedia && (
-                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                      Active
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] text-[#7D8795]">
-                  Wide landscape photo featured prominently at the top of your public page (max 5 MB).
-                </p>
-
-                {coverUrl ? (
-                  <div className="space-y-2">
-                    <div className="w-full h-24 rounded-lg overflow-hidden bg-[#E2E8F0] border border-[#DCE2E8]">
-                      <img src={coverUrl} alt="Cover" className="w-full h-full object-cover" />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleRemoveCover}
-                      className="text-xs font-semibold text-[#E36B5D] hover:underline"
-                    >
-                      Remove Cover Photo
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <input
-                      ref={coverInputRef}
-                      type="file"
-                      disabled={!businessId || isUploadingCover}
-                      accept="image/jpeg,image/png,image/webp,image/avif"
-                      onChange={handleUploadCover}
-                      className="text-xs text-[#5D6776] file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#004AAD] file:text-white hover:file:bg-[#003E91] disabled:opacity-50"
-                    />
-                    {isUploadingCover && <p className="text-xs text-[#004AAD]">Uploading cover photo...</p>}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Photo Gallery Section */}
-            <div className="pt-4 border-t border-[#DCE2E8] space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
-                    Photo Gallery ({galleryItems.length} Photos)
-                  </h3>
-                  <p className="text-[11px] text-[#7D8795] mt-0.5">
-                    Upload photos of your location, work, team, or projects.
-                  </p>
-                </div>
-              </div>
-
-              {/* Upload to Gallery Input */}
-              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Optional Caption
-                    </label>
-                    <input
-                      type="text"
-                      value={galleryCaption}
-                      onChange={(e) => setGalleryCaption(e.target.value)}
-                      placeholder="e.g. Main showroom interior..."
-                      maxLength={200}
-                      className="w-full px-3.5 py-1.5 rounded-[6px] bg-white border border-[#DCE2E8] text-xs text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
-                      Select Photo
-                    </label>
-                    <input
-                      ref={galleryInputRef}
-                      type="file"
-                      disabled={!businessId || isUploadingGallery}
-                      accept="image/jpeg,image/png,image/webp,image/avif"
-                      onChange={handleUploadGalleryItem}
-                      className="text-xs text-[#5D6776] file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#004AAD] file:text-white hover:file:bg-[#003E91] disabled:opacity-50"
-                    />
-                  </div>
-                </div>
-                {isUploadingGallery && <p className="text-xs text-[#004AAD]">Uploading photo to gallery...</p>}
-              </div>
-
-              {/* Gallery Grid */}
-              {galleryItems.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                  {galleryItems.map((item, idx) => {
-                    const imgUrl = getMediaPublicUrl(item.storage_path);
-                    return (
-                      <div
-                        key={item.id || idx}
-                        className="rounded-[8px] overflow-hidden bg-[#F2F5FA] border border-[#DCE2E8] group flex flex-col"
-                      >
-                        <div className="aspect-square bg-[#E2E8F0] relative overflow-hidden">
-                          {imgUrl && (
-                            <img src={imgUrl} alt={item.caption || `Gallery ${idx + 1}`} className="w-full h-full object-cover" />
-                          )}
-                        </div>
-                        <div className="p-2 flex-1 flex flex-col justify-between gap-1.5">
-                          {item.caption ? (
-                            <p className="text-[11px] text-[#2A3547] font-medium truncate">{item.caption}</p>
-                          ) : (
-                            <span className="text-[10px] text-[#7D8795] italic">No caption</span>
-                          )}
-                          <div className="flex items-center justify-between pt-1 border-t border-[#DCE2E8]/60 text-xs">
-                            <div className="flex items-center gap-1">
-                              <button
-                                type="button"
-                                onClick={() => handleMoveGalleryItem(idx, 'left')}
-                                disabled={idx === 0}
-                                title="Move Left"
-                                className="p-1 text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
-                              >
-                                ◀
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleMoveGalleryItem(idx, 'right')}
-                                disabled={idx === galleryItems.length - 1}
-                                title="Move Right"
-                                className="p-1 text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
-                              >
-                                ▶
-                              </button>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveGalleryItem(item.id, item.storage_path)}
-                              className="text-[#E36B5D] hover:underline text-[11px]"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Step 6: Location */}
-        {activeStep === 6 && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-base font-bold text-[#2A3547]">Step 6: Location & Coverage Mode</h2>
+              <h2 className="text-base font-bold text-[#2A3547]">Step 2: Location & Coverage Mode</h2>
               <p className="text-xs text-[#5D6776] mt-1">
                 Configure your operating location model and coverage.
               </p>
@@ -1859,6 +1175,690 @@ export default function BusinessForm({
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Step 3: Contact / NAP */}
+        {activeStep === 3 && (
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-base font-bold text-[#2A3547]">Step 3: Contact Information</h2>
+              <p className="text-xs text-[#5D6776] mt-1">
+                Official business contact details. Note: Business contact email is private by default and strictly independent of your login account.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="primary_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                  Primary Phone <span className="text-[#E36B5D]">*</span>
+                </label>
+                <input
+                  id="primary_phone"
+                  name="primary_phone"
+                  type="text"
+                  value={formData.primary_phone}
+                  onChange={(e) => updateField('primary_phone', e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
+                />
+                <p className="text-[11px] text-[#7D8795] mt-1">
+                  Primary citation phone displayed publicly.
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="alternate_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                  Alternate Phone
+                </label>
+                <input
+                  id="alternate_phone"
+                  name="alternate_phone"
+                  type="text"
+                  value={formData.alternate_phone}
+                  onChange={(e) => updateField('alternate_phone', e.target.value)}
+                  placeholder="+91 11 2345 6789"
+                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="whatsapp_phone" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                  WhatsApp Number
+                </label>
+                <input
+                  id="whatsapp_phone"
+                  name="whatsapp_phone"
+                  type="text"
+                  value={formData.whatsapp_phone}
+                  onChange={(e) => updateField('whatsapp_phone', e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="website_url" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                  Official Website URL
+                </label>
+                <input
+                  id="website_url"
+                  name="website_url"
+                  type="url"
+                  value={formData.website_url}
+                  onChange={(e) => updateField('website_url', e.target.value)}
+                  placeholder="https://example.com"
+                  className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
+                />
+              </div>
+
+              {/* Google Business Profile Link */}
+              <div className="md:col-span-2">
+                <label htmlFor="google_business_profile_url" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                  Google Business Profile Link <span className="text-[11px] font-normal text-[#7D8795]">(Optional)</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="google_business_profile_url"
+                    name="google_business_profile_url"
+                    type="url"
+                    value={formData.google_business_profile_url}
+                    onChange={(e) => updateField('google_business_profile_url', e.target.value)}
+                    placeholder="https://maps.app.goo.gl/... or https://google.com/maps/place/..."
+                    className="w-full pl-9 pr-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="w-4 h-4 text-[#EA4335]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-[11px] text-[#7D8795] mt-1">
+                  Paste the link to your business on Google. This will appear as &quot;View on Google&quot; on your public listing.
+                </p>
+              </div>
+
+              <div className="md:col-span-2 p-4 rounded-[8px] bg-[#F2F5FA] border border-[#DCE2E8] space-y-3">
+                <div>
+                  <label htmlFor="business_contact_email" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                    Business Contact Email (Optional)
+                  </label>
+                  <input
+                    id="business_contact_email"
+                    name="business_contact_email"
+                    type="email"
+                    value={formData.business_contact_email}
+                    onChange={(e) => updateField('business_contact_email', e.target.value)}
+                    placeholder="contact@business.com"
+                    className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                  />
+                  <p className="text-[11px] text-[#7D8795] mt-1">
+                    Strict privacy rule: Account login email is never exposed. Only enter an email intended for public communication.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="show_email"
+                    checked={formData.show_email}
+                    onChange={(e) => updateField('show_email', e.target.checked)}
+                    className="w-4 h-4 rounded text-[#004AAD] border-[#DCE2E8] focus:ring-[#004AAD]"
+                  />
+                  <label htmlFor="show_email" className="text-xs font-medium text-[#2A3547] cursor-pointer">
+                    Show this business email on public listing page
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Category & Services */}
+        {activeStep === 4 && (
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-base font-bold text-[#2A3547]">Step 4: Primary Category & Services</h2>
+              <p className="text-xs text-[#5D6776] mt-1">
+                Select your single primary curated category and define services offered (up to 20).
+              </p>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label htmlFor="primary_category_id" className="block text-xs font-semibold text-[#2A3547] mb-1">
+                  Primary Category <span className="text-[#E36B5D]">*</span>
+                </label>
+                <select
+                  id="primary_category_id"
+                  name="primary_category_id"
+                  value={formData.primary_category_id}
+                  onChange={(e) => updateField('primary_category_id', e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] bg-white focus:outline-none focus:border-[#004AAD]"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-[#7D8795] mt-1">
+                  Curated category for discovery and directory indexing.
+                </p>
+              </div>
+
+              {/* Services Section with Name + Description and Max 20 */}
+              <div className="pt-2 border-t border-[#DCE2E8]">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-[#2A3547]">
+                    What services does your business offer?
+                  </label>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    (formData.services || []).length >= 20 ? 'bg-[#FDECEE] text-[#C93B2B]' : 'bg-[#F2F5FA] text-[#004AAD]'
+                  }`}>
+                    {(formData.services || []).length} / 20 Services
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#7D8795] mb-3">
+                  Add up to 20 services with optional descriptions to showcase what you offer.
+                </p>
+
+                {(formData.services || []).length < 20 ? (
+                  <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3 mb-4">
+                    <div>
+                      <input
+                        type="text"
+                        value={newServiceName}
+                        onChange={(e) => setNewServiceName(e.target.value)}
+                        placeholder="Service Name (e.g. Laptop Screen Replacement, SEO Audit)..."
+                        maxLength={120}
+                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                      />
+                    </div>
+                    <div>
+                      <textarea
+                        value={newServiceDesc}
+                        onChange={(e) => setNewServiceDesc(e.target.value)}
+                        placeholder="Service Description (optional, max 1000 characters)..."
+                        rows={2}
+                        maxLength={1000}
+                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddService}
+                      disabled={!newServiceName.trim()}
+                      className="px-4 py-2 rounded-[8px] bg-[#004AAD] text-white text-xs font-semibold hover:bg-[#003E91] disabled:opacity-50 transition-colors"
+                    >
+                      + Add Service
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-3 mb-4 rounded-[8px] bg-[#FFF6DF] border border-[#FFE7A8] text-xs text-[#9A6700] font-medium">
+                    Maximum limit of 20 services reached.
+                  </div>
+                )}
+
+                {/* Empty State when 0 services */}
+                {(formData.services || []).length === 0 && (
+                  <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-dashed border-[#DCE2E8] text-center text-xs text-[#7D8795]">
+                    No services added yet. Add key services above to highlight your offerings for customers.
+                  </div>
+                )}
+
+                {/* List of Added Services */}
+                {(formData.services || []).length > 0 && (
+                  <div className="space-y-2">
+                    {(formData.services || []).map((service, index) => {
+                      const name = typeof service === 'string' ? service : service.service_name;
+                      const desc = typeof service === 'string' ? '' : service.service_description;
+
+                      return (
+                        <div
+                          key={index}
+                          className="p-3 bg-[#F2F5FA] rounded-[8px] border border-[#DCE2E8] flex items-start justify-between gap-3"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <span className="text-xs font-bold text-[#2A3547] block truncate">{name}</span>
+                            {desc && (
+                              <p className="text-[11px] text-[#5D6776] mt-1 leading-relaxed line-clamp-2">
+                                {desc}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleMoveService(index, 'up')}
+                              disabled={index === 0}
+                              title="Move Up"
+                              className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
+                            >
+                              ▲
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveService(index, 'down')}
+                              disabled={index === (formData.services || []).length - 1}
+                              title="Move Down"
+                              className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
+                            >
+                              ▼
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveService(index)}
+                              title="Delete"
+                              className="p-1 text-xs text-[#7D8795] hover:text-[#E36B5D] font-bold ml-1"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: Products */}
+        {activeStep === 5 && (
+          <div className="space-y-5">
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-[#2A3547]">Step 5: Products & Offerings (Optional)</h2>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  (formData.products || []).length >= 20 ? 'bg-[#FDECEE] text-[#C93B2B]' : 'bg-[#F2F5FA] text-[#004AAD]'
+                }`}>
+                  {(formData.products || []).length} / 20 Products
+                </span>
+              </div>
+              <p className="text-xs text-[#5D6776] mt-1">
+                Products are optional showcase items. Highlight key products, physical goods, or featured inventory on your public listing.
+              </p>
+            </div>
+
+            {/* Product Add Box */}
+            {(formData.products || []).length < 20 ? (
+              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
+                <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
+                  Add New Product
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                      Product Name <span className="text-[#E36B5D]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newProductName}
+                      onChange={(e) => setNewProductName(e.target.value)}
+                      placeholder="e.g. Ergonomic Office Chair"
+                      maxLength={160}
+                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                      Product Image
+                    </label>
+                    {businessId ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          ref={productImgInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/avif"
+                          onChange={handleUploadProductImage}
+                          className="text-xs text-[#5D6776] file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#ECF4FF] file:text-[#004AAD] hover:file:bg-[#BEDBFE]"
+                        />
+                        {isUploadingProductImg && <span className="text-xs text-[#004AAD] animate-pulse">Uploading...</span>}
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={newProductImagePath}
+                        onChange={(e) => setNewProductImagePath(e.target.value)}
+                        placeholder="Image URL or save draft to upload files"
+                        className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                      />
+                    )}
+                    {newProductImagePath && (
+                      <div className="mt-2 flex items-center gap-2 text-xs text-emerald-700">
+                        <span>✓ Image attached</span>
+                        <button
+                          type="button"
+                          onClick={() => setNewProductImagePath('')}
+                          className="text-[#E36B5D] hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                      Product Description (Optional)
+                    </label>
+                    <textarea
+                      value={newProductDesc}
+                      onChange={(e) => setNewProductDesc(e.target.value)}
+                      placeholder="Key specifications, features, or product details..."
+                      rows={2}
+                      maxLength={1000}
+                      className="w-full px-3.5 py-2 rounded-[8px] bg-white border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddProduct}
+                  disabled={!newProductName.trim()}
+                  className="px-4 py-2 rounded-[8px] bg-[#004AAD] text-white text-xs font-semibold hover:bg-[#003E91] disabled:opacity-50 transition-colors"
+                >
+                  + Add Product
+                </button>
+              </div>
+            ) : (
+              <div className="p-3 rounded-[8px] bg-[#FFF6DF] border border-[#FFE7A8] text-xs text-[#9A6700] font-medium">
+                Maximum limit of 20 products reached.
+              </div>
+            )}
+
+            {/* Empty State when 0 products */}
+            {(formData.products || []).length === 0 && (
+              <div className="p-5 rounded-[8px] bg-[#F8FAFC] border border-dashed border-[#DCE2E8] text-center space-y-1.5">
+                <p className="text-xs font-semibold text-[#2A3547]">No products added yet</p>
+                <p className="text-[11px] text-[#7D8795]">
+                  Products are completely optional. If your business sells physical goods or featured items, you can add them above.
+                </p>
+              </div>
+            )}
+
+            {/* List of Current Products */}
+            {(formData.products || []).length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                {(formData.products || []).map((product, idx) => {
+                  const imgUrl = getMediaPublicUrl(product.image_path);
+                  return (
+                    <div
+                      key={product.id || idx}
+                      className="p-3.5 rounded-[8px] bg-[#F2F5FA] border border-[#DCE2E8] flex gap-3 items-start justify-between"
+                    >
+                      <div className="flex gap-3 min-w-0">
+                        {imgUrl && (
+                          <div className="w-14 h-14 rounded overflow-hidden bg-[#E2E8F0] shrink-0 border border-[#DCE2E8]">
+                            <img src={imgUrl} alt={product.name} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <span className="text-xs font-bold text-[#2A3547] block truncate">{product.name}</span>
+                          {product.description && (
+                            <p className="text-[11px] text-[#5D6776] mt-1 line-clamp-2 leading-relaxed">
+                              {product.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveProduct(idx, 'up')}
+                          disabled={idx === 0}
+                          className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
+                        >
+                          ▲
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveProduct(idx, 'down')}
+                          disabled={idx === (formData.products || []).length - 1}
+                          className="p-1 text-xs text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
+                        >
+                          ▼
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveProduct(idx)}
+                          className="p-1 text-xs text-[#7D8795] hover:text-[#E36B5D] font-bold ml-1"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 6: Media & Gallery */}
+        {activeStep === 6 && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-base font-bold text-[#2A3547]">Step 6: Media & Photo Gallery</h2>
+              <p className="text-xs text-[#5D6776] mt-1">
+                Upload your official business logo, banner cover photo, and photo gallery.
+              </p>
+            </div>
+
+            {!businessId && (
+              <div className="p-4 rounded-[8px] bg-[#ECF4FF] border border-[#BEDBFE] text-xs text-[#004AAD] flex items-center justify-between">
+                <span>Please save your business draft first to enable direct file uploads to storage.</span>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isPending}
+                  className="px-3 py-1.5 rounded-[6px] bg-[#004AAD] text-white font-semibold text-xs hover:bg-[#003E91]"
+                >
+                  {isPending ? 'Saving...' : 'Save Draft to Enable Uploads'}
+                </button>
+              </div>
+            )}
+
+            {/* Logo & Cover Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              {/* Logo Card */}
+              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
+                    Business Logo
+                  </h3>
+                  {logoMedia && (
+                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#7D8795]">
+                  Square or circle emblem displayed next to your business name (max 5 MB).
+                </p>
+
+                {logoUrl ? (
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#DCE2E8] bg-white p-1 shrink-0">
+                      <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveLogo}
+                      className="text-xs font-semibold text-[#E36B5D] hover:underline"
+                    >
+                      Remove Logo
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      disabled={!businessId || isUploadingLogo}
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      onChange={handleUploadLogo}
+                      className="text-xs text-[#5D6776] file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#004AAD] file:text-white hover:file:bg-[#003E91] disabled:opacity-50"
+                    />
+                    {isUploadingLogo && <p className="text-xs text-[#004AAD]">Uploading logo...</p>}
+                  </div>
+                )}
+              </div>
+
+              {/* Cover Banner Card */}
+              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
+                    Cover Banner Photo
+                  </h3>
+                  {coverMedia && (
+                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#7D8795]">
+                  Wide landscape photo featured prominently at the top of your public page (max 5 MB).
+                </p>
+
+                {coverUrl ? (
+                  <div className="space-y-2">
+                    <div className="w-full h-24 rounded-lg overflow-hidden bg-[#E2E8F0] border border-[#DCE2E8]">
+                      <img src={coverUrl} alt="Cover" className="w-full h-full object-cover" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCover}
+                      className="text-xs font-semibold text-[#E36B5D] hover:underline"
+                    >
+                      Remove Cover Photo
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      ref={coverInputRef}
+                      type="file"
+                      disabled={!businessId || isUploadingCover}
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      onChange={handleUploadCover}
+                      className="text-xs text-[#5D6776] file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#004AAD] file:text-white hover:file:bg-[#003E91] disabled:opacity-50"
+                    />
+                    {isUploadingCover && <p className="text-xs text-[#004AAD]">Uploading cover photo...</p>}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Photo Gallery Section */}
+            <div className="pt-4 border-t border-[#DCE2E8] space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
+                    Photo Gallery ({galleryItems.length} Photos)
+                  </h3>
+                  <p className="text-[11px] text-[#7D8795] mt-0.5">
+                    Upload photos of your location, work, team, or projects.
+                  </p>
+                </div>
+              </div>
+
+              {/* Upload to Gallery Input */}
+              <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                      Optional Caption
+                    </label>
+                    <input
+                      type="text"
+                      value={galleryCaption}
+                      onChange={(e) => setGalleryCaption(e.target.value)}
+                      placeholder="e.g. Main showroom interior..."
+                      maxLength={200}
+                      className="w-full px-3.5 py-1.5 rounded-[6px] bg-white border border-[#DCE2E8] text-xs text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#2A3547] mb-1">
+                      Select Photo
+                    </label>
+                    <input
+                      ref={galleryInputRef}
+                      type="file"
+                      disabled={!businessId || isUploadingGallery}
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      onChange={handleUploadGalleryItem}
+                      className="text-xs text-[#5D6776] file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#004AAD] file:text-white hover:file:bg-[#003E91] disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+                {isUploadingGallery && <p className="text-xs text-[#004AAD]">Uploading photo to gallery...</p>}
+              </div>
+
+              {/* Gallery Grid */}
+              {galleryItems.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                  {galleryItems.map((item, idx) => {
+                    const imgUrl = getMediaPublicUrl(item.storage_path);
+                    return (
+                      <div
+                        key={item.id || idx}
+                        className="rounded-[8px] overflow-hidden bg-[#F2F5FA] border border-[#DCE2E8] group flex flex-col"
+                      >
+                        <div className="aspect-square bg-[#E2E8F0] relative overflow-hidden">
+                          {imgUrl && (
+                            <img src={imgUrl} alt={item.caption || `Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                          )}
+                        </div>
+                        <div className="p-2 flex-1 flex flex-col justify-between gap-1.5">
+                          {item.caption ? (
+                            <p className="text-[11px] text-[#2A3547] font-medium truncate">{item.caption}</p>
+                          ) : (
+                            <span className="text-[10px] text-[#7D8795] italic">No caption</span>
+                          )}
+                          <div className="flex items-center justify-between pt-1 border-t border-[#DCE2E8]/60 text-xs">
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => handleMoveGalleryItem(idx, 'left')}
+                                disabled={idx === 0}
+                                title="Move Left"
+                                className="p-1 text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
+                              >
+                                ◀
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveGalleryItem(idx, 'right')}
+                                disabled={idx === galleryItems.length - 1}
+                                title="Move Right"
+                                className="p-1 text-[#7D8795] hover:text-[#004AAD] disabled:opacity-30"
+                              >
+                                ▶
+                              </button>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveGalleryItem(item.id, item.storage_path)}
+                              className="text-[#E36B5D] hover:underline text-[11px]"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         )}
 

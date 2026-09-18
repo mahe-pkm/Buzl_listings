@@ -556,3 +556,31 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - **Review Audit Suite**: `scripts/staging-team-review-audit.mjs` executed against staging with 34/34 checks passing (100%).
 - **Product Decisions Cataloged**: 9 architectural product decisions surfaced and documented in `docs/STAGING_TEAM_REVIEW.md` (Product price/URL, gallery image caps, edit re-review behavior, claim listing, website generation, and multi-method OTP).
 - **Decision Verdict**: **APPROVED / GO** (0 blocking bugs).
+
+## Form Steps Reorder: Location Step 2 & Contact Step 3 (2026-09-18): COMPLETE
+
+- **Task**: `REORDER-FORM-STEPS-LOCATION-CONTACT`
+- **Branch**: `feature/reorder-form-steps-location-contact`
+- **Status**: `COMPLETE`
+- **Scope**: Reorder the multi-step business listing onboarding form (`BusinessForm.tsx`) so that **Location** is Step 2 and **Contact** is Step 3.
+- **Updated Step Sequence**:
+  1. **Step 1: Business Details** (Name, Established Year, Description)
+  2. **Step 2: Location & Coverage Mode** (Storefront / Service-Area / Hybrid, Google Places verification, Address / Coverage areas)
+  3. **Step 3: Contact Information** (Primary Phone, Alternate, WhatsApp, Contact Email with privacy toggle, Website URL, GBP Link)
+  4. **Step 4: Primary Category & Services** (Primary category selector, curated services list with descriptions)
+  5. **Step 5: Products & Offerings (Optional)** (Product showcase items, descriptions, images)
+  6. **Step 6: Media & Photo Gallery** (Logo, Cover photo, Photo gallery)
+  7. **Step 7: Business Hours & Social Links** (7-day schedule, social links)
+  8. **Step 8: Preview & Submit** (Readiness Summary, Live Public Preview, Draft Save & Submit for Review)
+- **Key Deliverables**:
+  - `STEPS` constant in `src/components/business/BusinessForm.tsx` reordered to match the new flow.
+  - `validateCurrentStep()` updated: Step 2 validates Location requirements, Step 3 validates Contact/Phone/URLs, Step 4 validates Category & Services, Step 5 validates Products.
+  - JSX step blocks rearranged into sequential order (1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8).
+  - Automated smoke test suites (`scripts/browser-smoke-test-business-owner-ux.mjs`, `scripts/staging-team-review-audit.mjs`) updated to traverse the new step order.
+- **Verification Results**:
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (all 32 routes compiled and optimized cleanly)
+  - `git diff --check`: PASS (0 whitespace errors)
+  - `npx supabase test db`: PASS (5 suites, 38 tests)
+  - `node scripts/verify-email-otp-flow.mjs`: PASS (49/49 checks)
+

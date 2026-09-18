@@ -204,46 +204,9 @@ async function main() {
     await page.fill('#canonical_name', testName);
     await page.click('button:has-text("Next Step →")');
 
-    // 3.2 Step 2: Contact Information & GBP Link
-    const step2Heading = page.locator('h2:has-text("Step 2: Contact Information")');
-    assert(await step2Heading.isVisible(), 'Step 2 title is "Step 2: Contact Information"');
-
-    const gbpLabel = page.locator('label[for="google_business_profile_url"]:has-text("Google Business Profile Link")');
-    assert(await gbpLabel.isVisible(), 'Google Business Profile Link label is visible');
-
-    await page.fill('#primary_phone', '+91 98765 43210');
-    await page.fill('#google_business_profile_url', 'https://maps.app.goo.gl/example123');
-    await page.click('button:has-text("Next Step →")');
-
-    // 3.3 Step 3: Category & Services
-    const step3Label = page.locator('label:has-text("What services does your business offer?")');
-    assert(await step3Label.isVisible(), 'Step 3 label is "What services does your business offer?"');
-
-    const serviceEmptyState = page.locator('text=No services added yet');
-    assert(await serviceEmptyState.isVisible(), 'Step 3 shows friendly empty state when 0 services');
-
-    // Add a service
-    await page.fill('input[placeholder*="Service Name"]', 'General Consultation');
-    await page.click('button:has-text("+ Add Service")');
-    assert(await page.locator('text=General Consultation').isVisible(), 'Service added successfully');
-    await page.click('button:has-text("Next Step →")');
-
-    // 3.4 Step 4: Products & Offerings (Optional)
-    const step4Heading = page.locator('h2:has-text("Step 4: Products & Offerings (Optional)")');
-    assert(await step4Heading.isVisible(), 'Step 4 header is "Step 4: Products & Offerings (Optional)"');
-
-    const productEmptyState = page.locator('text=No products added yet');
-    assert(await productEmptyState.isVisible(), 'Step 4 shows friendly empty state when 0 products');
-    await page.click('button:has-text("Next Step →")');
-
-    // 3.5 Step 5: Media & Gallery
-    const step5Heading = page.locator('h2:has-text("Step 5: Media & Photo Gallery")');
-    assert(await step5Heading.isVisible(), 'Step 5 Media is visible');
-    await page.click('button:has-text("Next Step →")');
-
-    // 3.6 Step 6: Location & Zero Jargon
-    const step6Heading = page.locator('h2:has-text("Step 6: Location & Coverage Mode")');
-    assert(await step6Heading.isVisible(), 'Step 6 Location is visible');
+    // 3.2 Step 2: Location & Zero Jargon
+    const step2Heading = page.locator('h2:has-text("Step 2: Location & Coverage Mode")');
+    assert(await step2Heading.isVisible(), 'Step 2 Location is visible');
 
     // Check no PostGIS or Geospatial Coordinates jargon
     const postgisJargon = page.locator('text=PostGIS');
@@ -259,6 +222,43 @@ async function main() {
     await page.fill('#country', 'India');
     await page.fill('input[placeholder="Enter coverage area..."]', 'South Delhi');
     await page.click('button:has-text("Add Area")');
+    await page.click('button:has-text("Next Step →")');
+
+    // 3.3 Step 3: Contact Information & GBP Link
+    const step3Heading = page.locator('h2:has-text("Step 3: Contact Information")');
+    assert(await step3Heading.isVisible(), 'Step 3 title is "Step 3: Contact Information"');
+
+    const gbpLabel = page.locator('label[for="google_business_profile_url"]:has-text("Google Business Profile Link")');
+    assert(await gbpLabel.isVisible(), 'Google Business Profile Link label is visible');
+
+    await page.fill('#primary_phone', '+91 98765 43210');
+    await page.fill('#google_business_profile_url', 'https://maps.app.goo.gl/example123');
+    await page.click('button:has-text("Next Step →")');
+
+    // 3.4 Step 4: Category & Services
+    const step4Label = page.locator('label:has-text("What services does your business offer?")');
+    assert(await step4Label.isVisible(), 'Step 4 label is "What services does your business offer?"');
+
+    const serviceEmptyState = page.locator('text=No services added yet');
+    assert(await serviceEmptyState.isVisible(), 'Step 4 shows friendly empty state when 0 services');
+
+    // Add a service
+    await page.fill('input[placeholder*="Service Name"]', 'General Consultation');
+    await page.click('button:has-text("+ Add Service")');
+    assert(await page.locator('text=General Consultation').isVisible(), 'Service added successfully');
+    await page.click('button:has-text("Next Step →")');
+
+    // 3.5 Step 5: Products & Offerings (Optional)
+    const step5Heading = page.locator('h2:has-text("Step 5: Products & Offerings (Optional)")');
+    assert(await step5Heading.isVisible(), 'Step 5 header is "Step 5: Products & Offerings (Optional)"');
+
+    const productEmptyState = page.locator('text=No products added yet');
+    assert(await productEmptyState.isVisible(), 'Step 5 shows friendly empty state when 0 products');
+    await page.click('button:has-text("Next Step →")');
+
+    // 3.6 Step 6: Media & Gallery
+    const step6Heading = page.locator('h2:has-text("Step 6: Media & Photo Gallery")');
+    assert(await step6Heading.isVisible(), 'Step 6 Media is visible');
     await page.click('button:has-text("Next Step →")');
 
     // 3.7 Step 7: Hours & Social

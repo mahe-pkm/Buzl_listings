@@ -7,27 +7,32 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `STAGING-TEAM-REVIEW` |
-| Task Name | Staging Team Review |
+| Task ID | `REORDER-FORM-STEPS-LOCATION-CONTACT` |
+| Task Name | Reorder Form Steps Location Contact |
 | Status | **COMPLETE** |
 | Current Agent | `antigravity` |
-| Started From Commit | `42c06d2b318ba31c02851cab19bca4c828505c77` |
-| Latest Commit | `16da1c8362de0eb84e67edc6d04d72d26778461a` |
-| Branch | `main` |
-| Started At | 2026-09-18T01:32:35+05:30 |
-| Last Updated | 2026-09-18T01:42:49+05:30 |
+| Started From Commit | `503cfc69ed76171d3b246997fb8e1cf182c6ef17` |
+| Latest Commit | `503cfc69ed76171d3b246997fb8e1cf182c6ef17` |
+| Branch | `feature/reorder-form-steps-location-contact` |
+| Started At | 2026-09-18T07:56:00+05:30 |
+| Last Updated | 2026-09-18T08:00:00+05:30 |
 
 ## Objective
 
-Run structured product review of the complete Buzl Listing staging experience across WhatsApp UI, owner journey, admin moderation, public listing, mobile viewports, privacy, and indexing guards. Capture feedback and generate docs/STAGING_TEAM_REVIEW.md.
+Reorder 8-step business listing form so Location is Step 2 and Contact is Step 3, cascading Category & Services to 4, Products to 5, Media to 6, with Hours as 7 and Preview as 8. Update test scripts accordingly.
 
 ## Allowed Files
 
-- —
+- src/components/business/BusinessForm.tsx, scripts/staging-team-review-audit.mjs, scripts/browser-smoke-test-business-owner-ux.mjs, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md
 
 ## Completed Work
 
-- Completed structured staging team review audit (34/34 checks PASS) across health guards, auth/WhatsApp UI, owner journey (Steps 1-8), admin moderation, public directory and privacy invariants, and mobile viewports (375px/390px/430px). Generated docs/STAGING_TEAM_REVIEW.md and updated docs/CURRENT_STATE.md.
+- Reordered STEPS constant in BusinessForm.tsx (Location is Step 2, Contact is Step 3).
+- Updated validateCurrentStep() validation rules to align with new step sequence.
+- Reorganized JSX card blocks into strict sequential order (1 to 8).
+- Updated automated smoke test suites (browser-smoke-test-business-owner-ux.mjs and staging-team-review-audit.mjs).
+- Verified lint (0 errors), build (all 32 routes compiled cleanly), whitespace (0 errors), DB tests (5 suites, 38 tests), and email OTP flow (49/49 checks).
+- Updated docs/CURRENT_STATE.md.
 
 ## Remaining Work
 
@@ -35,15 +40,15 @@ Run structured product review of the complete Buzl Listing staging experience ac
 
 ## Checks / Tests
 
-- scripts/staging-team-review-audit.mjs PASS (34/34), git status clean, staging health check PASS
+- npm run lint PASS (0 errors), npm run build PASS (32 routes), npx supabase test db PASS (5 suites, 38 tests), node scripts/verify-email-otp-flow.mjs PASS (49/49 checks), git diff --check PASS
 
 ## Known Issues
 
-- —
+- None
 
 ## Next Exact Action
 
-No further action — task complete.
+Merge feature/reorder-form-steps-location-contact into main and deploy to staging.
 
 ## Handoff Notes
 
