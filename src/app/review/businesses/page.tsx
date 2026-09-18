@@ -11,11 +11,12 @@ export default async function ReviewBusinessesPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from('businesses')
-    .select('id, canonical_name, slug, location_mode, city, state, publication_status, verification_status, updated_at, primary_category_id, categories(name)')
+    .select('id, listing_code, canonical_name, slug, location_mode, city, state, publication_status, verification_status, updated_at, primary_category_id, categories(name)')
     .in('publication_status', ['pending', 'published', 'suspended'])
     .order('updated_at', { ascending: false });
   const rows: BusinessTableRow[] = (data ?? []).map((business) => ({
     id: business.id,
+    listing_code: business.listing_code,
     canonical_name: business.canonical_name,
     slug: business.slug,
     location_mode: business.location_mode,

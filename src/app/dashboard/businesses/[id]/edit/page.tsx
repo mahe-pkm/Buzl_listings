@@ -163,7 +163,7 @@ export default async function EditBusinessPage({ params }: EditPageProps) {
     <>
       <Topbar
         title={`Edit: ${business.canonical_name}`}
-        subtitle={`Listing URL: /business/${business.slug}`}
+        subtitle={`${business.listing_code} · /business/${business.slug}`}
       />
 
       <main className="p-6 max-w-5xl">
@@ -172,6 +172,7 @@ export default async function EditBusinessPage({ params }: EditPageProps) {
           initialData={initialData}
           businessId={id}
           businessSlug={business.slug}
+          listingCode={business.listing_code}
           currentPublicationStatus={business.publication_status}
           currentVerificationStatus={business.verification_status}
           isAdmin={user.isAdmin}

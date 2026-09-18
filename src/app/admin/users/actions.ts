@@ -25,6 +25,7 @@ export type ManagedUser = {
 
 export type UserAssociatedBusiness = {
   id: string;
+  listing_code: string;
   canonical_name: string;
   slug: string;
   city: string;
@@ -159,6 +160,7 @@ type BusinessManagerQueryResult = {
   role: string | null;
   business: {
     id: string;
+    listing_code: string | null;
     canonical_name: string;
     slug: string;
     city: string | null;
@@ -173,7 +175,7 @@ export async function getUserBusinesses(userId: string): Promise<UserAssociatedB
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("business_managers")
-    .select("role, business:businesses(id, canonical_name, slug, city, state, publication_status, verification_status)")
+    .select("role, business:businesses(id, listing_code, canonical_name, slug, city, state, publication_status, verification_status)")
     .eq("user_id", userId);
 
   if (error || !data) return [];
@@ -182,6 +184,7 @@ export async function getUserBusinesses(userId: string): Promise<UserAssociatedB
     .filter((row): row is BusinessManagerQueryResult & { business: NonNullable<BusinessManagerQueryResult["business"]> } => Boolean(row.business))
     .map((row) => ({
       id: row.business.id,
+      listing_code: row.business.listing_code ?? "",
       canonical_name: row.business.canonical_name,
       slug: row.business.slug,
       city: row.business.city ?? "",

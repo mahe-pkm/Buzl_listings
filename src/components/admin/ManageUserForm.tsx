@@ -526,6 +526,11 @@ export default function ManageUserForm({
                 <div>
                   <div className="font-semibold text-sm text-[#2A3547] flex items-center gap-2">
                     <span>{b.canonical_name}</span>
+                    {b.listing_code && (
+                      <span className="font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                        {b.listing_code}
+                      </span>
+                    )}
                     <span className="text-[10px] px-2 py-0.5 rounded font-mono font-medium bg-[#ECF4FF] text-[#004AAD] uppercase">
                       {b.managerRole}
                     </span>

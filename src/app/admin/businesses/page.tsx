@@ -20,7 +20,7 @@ export default async function AdminBusinessesPage() {
   // Admin query fetches all businesses in system
   const { data: businesses } = await supabase
     .from('businesses')
-    .select('id, canonical_name, slug, location_mode, city, state, publication_status, verification_status, updated_at, primary_category_id, categories(name)')
+    .select('id, listing_code, canonical_name, slug, location_mode, city, state, publication_status, verification_status, updated_at, primary_category_id, categories(name)')
     .order('updated_at', { ascending: false });
 
   const rawList = businesses || [];
@@ -32,6 +32,7 @@ export default async function AdminBusinessesPage() {
 
     return {
       id: b.id,
+      listing_code: b.listing_code,
       canonical_name: b.canonical_name,
       slug: b.slug,
       location_mode: b.location_mode,
