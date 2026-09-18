@@ -584,11 +584,13 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `npx supabase test db`: PASS (5 suites, 38 tests)
   - `node scripts/verify-email-otp-flow.mjs`: PASS (49/49 checks)
 
-## Platform Admin User Management UX (2026-09-18): REVIEW_READY
+## Platform Admin User Management UX (2026-09-18): COMPLETE & DEPLOYED TO STAGING
 
 - **Task**: `ADMIN-USER-MANAGEMENT-UX`
-- **Branch**: `feature/admin-user-management-ux`
-- **Status**: `REVIEW_READY`
+- **Branch**: `main` (merged via `--no-ff` from `feature/admin-user-management-ux`)
+- **Main HEAD**: `8fc99ddd7ad190616e3d46f8d4adadaf6608c3d0`
+- **Staging Deployment**: `https://listing.rclk.in` (Container `buzl-listing-app-1` rebuilt and active)
+- **Status**: `COMPLETE`
 - **Scope**: Expose and improve the Platform Admin User Management experience (`/admin/users`, `/admin/users/new`, `/admin/users/[id]`) with admin navigation discoverability, summary metrics, live search/filtering, responsive mobile stacked cards, dynamic role-conditional invite form, organized user detail page with associated businesses, admin self-protection, last active admin protection, and full automated browser smoke tests.
 - **Key Deliverables**:
   - **Admin Navigation (`Sidebar.tsx`)**: Added first-class `Users` (`/admin/users`) and `Add User` (`/admin/users/new`) entries under Platform Admin navigation with active-route highlighting.
@@ -602,6 +604,9 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `npm run build`: PASS (all 32 routes compiled and optimized cleanly)
   - `git diff --check`: PASS (0 whitespace errors)
   - `npx supabase test db`: PASS (5 suites, 38 tests)
-  - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (all 9 suites pass, 100%)
+  - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (all 9 suites pass against live staging https://listing.rclk.in, 100%)
+  - Staging Health (`https://listing.rclk.in/api/health`): HTTP 200 `{"status":"ok"}`
+  - Staging Indexing Guards: `X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow /`, `sitemap.xml`: empty `<urlset>`
+  - Isolation & Zero Interruption: Zero database migrations; no touching of production containers (`buzl-backend-prod`, `buzl-postgres-prod`).
 
 

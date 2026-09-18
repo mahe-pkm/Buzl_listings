@@ -8,7 +8,8 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ### Platform Admin User Management UX — 2026-09-18
 
-- **Feature Branch**: `feature/admin-user-management-ux`
+- **Feature Branch**: `feature/admin-user-management-ux` merged into `main` (`8fc99dd`).
+- **Staging Deployment**: Deployed and verified on `https://listing.rclk.in` (Container `buzl-listing-app-1`).
 - **Navigation & Discoverability**:
   - Added first-class `Users` (`/admin/users`) and `Add User` (`/admin/users/new`) entries in `Sidebar.tsx` for Platform Admins.
   - Refined route-matching to ensure accurate active state highlighting.
@@ -34,10 +35,12 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
   - Authentication details card: Exposes read-only auth user UUID, authentication email, phone, and provider tags.
   - Destructive actions: Password reset dispatch and session revocation with modal confirmation dialogs.
 - **Automated Verification & Browser Smoke Tests**:
-  - New test suite `scripts/browser-smoke-test-admin-users.mjs` with 9 suites covering desktop and mobile viewports (100% pass).
+  - Test suite `scripts/browser-smoke-test-admin-users.mjs` executed against staging (`https://listing.rclk.in`): 9/9 suites pass (100%).
   - `npm run lint`: PASS (0 errors)
   - `npm run build`: PASS (32 routes)
   - `npx supabase test db`: PASS (5 suites, 38 tests)
+  - Indexing defense verified: `X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt` Disallow: /, empty `sitemap.xml`.
+  - Zero database migrations required; zero disruption to adjacent containers.
 
 ### WhatsApp UI Staging Preview — 2026-09-18
 

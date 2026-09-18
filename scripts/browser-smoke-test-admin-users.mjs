@@ -35,12 +35,12 @@ async function main() {
   console.log(`Base URL: ${BASE_URL}`);
   console.log('================================================================\n');
 
-  const adminEmail = process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
-  const adminPassword = process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!';
-  const ownerEmail = process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
-  const ownerPassword = process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
-  const memberEmail = process.env.LOCAL_FIXTURE_MEMBER_EMAIL || 'member@buzl.test';
-  const memberPassword = process.env.LOCAL_FIXTURE_MEMBER_PASSWORD || 'MemberPassword123!';
+  const adminEmail = process.env.STAGING_ADMIN_EMAIL || process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
+  const adminPassword = process.env.STAGING_ADMIN_PASSWORD || process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!';
+  const ownerEmail = process.env.STAGING_OWNER_EMAIL || process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
+  const ownerPassword = process.env.STAGING_OWNER_PASSWORD || process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
+  const memberEmail = process.env.STAGING_MEMBER_EMAIL || process.env.LOCAL_FIXTURE_MEMBER_EMAIL || 'member@buzl.test';
+  const memberPassword = process.env.STAGING_MEMBER_PASSWORD || process.env.LOCAL_FIXTURE_MEMBER_PASSWORD || 'MemberPassword123!';
 
   const browser = await chromium.launch({
     executablePath: CHROME_PATH,
@@ -60,9 +60,11 @@ async function main() {
 
     // Check sidebar navigation items
     const usersNavLink = adminPage.locator('aside a[href="/admin/users"]');
+    await usersNavLink.waitFor({ state: 'visible', timeout: 10000 });
     assert(await usersNavLink.isVisible(), 'Sidebar contains "Users" navigation link pointing to /admin/users');
 
     const addUserNavLink = adminPage.locator('aside a[href="/admin/users/new"]');
+    await addUserNavLink.waitFor({ state: 'visible', timeout: 10000 });
     assert(await addUserNavLink.isVisible(), 'Sidebar contains "Add User" navigation link pointing to /admin/users/new');
 
     // Click Users link
@@ -218,7 +220,7 @@ async function main() {
 
     const ownerManageBtn = ownerRow.locator('a:has-text("Manage")');
     await ownerManageBtn.click();
-    await adminPage.waitForURL('**/admin/users/**', { timeout: 10000 });
+    await adminPage.waitForURL((url) => url.pathname.startsWith('/admin/users/') && url.pathname !== '/admin/users' && !url.pathname.includes('/new'), { timeout: 15000 });
     assert(adminPage.url().includes('/admin/users/'), 'Navigated to user management detail screen');
 
     // Verify sections on Detail page
@@ -257,7 +259,7 @@ async function main() {
     const myAdminRow = adminPage.locator(`table tbody tr:has-text("${adminEmail}")`);
     const myAdminManageBtn = myAdminRow.locator('a:has-text("Manage")');
     await myAdminManageBtn.click();
-    await adminPage.waitForURL('**/admin/users/**', { timeout: 10000 });
+    await adminPage.waitForURL((url) => url.pathname.startsWith('/admin/users/') && url.pathname !== '/admin/users' && !url.pathname.includes('/new'), { timeout: 15000 });
 
     // Self indicator badge
     const selfBadge = adminPage.locator('text=Current Admin (You)');
@@ -285,10 +287,11 @@ async function main() {
 
     const targetOwnerRow = adminPage.locator(`table tbody tr:has-text("${ownerEmail}")`);
     await targetOwnerRow.locator('a:has-text("Manage")').click();
-    await adminPage.waitForURL('**/admin/users/**', { timeout: 10000 });
+    await adminPage.waitForURL((url) => url.pathname.startsWith('/admin/users/') && url.pathname !== '/admin/users' && !url.pathname.includes('/new'), { timeout: 15000 });
 
     // Test Revoke Sessions modal
     const revokeBtn = adminPage.locator('button:has-text("Revoke All Sessions")');
+    await revokeBtn.waitFor({ state: 'visible', timeout: 10000 });
     await revokeBtn.click();
     await adminPage.waitForTimeout(200);
 
@@ -381,10 +384,12 @@ async function main() {
 
       // Verify mobile stacked cards are visible and desktop table is hidden
       const mobileCards = mobilePage.locator('.block.md\\:hidden .rounded-xl');
+      await mobileCards.first().waitFor({ state: 'visible', timeout: 10000 });
       assert(await mobileCards.count() > 0, `Stacked mobile user cards rendered on ${width}px`);
 
       // Verify first mobile card contains Manage link
       const firstManageLink = mobileCards.first().locator('a:has-text("Manage")');
+      await firstManageLink.waitFor({ state: 'visible', timeout: 5000 });
       assert(await firstManageLink.isVisible(), `Manage link is visible on mobile user card (${width}px)`);
 
       // Navigate to /admin/users/new on mobile
