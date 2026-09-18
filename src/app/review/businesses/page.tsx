@@ -28,11 +28,46 @@ export default async function ReviewBusinessesPage() {
     categoryName: Array.isArray(business.categories) ? (business.categories[0] as { name?: string } | undefined)?.name : (business.categories as { name?: string } | null)?.name,
   }));
 
-  return <>
-    <Topbar title="Listing review" subtitle="Permission-based moderation queue" userEmail={user.email} isAdmin={user.isAdmin} />
-    <main className="p-6 space-y-6 flex-1">
-      <p className="text-sm text-[#5D6776]">Publish and suspend actions are enforced again by the database RPC.</p>
-      <BusinessTableView businesses={rows} isAdmin moderationPermissions={user.isAdmin ? { publish: true, suspend: true, verify: true, delete: true } : { publish: true, suspend: user.permissions.includes('listing.suspend'), verify: false, delete: false }} />
-    </main>
-  </>;
+  const pendingCount = rows.filter((r) => r.publication_status === 'pending').length;
+
+  return (
+    <>
+      <Topbar
+        title="Moderation Review Queue"
+        subtitle={
+          pendingCount === 1
+            ? '1 business listing awaiting publication review'
+            : `${pendingCount} business listings awaiting publication review`
+        }
+        userEmail={user.email}
+        isAdmin={user.isAdmin}
+      />
+      <main className="p-6 space-y-6 flex-1">
+        <p className="text-sm text-[#5D6776]">
+          Review pending listings and publication transitions. Actions are strictly enforced by database RPC guards.
+        </p>
+        <BusinessTableView
+          businesses={rows}
+          isAdmin
+          moderationPermissions={
+            user.isAdmin
+              ? {
+                  publish: true,
+                  suspend: true,
+                  verify: true,
+                  delete: true,
+                  edit: true,
+                }
+              : {
+                  publish: user.permissions.includes('listing.publish'),
+                  suspend: user.permissions.includes('listing.suspend'),
+                  verify: false,
+                  delete: false,
+                  edit: user.permissions.includes('listing.edit'),
+                }
+          }
+        />
+      </main>
+    </>
+  );
 }

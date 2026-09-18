@@ -624,3 +624,46 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - **Platform Admin Dashboard Overview is Missing (P1)**: `/admin` redirects to `/admin/businesses` rather than providing an administrative overview.
 - **Runtime Code Changes**: None (strictly read-only analysis).
 - **Database Migrations**: None.
+
+## Internal Dashboard Phase A: Navigation & Moderation Queue Discoverability (2026-09-18): COMPLETE & REVIEW_READY
+
+- **Task**: `INTERNAL-DASHBOARD-PHASE-A`
+- **Branch**: `feature/internal-dashboard-navigation`
+- **Status**: `REVIEW_READY`
+- **Scope**: Implement Phase A of the internal dashboard enhancements: expose Moderation Queue in role-aware navigation with a pending-review count badge, create a protected review layout shell, fix Listing Manager review/edit discoverability bug, and preserve all existing RBAC invariants.
+- **Key Deliverables**:
+  - **Role-Aware Navigation (`Sidebar.tsx`)**:
+    - **Platform Admin**: Overview (`/dashboard`), All Listings (`/admin/businesses`), Moderation Queue (`/review/businesses` + pending badge), Import Buzl Profile (`/admin/businesses/import`), Users (`/admin/users`), Add User (`/admin/users/new`).
+    - **Listing Manager** (`buzl_member` + preset `listing_manager`): Overview (`/dashboard`), Listings (`/dashboard/businesses`), Add Business (`/dashboard/businesses/new`), Moderation Queue (`/review/businesses` + pending badge), Import Buzl Profile (`/admin/businesses/import`). Users & Admin items strictly hidden.
+    - **Onboarding Member** (`buzl_member` + preset `onboarding_member`): Overview (`/dashboard`), My Listings (`/dashboard/businesses`), Add Business (`/dashboard/businesses/new`), Import Buzl Profile (`/admin/businesses/import`). Moderation Queue & Users strictly hidden.
+    - **Business Owner**: Overview (`/dashboard`), My Businesses (`/dashboard/businesses`), Add Business (`/dashboard/businesses/new`). Internal items strictly hidden.
+    - Accurate active-route highlighting for all navigation items with zero overlap.
+  - **Pending-Review Badge (`Sidebar.tsx`, `business-actions.ts`)**:
+    - Implemented `getPendingReviewCount()` querying `publication_status = 'pending'` with `{ count: 'exact', head: true }`.
+    - Zero row payloads; authorized internal callers only (`isAdmin` or `listing.publish`); safe error logging without credential leakage.
+    - Compact Buzl amber badge (`bg-[#FFF6DF] text-[#9A6700] border-[#FFE7A8]`): `0` is hidden, `1–99` shows exact number, `100+` shows `99+`.
+  - **Review Section Layout (`src/app/review/layout.tsx`)**:
+    - Created layout wrapping `/review/*` routes with standard sidebar shell.
+    - Server-side authentication check redirects unauthenticated users to `/login?redirect=/review/businesses`.
+    - Server-side moderation authorization check redirects unauthorized users (Onboarding Members, Business Owners) to `/dashboard`.
+  - **Edit Permission Bug Fix (`BusinessTableView.tsx`, `AdminBusinessRowActions.tsx`)**:
+    - Decoupled `canEdit` from delete permissions in `BusinessTableView.tsx`.
+    - Explicitly passed `edit: user.permissions.includes('listing.edit')` from authenticated context on `/review/businesses`.
+    - Listing Managers can now view listings and edit listing details directly from the moderation queue.
+  - **Review Page Polish (`src/app/review/businesses/page.tsx`)**:
+    - Title updated to "Moderation Review Queue".
+    - Subtitle dynamically displays pending listing count.
+    - Explicit moderation permissions provided: publish (`listing.publish`), suspend (`listing.suspend`), edit (`listing.edit`), verify (`false`), delete (`false`).
+  - **Targeted Cache Revalidation (`business-actions.ts`)**:
+    - Added `revalidatePath('/review/businesses')` across `transitionPublication`, `setVerification`, `deleteBusiness`, `createBusiness`, `updateBusiness`, and `createDraftFromImport`.
+  - **Automated Verification (`scripts/browser-smoke-test-internal-navigation.mjs`)**:
+    - 12 comprehensive test suites validating Admin navigation, Listing Manager navigation, Onboarding Member navigation, Business Owner navigation, Direct URL RBAC denial, Listing Manager capabilities, explicit edit authorization, badge formatting, count freshness/revalidation after insert/delete, and mobile viewports (375px, 390px, 430px).
+- **Verification Results**:
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (all 32 routes compiled and optimized cleanly)
+  - `git diff --check`: PASS (0 whitespace errors)
+  - `npx supabase test db`: PASS (5 suites, 38 tests pass)
+  - `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass, 100%)
+  - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass, 100%)
+  - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass, 100%)
+- **Database Migrations**: NONE (0 database schema changes required).
