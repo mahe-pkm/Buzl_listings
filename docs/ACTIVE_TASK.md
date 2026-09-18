@@ -9,17 +9,20 @@
 |---|---|
 | Task ID | `INTERNAL-DASHBOARD-PHASE-A` |
 | Task Name | Internal Dashboard Phase A Navigation & Moderation Queue Discoverability |
-| Status | **REVIEW_READY** |
+| Status | **COMPLETE** |
 | Current Agent | `antigravity` |
 | Started From Commit | `faf716a9cb37bd4a527f3bf52414e0647080e8d0` |
-| Latest Commit | `faf716a9cb37bd4a527f3bf52414e0647080e8d0` |
-| Branch | `feature/internal-dashboard-navigation` |
+| Feature Commit | `fcaf7042e58eac471061083470a70abd11f0806a` |
+| Merge Commit | `3a4c7a2511412274d90ffdb3caaafbb17242fbea` |
+| Main HEAD | `3a4c7a2511412274d90ffdb3caaafbb17242fbea` |
+| Staging HEAD | `3a4c7a2511412274d90ffdb3caaafbb17242fbea` |
+| Branch | `main` |
 | Started At | 2026-09-18T09:40:13+05:30 |
-| Last Updated | 2026-09-18T09:54:00+05:30 |
+| Last Updated | 2026-09-18T10:20:00+05:30 |
 
 ## Objective
 
-Expose Moderation Queue in role-aware navigation with pending-review count badge across Admin and Listing Manager, hide from unauthorized roles, and verify permissions.
+Expose Moderation Queue in role-aware navigation with pending-review count badge across Admin and Listing Manager, hide from unauthorized roles, merge to main, deploy to staging VPS, and verify full workflow, security invariants, and indexing guards.
 
 ## Allowed Files
 
@@ -34,12 +37,22 @@ Expose Moderation Queue in role-aware navigation with pending-review count badge
 - Fixed `canEdit` bug in `BusinessTableView.tsx` decoupling edit permissions from deletion authority; explicitly passing edit permission from authenticated context.
 - Updated `src/app/review/businesses/page.tsx` with "Moderation Review Queue" title, pending count in subtitle, and explicit moderation permissions.
 - Targeted cache revalidation for `/review/businesses` across `transitionPublication`, `setVerification`, `deleteBusiness`, `createBusiness`, `updateBusiness`, and `createDraftFromImport`.
-- Comprehensive automated Playwright test suite `scripts/browser-smoke-test-internal-navigation.mjs` verifying all 12 suites (100% pass).
+- Feature branch `feature/internal-dashboard-navigation` merged to `main` (`3a4c7a2`) with `--no-ff`.
+- Staging container `buzl-listing-app-1` rebuilt and recreated on Hostinger VPS (`213.210.37.204`). Unrelated production and Supabase containers left untouched (12-day uptime intact).
+- Verified live on staging (`https://listing.rclk.in`):
+  - Admin: Moderation Queue visible with pending badge "4", Users & Import visible, Review Queue accessible.
+  - Listing Manager: Moderation Queue visible with pending badge "4", Users hidden, Review Queue accessible, verification/delete hidden, 42 active Edit links functional.
+  - Onboarding Member: Moderation Queue & Users strictly hidden; direct `/review/businesses` denied and redirected to `/dashboard`.
+  - Business Owner: Moderation Queue, Import & Users strictly hidden; direct `/review/businesses` denied and redirected to `/dashboard`.
+  - Unauthenticated direct URL redirected to `/login?redirect=/review/businesses`.
+  - Mobile viewports (375px, 390px, 430px): 0 horizontal overflow, drawer navigation functional.
+  - Staging indexing guards: `X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow: /`, empty `sitemap.xml`.
+- Comprehensive automated Playwright test suite `scripts/browser-smoke-test-internal-navigation.mjs` verifying all 12 suites (100% pass locally and against live staging).
 - Verified regressions: `browser-smoke-test-admin-users.mjs` (100%), `browser-smoke-test-business-owner-ux.mjs` (100%), `npx supabase test db` (5 suites, 38 tests pass).
 
 ## Remaining Work
 
-- None. Phase A is complete and ready for review.
+- None. Phase A is complete and fully verified on staging.
 
 ## Checks / Tests
 
@@ -47,9 +60,13 @@ Expose Moderation Queue in role-aware navigation with pending-review count badge
 - `npm run build`: PASS (all 32 routes compiled and optimized cleanly)
 - `git diff --check`: PASS (0 whitespace errors)
 - `npx supabase test db`: PASS (5 suites, 38 tests pass)
-- `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass)
+- `node scripts/browser-smoke-test-internal-navigation.mjs` (local): PASS (12/12 suites pass)
+- `node scripts/browser-smoke-test-internal-navigation.mjs` (staging): PASS (12/12 suites pass on https://listing.rclk.in)
 - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass)
 - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass)
+- Staging Health (`/api/health`): HTTP 200 `{"status":"ok"}`
+- Staging Indexing Guards: `X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow /`, empty `sitemap.xml`
+- Unrelated Stack Uptime: PASS (12+ days untouched)
 
 ## Known Issues
 
@@ -57,7 +74,7 @@ Expose Moderation Queue in role-aware navigation with pending-review count badge
 
 ## Next Exact Action
 
-- Perform review and merge `feature/internal-dashboard-navigation` to `main`. Next task: `CATEGORY-MANAGEMENT` (Phase B).
+Task complete. Recommended next task: `CATEGORY-MANAGEMENT` (Phase B per `docs/INTERNAL_DASHBOARD_CAPABILITY_AUDIT.md`).
 
 ## Handoff Notes
 

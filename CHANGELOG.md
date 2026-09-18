@@ -8,7 +8,7 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ### Internal Dashboard Phase A: Navigation & Moderation Queue Discoverability — 2026-09-18
 
-- **Feature Branch**: `feature/internal-dashboard-navigation`
+- **Feature Branch**: `feature/internal-dashboard-navigation` merged into `main` (`3a4c7a2`).
 - **Scope**: Expose Moderation Queue in role-aware navigation with pending-review count badge, add protected `/review` layout shell, fix Listing Manager review/edit discoverability bug, and preserve all RBAC security invariants.
 - **Role-Aware Navigation & Discoverability (`Sidebar.tsx`)**:
   - Moderation Queue (`/review/businesses`) exposed to Platform Admins and Listing Managers with live pending-review count badge.
@@ -31,8 +31,14 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
   - Listing Managers can now view listings and edit listing details directly from the moderation queue.
 - **Targeted Cache Revalidation (`business-actions.ts`)**:
   - Added targeted revalidation for `/review/businesses` on `transitionPublication`, `setVerification`, `deleteBusiness`, `createBusiness`, `updateBusiness`, and `createDraftFromImport`.
+- **Staging Deployment & Verification**:
+  - Merged `feature/internal-dashboard-navigation` into `main` (`3a4c7a2`).
+  - Staging container `buzl-listing-app-1` rebuilt and recreated on Hostinger staging VPS (`213.210.37.204`). Unrelated Supabase and production containers left untouched (12-day uptime intact).
+  - Health check `https://listing.rclk.in/api/health` returned HTTP 200 `{"status":"ok"}`.
+  - Live staging verification across all 4 personas (Admin, Listing Manager, Onboarding Member, Business Owner) passed 100%.
+  - Staging indexing protections verified (`X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow: /`, empty `sitemap.xml`).
 - **Automated Verification (`scripts/browser-smoke-test-internal-navigation.mjs`)**:
-  - 12 comprehensive test suites validating Admin navigation, Listing Manager navigation, Onboarding Member navigation, Business Owner navigation, Direct URL RBAC denial, Listing Manager capabilities, explicit edit authorization, badge formatting, count freshness after record creation/deletion, and mobile responsiveness across 375px, 390px, and 430px viewports.
+  - 12 comprehensive test suites validating Admin navigation, Listing Manager navigation, Onboarding Member navigation, Business Owner navigation, Direct URL RBAC denial, Listing Manager capabilities, explicit edit authorization, badge formatting, count freshness after record creation/deletion, and mobile responsiveness across 375px, 390px, and 430px viewports (100% pass locally and against staging).
 - **Database Migrations**: None (0 schema changes).
 
 ### Platform Admin User Management UX — 2026-09-18

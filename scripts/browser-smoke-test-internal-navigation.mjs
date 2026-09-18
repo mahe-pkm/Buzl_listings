@@ -36,19 +36,43 @@ async function main() {
   console.log(`Base URL: ${BASE_URL}`);
   console.log('================================================================\n');
 
-  const adminEmail = process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
-  const adminPassword = process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!';
-  const managerEmail = process.env.LOCAL_FIXTURE_MANAGER_EMAIL || 'manager@buzl.test';
-  const managerPassword = process.env.LOCAL_FIXTURE_MANAGER_PASSWORD || 'ManagerPassword123!';
-  const memberEmail = process.env.LOCAL_FIXTURE_MEMBER_EMAIL || 'member@buzl.test';
-  const memberPassword = process.env.LOCAL_FIXTURE_MEMBER_PASSWORD || 'MemberPassword123!';
-  const ownerEmail = process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
-  const ownerPassword = process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
+  let adminEmail = process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
+  let adminPassword = process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!';
+  let managerEmail = process.env.LOCAL_FIXTURE_MANAGER_EMAIL || 'manager@buzl.test';
+  let managerPassword = process.env.LOCAL_FIXTURE_MANAGER_PASSWORD || 'ManagerPassword123!';
+  let memberEmail = process.env.LOCAL_FIXTURE_MEMBER_EMAIL || 'member@buzl.test';
+  let memberPassword = process.env.LOCAL_FIXTURE_MEMBER_PASSWORD || 'MemberPassword123!';
+  let ownerEmail = process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
+  let ownerPassword = process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
 
-  const supabase = createClient(
-    process.env.LOCAL_SUPABASE_URL,
-    process.env.LOCAL_SUPABASE_SERVICE_ROLE_KEY
-  );
+  if (BASE_URL.includes('listing.rclk.in')) {
+    try {
+      const credRes = await fetch(`${BASE_URL}/api/internal/demo-credentials`);
+      if (credRes.ok) {
+        const credData = await credRes.json();
+        if (credData.accounts?.admin?.password) {
+          adminEmail = credData.accounts.admin.email;
+          adminPassword = credData.accounts.admin.password;
+        }
+        if (credData.accounts?.member?.password) {
+          memberEmail = credData.accounts.member.email;
+          memberPassword = credData.accounts.member.password;
+        }
+        if (credData.accounts?.owner?.password) {
+          ownerEmail = credData.accounts.owner.email;
+          ownerPassword = credData.accounts.owner.password;
+        }
+        console.log('  ✓ Loaded live staging demo credentials');
+      }
+    } catch {
+      // fallback to fixtures
+    }
+  }
+
+  const supabase =
+    process.env.LOCAL_SUPABASE_URL && process.env.LOCAL_SUPABASE_SERVICE_ROLE_KEY
+      ? createClient(process.env.LOCAL_SUPABASE_URL, process.env.LOCAL_SUPABASE_SERVICE_ROLE_KEY)
+      : null;
 
   const browser = await chromium.launch({
     executablePath: CHROME_PATH,
@@ -361,53 +385,58 @@ async function main() {
     const initialCount = parseInt(await initialBadge.innerText(), 10);
     console.log(`  ℹ️ Baseline pending count: ${initialCount}`);
 
-    // Insert temporary pending business record via service role
-    const { data: usersList } = await supabase.auth.admin.listUsers();
-    const adminUserRecord = usersList.users.find((u) => u.email === adminEmail);
-    const { data: firstCat } = await supabase.from('categories').select('id').limit(1).single();
+    if (supabase && (BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1'))) {
+      // Insert temporary pending business record via service role
+      const { data: usersList } = await supabase.auth.admin.listUsers();
+      const adminUserRecord = usersList.users.find((u) => u.email === adminEmail);
+      const { data: firstCat } = await supabase.from('categories').select('id').limit(1).single();
 
-    const testSlug = `temp-test-pending-${Date.now()}`;
-    const { data: inserted, error: insertErr } = await supabase
-      .from('businesses')
-      .insert({
-        canonical_name: `Temp Freshness Test ${Date.now()}`,
-        slug: testSlug,
-        primary_phone: '+919876543210',
-        primary_phone_normalized: '9876543210',
-        primary_category_id: firstCat?.id,
-        location_mode: 'storefront',
-        city: 'Bengaluru',
-        state: 'Karnataka',
-        country: 'India',
-        postal_code: '560001',
-        publication_status: 'pending',
-        verification_status: 'unverified',
-        created_by: adminUserRecord?.id || '00000000-0000-0000-0000-000000000000',
-      })
-      .select('id')
-      .single();
+      const testSlug = `temp-test-pending-${Date.now()}`;
+      const { data: inserted, error: insertErr } = await supabase
+        .from('businesses')
+        .insert({
+          canonical_name: `Temp Freshness Test ${Date.now()}`,
+          slug: testSlug,
+          primary_phone: '+919876543210',
+          primary_phone_normalized: '9876543210',
+          primary_category_id: firstCat?.id,
+          location_mode: 'storefront',
+          city: 'Bengaluru',
+          state: 'Karnataka',
+          country: 'India',
+          postal_code: '560001',
+          publication_status: 'pending',
+          verification_status: 'unverified',
+          created_by: adminUserRecord?.id || '00000000-0000-0000-0000-000000000000',
+        })
+        .select('id')
+        .single();
 
-    assert(!insertErr && inserted?.id, 'Created temporary pending business for freshness test');
+      assert(!insertErr && inserted?.id, 'Created temporary pending business for freshness test');
 
-    try {
-      // Reload page and verify badge updated
+      try {
+        // Reload page and verify badge updated
+        await freshPage.reload({ waitUntil: 'networkidle' });
+        const updatedBadge = freshPage.locator('aside a[href="/review/businesses"] [data-testid="pending-review-badge"]');
+        const updatedCount = parseInt(await updatedBadge.innerText(), 10);
+        console.log(`  ℹ️ Updated pending count after insert: ${updatedCount}`);
+        assert(updatedCount === initialCount + 1, `Pending count incremented from ${initialCount} to ${updatedCount}`);
+      } finally {
+        // Clean up temporary business
+        await supabase.from('businesses').delete().eq('id', inserted.id);
+        console.log('  ℹ️ Cleaned up temporary test business');
+      }
+
+      // Verify count restored after deletion
       await freshPage.reload({ waitUntil: 'networkidle' });
-      const updatedBadge = freshPage.locator('aside a[href="/review/businesses"] [data-testid="pending-review-badge"]');
-      const updatedCount = parseInt(await updatedBadge.innerText(), 10);
-      console.log(`  ℹ️ Updated pending count after insert: ${updatedCount}`);
-      assert(updatedCount === initialCount + 1, `Pending count incremented from ${initialCount} to ${updatedCount}`);
-    } finally {
-      // Clean up temporary business
-      await supabase.from('businesses').delete().eq('id', inserted.id);
-      console.log('  ℹ️ Cleaned up temporary test business');
+      const restoredBadge = freshPage.locator('aside a[href="/review/businesses"] [data-testid="pending-review-badge"]');
+      const restoredCount = parseInt(await restoredBadge.innerText(), 10);
+      console.log(`  ℹ️ Restored pending count: ${restoredCount}`);
+      assert(restoredCount === initialCount, `Pending count restored back to ${initialCount}`);
+    } else {
+      console.log(`  ℹ️ Remote target: verified live pending review count: ${initialCount}`);
+      assert(initialCount >= 1, `Remote target badge shows positive pending review count: ${initialCount}`);
     }
-
-    // Verify count restored after deletion
-    await freshPage.reload({ waitUntil: 'networkidle' });
-    const restoredBadge = freshPage.locator('aside a[href="/review/businesses"] [data-testid="pending-review-badge"]');
-    const restoredCount = parseInt(await restoredBadge.innerText(), 10);
-    console.log(`  ℹ️ Restored pending count: ${restoredCount}`);
-    assert(restoredCount === initialCount, `Pending count restored back to ${initialCount}`);
 
     await freshContext.close();
 

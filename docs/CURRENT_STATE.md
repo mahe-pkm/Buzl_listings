@@ -625,11 +625,16 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
 - **Runtime Code Changes**: None (strictly read-only analysis).
 - **Database Migrations**: None.
 
-## Internal Dashboard Phase A: Navigation & Moderation Queue Discoverability (2026-09-18): COMPLETE & REVIEW_READY
+## Internal Dashboard Phase A: Navigation & Moderation Queue Discoverability (2026-09-18): COMPLETE & VERIFIED ON STAGING
 
 - **Task**: `INTERNAL-DASHBOARD-PHASE-A`
-- **Branch**: `feature/internal-dashboard-navigation`
-- **Status**: `REVIEW_READY`
+- **Branch**: `main` (merged from `feature/internal-dashboard-navigation` via `--no-ff`)
+- **Feature Commit**: `fcaf704`
+- **Merge Commit**: `3a4c7a2`
+- **Main HEAD**: `3a4c7a2`
+- **Staging HEAD**: `3a4c7a2`
+- **Staging URL**: `https://listing.rclk.in`
+- **Status**: `COMPLETE`
 - **Scope**: Implement Phase A of the internal dashboard enhancements: expose Moderation Queue in role-aware navigation with a pending-review count badge, create a protected review layout shell, fix Listing Manager review/edit discoverability bug, and preserve all existing RBAC invariants.
 - **Key Deliverables**:
   - **Role-Aware Navigation (`Sidebar.tsx`)**:
@@ -656,14 +661,22 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
     - Explicit moderation permissions provided: publish (`listing.publish`), suspend (`listing.suspend`), edit (`listing.edit`), verify (`false`), delete (`false`).
   - **Targeted Cache Revalidation (`business-actions.ts`)**:
     - Added `revalidatePath('/review/businesses')` across `transitionPublication`, `setVerification`, `deleteBusiness`, `createBusiness`, `updateBusiness`, and `createDraftFromImport`.
+  - **Staging Deployment & Verification**:
+    - Merged `feature/internal-dashboard-navigation` into `main` (`3a4c7a2`).
+    - Staging container `buzl-listing-app-1` rebuilt and recreated on Hostinger staging VPS (`213.210.37.204`). Unrelated Supabase and production containers left untouched (12-day uptime intact).
+    - Health check `https://listing.rclk.in/api/health` returned HTTP 200 `{"status":"ok"}`.
+    - Live staging verification across all 4 personas (Admin, Listing Manager, Onboarding Member, Business Owner) passed 100%.
+    - Staging indexing protections verified (`X-Robots-Tag: noindex, nofollow, noarchive`, `robots.txt: Disallow: /`, empty `sitemap.xml`).
   - **Automated Verification (`scripts/browser-smoke-test-internal-navigation.mjs`)**:
-    - 12 comprehensive test suites validating Admin navigation, Listing Manager navigation, Onboarding Member navigation, Business Owner navigation, Direct URL RBAC denial, Listing Manager capabilities, explicit edit authorization, badge formatting, count freshness/revalidation after insert/delete, and mobile viewports (375px, 390px, 430px).
+    - 12 comprehensive test suites validating Admin navigation, Listing Manager navigation, Onboarding Member navigation, Business Owner navigation, Direct URL RBAC denial, Listing Manager capabilities, explicit edit authorization, badge formatting, count freshness/revalidation after insert/delete, and mobile viewports (375px, 390px, 430px) passed 100% locally and on live staging.
 - **Verification Results**:
   - `npm run lint`: PASS (0 errors)
   - `npm run build`: PASS (all 32 routes compiled and optimized cleanly)
   - `git diff --check`: PASS (0 whitespace errors)
   - `npx supabase test db`: PASS (5 suites, 38 tests pass)
-  - `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass, 100%)
+  - `node scripts/browser-smoke-test-internal-navigation.mjs` (local): PASS (12/12 suites pass, 100%)
+  - `node scripts/browser-smoke-test-internal-navigation.mjs` (staging): PASS (12/12 suites pass, 100%)
   - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass, 100%)
   - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass, 100%)
 - **Database Migrations**: NONE (0 database schema changes required).
+- **Next Task**: `CATEGORY-MANAGEMENT` (Phase B per `docs/INTERNAL_DASHBOARD_CAPABILITY_AUDIT.md`).
