@@ -584,3 +584,24 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `npx supabase test db`: PASS (5 suites, 38 tests)
   - `node scripts/verify-email-otp-flow.mjs`: PASS (49/49 checks)
 
+## Platform Admin User Management UX (2026-09-18): REVIEW_READY
+
+- **Task**: `ADMIN-USER-MANAGEMENT-UX`
+- **Branch**: `feature/admin-user-management-ux`
+- **Status**: `REVIEW_READY`
+- **Scope**: Expose and improve the Platform Admin User Management experience (`/admin/users`, `/admin/users/new`, `/admin/users/[id]`) with admin navigation discoverability, summary metrics, live search/filtering, responsive mobile stacked cards, dynamic role-conditional invite form, organized user detail page with associated businesses, admin self-protection, last active admin protection, and full automated browser smoke tests.
+- **Key Deliverables**:
+  - **Admin Navigation (`Sidebar.tsx`)**: Added first-class `Users` (`/admin/users`) and `Add User` (`/admin/users/new`) entries under Platform Admin navigation with active-route highlighting.
+  - **Summary Metrics & User List (`UserListClient.tsx`)**: 5 summary metrics cards (Total Users, Business Owners, Buzl Members, Platform Admins, Suspended), live search input (name, email, Buzl Member ID), role filter pills (`All`, `Business Owners`, `Buzl Members`, `Admins`), status dropdown filter, and accessible colored status dots and role badges.
+  - **Mobile Responsiveness**: Desktop table paired with mobile stacked card layout for `< md` screens; zero horizontal overflow verified across 375px, 390px, and 430px viewports (`scrollWidth <= clientWidth`).
+  - **Dynamic Invite Form (`InviteUserForm.tsx`)**: Breadcrumb navigation (`← Back to Users`), role selector radio cards; conditional Buzl Member ID and Permission Preset select (`Onboarding Member`, `Listing Manager`, None) with human-readable descriptions for Buzl Members; administrator privilege warning for Admins; zero-jargon copy for Business Owners.
+  - **User Detail & Management (`ManageUserForm.tsx`, `getUserBusinesses`)**: Profile header with initials avatar, metadata, role/status badges; Admin Self-Protection (disables role/status editing when admin edits own account with warning notice); Last Active Admin Protection (guards against demoting/deactivating the final active administrator); Authentication & Identity Details card; Associated Businesses card (lists businesses managed by user with manager role, city/state, and publication status); Danger Zone with Password Reset and session revocation modal.
+  - **Automated Browser Smoke Suite (`scripts/browser-smoke-test-admin-users.mjs`)**: 9 comprehensive test suites validating sidebar navigation, list view, metrics, search, role filters, empty states, invite form conditional fields, user detail management, admin self-protection, modal confirmations, RBAC unauthorized denial (owner/member blocked from admin routes), and mobile viewports.
+- **Verification Results**:
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (all 32 routes compiled and optimized cleanly)
+  - `git diff --check`: PASS (0 whitespace errors)
+  - `npx supabase test db`: PASS (5 suites, 38 tests)
+  - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (all 9 suites pass, 100%)
+
+

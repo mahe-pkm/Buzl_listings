@@ -1,6 +1,11 @@
-import Link from "next/link";
-import { inviteManagedUser } from "../actions";
+import InviteUserForm from "@/components/admin/InviteUserForm";
+
+export const dynamic = "force-dynamic";
 
 export default function NewAdminUserPage() {
-  return <main className="p-5 md:p-8 max-w-2xl w-full mx-auto"><Link href="/admin/users" className="text-sm text-[#004AAD]">← Users</Link><h1 className="mt-4 text-2xl font-bold text-[#2A3547]">Invite user</h1><form action={inviteManagedUser} className="mt-6 space-y-4 rounded-xl border border-[#DCE2E8] bg-white p-6"><label className="block text-sm font-semibold">Full name<input required name="fullName" className="mt-1 w-full rounded border border-[#DCE2E8] p-2" /></label><label className="block text-sm font-semibold">Email<input required type="email" name="email" className="mt-1 w-full rounded border border-[#DCE2E8] p-2" /></label><label className="block text-sm font-semibold">Role<select name="role" defaultValue="business_owner" className="mt-1 w-full rounded border border-[#DCE2E8] p-2"><option value="business_owner">Business owner</option><option value="buzl_member">Buzl Member</option><option value="admin">Admin</option></select></label><label className="block text-sm font-semibold">Member permission preset (Buzl Member only)<select name="permissionPreset" className="mt-1 w-full rounded border border-[#DCE2E8] p-2"><option value="">None</option><option value="onboarding_member">Onboarding Member</option><option value="listing_manager">Listing Manager</option></select></label><label className="block text-sm font-semibold">Buzl Member ID (Buzl Member only)<input name="memberId" className="mt-1 w-full rounded border border-[#DCE2E8] p-2" /></label><button className="rounded-lg bg-[#004AAD] px-4 py-2 text-sm font-semibold text-white">Send invite</button></form></main>;
+  return (
+    <main className="p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
+      <InviteUserForm />
+    </main>
+  );
 }

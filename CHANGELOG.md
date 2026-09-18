@@ -6,6 +6,39 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Platform Admin User Management UX — 2026-09-18
+
+- **Feature Branch**: `feature/admin-user-management-ux`
+- **Navigation & Discoverability**:
+  - Added first-class `Users` (`/admin/users`) and `Add User` (`/admin/users/new`) entries in `Sidebar.tsx` for Platform Admins.
+  - Refined route-matching to ensure accurate active state highlighting.
+- **User List & Search/Filter Interface (`UserListClient.tsx`)**:
+  - 5 summary metrics cards: Total Users, Business Owners, Buzl Members, Platform Admins, and Suspended Accounts.
+  - Live search input matching user name, email, or Buzl Member ID with instant clear button.
+  - Role filter pills (`All`, `Business Owners`, `Buzl Members`, `Admins`) and account status dropdown (`All`, `Active`, `Invited`, `Inactive`, `Suspended`).
+  - Desktop table with user avatar initials, role badges, Buzl Member ID monospace tags, human-readable presets, pulse status indicators, last sign-in timestamps, and action links.
+  - Fully responsive mobile stacked cards view for `< md` screens with zero horizontal overflow across 375px, 390px, and 430px viewports.
+  - Clean empty state with "Clear all filters" button when no results match criteria.
+- **Dynamic Role-Aware Invite Form (`InviteUserForm.tsx`)**:
+  - Breadcrumb navigation (`← Back to Users`).
+  - Interactive platform role selection cards (`Business Owner`, `Buzl Member`, `Platform Admin`).
+  - Conditional rendering:
+    - *Buzl Member*: reveals Buzl Member ID input and human-readable Permission Preset options (`Onboarding Member`, `Listing Manager`, None) with descriptive explanations.
+    - *Platform Admin*: reveals administrative privilege security warning.
+    - *Business Owner*: hides internal IDs/presets and presents user-friendly owner portal copy.
+- **User Management & Detail Screen (`ManageUserForm.tsx`, `getUserBusinesses`)**:
+  - Organized sections: Profile Overview Header, Profile & Role Settings, Authentication & Identity Details, Associated Businesses, and Danger Zone.
+  - **Admin Self-Protection**: Prevents administrators from demoting or deactivating their own active account, with an explanatory alert banner and locked dropdowns.
+  - **Last Active Admin Protection**: Server action enforcement ensures platform never drops to 0 active administrators.
+  - Associated Businesses card: Queries `business_managers` table to display all businesses managed by the user with role tag, city/state, and publication status badge.
+  - Authentication details card: Exposes read-only auth user UUID, authentication email, phone, and provider tags.
+  - Destructive actions: Password reset dispatch and session revocation with modal confirmation dialogs.
+- **Automated Verification & Browser Smoke Tests**:
+  - New test suite `scripts/browser-smoke-test-admin-users.mjs` with 9 suites covering desktop and mobile viewports (100% pass).
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (32 routes)
+  - `npx supabase test db`: PASS (5 suites, 38 tests)
+
 ### WhatsApp UI Staging Preview — 2026-09-18
 
 - **Feature Branch**: `feature/whatsapp-ui-preview` merged to `main`.
