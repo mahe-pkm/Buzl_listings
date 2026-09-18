@@ -736,18 +736,18 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
 - **Status**: REVIEW_READY
 - **Scope**: Implemented a permanent human-readable Buzl Listing ID system (e.g., BZL-000001) using a PostgreSQL sequence allocator (MAXVALUE 999999) to ensure uniqueness, monotonicity, and immutability.
 - **Key Deliverables**:
-  - **Database Migration (20260918140000_listing_id_system.sql)**: 
-    - Created sequence usiness_listing_code_seq (1 to 999999, NO CYCLE).
-    - Added listing_code column with CHECK constraint (^BZL-[0-9]{6}$).
-    - Deterministic backfill applied to existing records ordered by created_at ASC, id ASC.
+  - **Database Migration (`20260918140000_listing_id_system.sql`)**: 
+    - Created sequence `business_listing_code_seq` (1 to 999999, NO CYCLE).
+    - Added `listing_code` column with CHECK constraint (`^BZL-[0-9]{6}$`).
+    - Deterministic backfill applied to existing records ordered by `created_at ASC`, `id ASC`.
     - INSERT trigger automatically forces assignment from the sequence, completely bypassing manual caller inputs.
-    - UPDATE trigger enforces immutability, rejecting any change to listing_code.
-  - **pgTAP Test Coverage (listing_id_system_runtime.sql)**:
+    - UPDATE trigger enforces immutability, rejecting any change to `listing_code`.
+  - **pgTAP Test Coverage (`listing_id_system_runtime.sql`)**:
     - Added 20 new pgTAP tests specifically covering the sequence constraints, trigger behaviors, manual injection protections, null-update rejections, and backfill validation.
   - **UI Integration**:
-    - Dashboard listing overview table displays listing_code in a monospace badge and supports exact/partial ID search.
-    - Business edit form (BusinessForm.tsx) presents a read-only badge with a one-click copy button for existing listings.
-    - Admin ManageUserForm displays listing_code badges in the associated businesses list.
+    - Dashboard listing overview table displays `listing_code` in a monospace badge and supports exact/partial ID search.
+    - Business edit form (`BusinessForm.tsx`) presents a read-only badge with a one-click copy button for existing listings.
+    - Admin `ManageUserForm` displays `listing_code` badges in the associated businesses list.
     - Internal dashboard routing preserves listing URL and query parameters.
   - **Smoke Testing (rowser-smoke-test-listing-id.mjs)**:
     - Dedicated Playwright smoke test script verifies rendering, searchability, and copy functionality across Admin, Listing Manager, and Business Owner personas, including mobile viewport tests and staging fixture invariants.

@@ -125,18 +125,18 @@ async function runTests() {
     const testListingId = await adminBadges.first().textContent();
     const cleanListingId = testListingId.trim();
 
-    await page.fill('input[placeholder="Search businesses..."]', cleanListingId);
+    await page.fill('input[placeholder*="Search"]', cleanListingId);
     await page.waitForTimeout(1000); 
     const exactSearchResults = await page.locator('table tbody tr').count();
     assert(exactSearchResults === 1, `Search by exact Listing ID returns 1 result`);
 
     const numericSuffix = cleanListingId.split('-')[1];
-    await page.fill('input[placeholder="Search businesses..."]', numericSuffix);
+    await page.fill('input[placeholder*="Search"]', numericSuffix);
     await page.waitForTimeout(1000); 
     const suffixSearchResults = await page.locator('table tbody tr').count();
     assert(suffixSearchResults === 1, `Search by numeric suffix returns 1 result`);
 
-    await page.fill('input[placeholder="Search businesses..."]', '');
+    await page.fill('input[placeholder*="Search"]', '');
     await page.waitForTimeout(1000);
 
     console.log('\n======================================');
@@ -150,7 +150,7 @@ async function runTests() {
     const modBadgeCount = await modBadges.count();
     assert(modBadgeCount > 0, `Moderation queue displays Listing ID badges (Found ${modBadgeCount})`);
 
-    await page.fill('input[placeholder="Search businesses..."]', cleanListingId);
+    await page.fill('input[placeholder*="Search"]', cleanListingId);
     await page.waitForTimeout(1000);
     const modSearchResults = await page.locator('table tbody tr').count();
     assert(modSearchResults === 1, `Search by Listing ID in Moderation queue works`);
@@ -191,7 +191,7 @@ async function runTests() {
 
     const ownerListingId = await ownerBadges.first().textContent();
 
-    await page.fill('input[placeholder="Search businesses..."]', ownerListingId.trim());
+    await page.fill('input[placeholder*="Search"]', ownerListingId.trim());
     await page.waitForTimeout(1000);
     const ownerSearchResults = await page.locator('table tbody tr').count();
     assert(ownerSearchResults === 1, `Search by Listing ID in member table works`);
