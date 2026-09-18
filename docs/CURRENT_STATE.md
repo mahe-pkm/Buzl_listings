@@ -680,12 +680,14 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass, 100%)
 - **Database Migrations**: NONE (0 database schema changes required).
 
-## Internal Dashboard Phase B: Category Management (2026-09-18): IMPLEMENTED & LOCALLY VERIFIED
+## Internal Dashboard Phase B: Category Management (2026-09-18): COMPLETE & VERIFIED ON STAGING
 
 - **Task**: `CATEGORY-MANAGEMENT`
-- **Branch**: `feature/category-management`
-- **Status**: `REVIEW_READY` (Local implementation & automated test verification complete; ready for staging review and merge)
-- **Scope**: Internal Category Management UI & server actions for Platform Admins (taxonomy management) and Buzl Members (read-only reference), URL normalization bugfix, security credential hardening, pgTAP tests, and Playwright smoke tests. Zero DB migrations.
+- **Branch**: `main` (merged from `feature/category-management`)
+- **Main HEAD**: `df08d57`
+- **Staging URL**: `https://listing.rclk.in`
+- **Status**: `COMPLETE` (Merged to main, deployed to staging VPS, and verified live across all 4 personas and mobile viewports)
+- **Scope**: Internal Category Management UI & server actions for Platform Admins (taxonomy management) and Buzl Members (read-only reference), URL normalization bugfix, security credential hardening, pgTAP tests, Playwright smoke tests, staging Docker build deployment, and live staging verification. Zero DB migrations.
 - **Key Deliverables**:
   - **URL Normalization Fix (`BusinessForm.tsx`, `business-actions.ts`)**:
     - Converted website and social URL inputs from `type="url"` to `type="text"` to eliminate browser native validation blocks on plain domains (e.g. `google.com`).
@@ -710,16 +712,19 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
     - `createCategory()`: server-side name length (1–100), slug regex, duplicate slug uniqueness check, parent category active verification, path revalidation.
     - `updateCategory()`: name/slug validation, self-parent and circular descendant traversal detection, published listing deactivation guard with user-friendly error catching PostgreSQL trigger exception.
     - `toggleCategoryActive()`: toggles category state with identical published listing safety guard.
-  - **Automated Verification**:
-    - `supabase/tests/category_management_runtime.sql`: 5 pgTAP tests verifying RLS policies, slug uniqueness, and `categories_prevent_published_deactivation` trigger pass 100%.
-    - `scripts/browser-smoke-test-category-management.mjs`: 13 comprehensive Playwright suites covering Admin management, Listing Manager read-only, Onboarding Member read-only, Business Owner denial, search/filter, category creation, duplicate slug rejection, editing, deactivation safety guard, unreferenced deactivation/reactivation, and mobile viewports (375px, 390px, 430px) pass 100%.
+  - **Staging Deployment & Verification**:
+    - Built production image with project flag `-p buzl-listing` ensuring image `buzl-listing-app` matches the latest commit (`df08d57`).
+    - Recreated container `buzl-listing-app-1` on Hostinger staging VPS (`213.210.37.204`). Traefik proxy and network aliases intact.
+    - Health endpoint `https://listing.rclk.in/api/health` confirmed HTTP 200 `{"status":"ok"}` with `X-Robots-Tag: noindex, nofollow, noarchive`.
+    - Live staging automated verification (`scripts/browser-smoke-test-category-management.mjs`): 13/13 suites passed (100%).
+    - Live staging regression verification: internal navigation (12/12 suites pass), admin user management (9/9 suites pass), business owner UX (5/5 suites pass).
 - **Verification Results**:
   - `npm run lint`: PASS (0 errors)
   - `npm run build`: PASS (all 33 routes compiled cleanly with Turbopack)
   - `npx supabase test db`: PASS (6 suites, 43 tests pass)
-  - `node scripts/browser-smoke-test-category-management.mjs`: PASS (13/13 suites pass, 100%)
-  - `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass, 100%)
-  - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass, 100%)
-  - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass, 100%)
+  - `node scripts/browser-smoke-test-category-management.mjs` (local): PASS (13/13 suites pass, 100%)
+  - `node scripts/browser-smoke-test-category-management.mjs` (staging): PASS (13/13 suites pass, 100%)
+  - `node scripts/browser-smoke-test-internal-navigation.mjs` (staging): PASS (12/12 suites pass, 100%)
+  - `node scripts/browser-smoke-test-admin-users.mjs` (staging): PASS (9/9 suites pass, 100%)
+  - `node scripts/browser-smoke-test-business-owner-ux.mjs` (staging): PASS (5/5 suites pass, 100%)
 - **Database Migrations**: NONE (0 database schema changes required).
-- **Next Step**: When resuming, perform staging deployment review and verification of `CATEGORY-MANAGEMENT`.

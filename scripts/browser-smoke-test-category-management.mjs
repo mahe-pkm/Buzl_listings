@@ -60,10 +60,25 @@ async function main() {
       ? createClient(process.env.LOCAL_SUPABASE_URL, process.env.LOCAL_SUPABASE_SERVICE_ROLE_KEY)
       : null;
 
-  // Pre-cleanup any stale test categories
-  if (supabase) {
-    await supabase.from('categories').delete().like('slug', '%smoke-category%');
+  async function cleanupTestCategories() {
+    if (supabase && !BASE_URL.includes('rclk.in')) {
+      await supabase.from('categories').delete().like('slug', '%smoke-category%');
+    }
+    if (BASE_URL.includes('rclk.in')) {
+      try {
+        const { execSync } = await import('node:child_process');
+        execSync(
+          'ssh -o StrictHostKeyChecking=no root@213.210.37.204 "docker exec buzl-listing-db-1 psql -U postgres -d postgres -c \\"delete from categories where slug like \'%smoke-category%\';\\""',
+          { stdio: 'pipe' }
+        );
+      } catch {
+        // best-effort cleanup
+      }
+    }
   }
+
+  // Pre-cleanup any stale test categories
+  await cleanupTestCategories();
 
   const browser = await chromium.launch({
     executablePath: CHROME_PATH,
@@ -363,10 +378,7 @@ async function main() {
     assert(await activeBadge.isVisible(), 'Category status badge successfully restored to Active');
 
     // Clean up temporary category
-    if (supabase) {
-      await supabase.from('categories').delete().like('slug', '%smoke-category%');
-      console.log('  ℹ️ Cleaned up temporary smoke test category from database');
-    }
+    await cleanupTestCategories();
 
     // ============================================================
     // SUITE 11: Mobile Viewport 375px
@@ -421,9 +433,7 @@ async function main() {
     console.log('✅ ALL CATEGORY MANAGEMENT TESTS PASSED SUCCESSFULLY!');
     console.log('================================================================\n');
   } finally {
-    if (supabase) {
-      await supabase.from('categories').delete().like('slug', '%smoke-category%');
-    }
+    await cleanupTestCategories();
     await browser.close();
   }
 }
