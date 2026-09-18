@@ -9,6 +9,14 @@ import {
 } from '@/types/business';
 import { revalidatePath } from 'next/cache';
 
+function normalizeUrl(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export async function checkDuplicates(phone: string, websiteUrl?: string, excludeId?: string) {
   const supabase = await createClient();
   const digits = phone.replace(/[^0-9]/g, '');
@@ -283,13 +291,13 @@ export async function createDraftFromImport({
       whatsapp_phone: formData.whatsapp_phone?.trim() || null,
       business_contact_email: formData.business_contact_email?.trim() || null,
       show_email: formData.show_email ?? false,
-      website_url: formData.website_url?.trim() || null,
-      google_business_profile_url: formData.google_business_profile_url?.trim() || null,
+      website_url: normalizeUrl(formData.website_url),
+      google_business_profile_url: normalizeUrl(formData.google_business_profile_url),
       place_id: (provenance.source_place_id || formData.place_id)?.trim() || null,
-      facebook_url: formData.facebook_url?.trim() || null,
-      instagram_url: formData.instagram_url?.trim() || null,
-      linkedin_url: formData.linkedin_url?.trim() || null,
-      youtube_url: formData.youtube_url?.trim() || null,
+      facebook_url: normalizeUrl(formData.facebook_url),
+      instagram_url: normalizeUrl(formData.instagram_url),
+      linkedin_url: normalizeUrl(formData.linkedin_url),
+      youtube_url: normalizeUrl(formData.youtube_url),
       created_source: 'trusted_import',
       source_record_id: provenance.source_record_id?.trim() || null,
       source_buss_id: provenance.source_buss_id?.trim() || null,
@@ -470,13 +478,13 @@ export async function createBusiness(data: BusinessFormData) {
       whatsapp_phone: data.whatsapp_phone?.trim() || null,
       business_contact_email: data.business_contact_email?.trim() || null,
       show_email: data.show_email ?? false,
-      website_url: data.website_url?.trim() || null,
-      google_business_profile_url: gbpUrl,
+      website_url: normalizeUrl(data.website_url),
+      google_business_profile_url: normalizeUrl(gbpUrl),
       place_id: data.place_id?.trim() || null,
-      facebook_url: data.facebook_url?.trim() || null,
-      instagram_url: data.instagram_url?.trim() || null,
-      linkedin_url: data.linkedin_url?.trim() || null,
-      youtube_url: data.youtube_url?.trim() || null,
+      facebook_url: normalizeUrl(data.facebook_url),
+      instagram_url: normalizeUrl(data.instagram_url),
+      linkedin_url: normalizeUrl(data.linkedin_url),
+      youtube_url: normalizeUrl(data.youtube_url),
     })
     .eq('id', businessId);
 
@@ -654,8 +662,8 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
       whatsapp_phone: data.whatsapp_phone?.trim() || null,
       business_contact_email: data.business_contact_email?.trim() || null,
       show_email: data.show_email ?? false,
-      website_url: data.website_url?.trim() || null,
-      google_business_profile_url: gbpUrl,
+      website_url: normalizeUrl(data.website_url),
+      google_business_profile_url: normalizeUrl(gbpUrl),
       place_id: data.place_id !== undefined ? (data.place_id ? data.place_id.trim() : null) : undefined,
       city: data.city.trim(),
       state: data.state.trim(),
@@ -667,10 +675,10 @@ export async function updateBusiness(businessId: string, data: BusinessFormData)
       postal_code: mode === 'service_area' ? null : data.postal_code?.trim() || null,
       show_street_address: showAddress,
       geo_point: geoPointValue,
-      facebook_url: data.facebook_url?.trim() || null,
-      instagram_url: data.instagram_url?.trim() || null,
-      linkedin_url: data.linkedin_url?.trim() || null,
-      youtube_url: data.youtube_url?.trim() || null,
+      facebook_url: normalizeUrl(data.facebook_url),
+      instagram_url: normalizeUrl(data.instagram_url),
+      linkedin_url: normalizeUrl(data.linkedin_url),
+      youtube_url: normalizeUrl(data.youtube_url),
     })
     .eq('id', businessId);
 

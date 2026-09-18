@@ -6,6 +6,39 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Internal Dashboard Phase B: Category Management — 2026-09-18
+
+- **Feature Branch**: `feature/category-management`.
+- **Status**: Implemented & Verified locally; ready for staging deployment and review.
+- **Scope**: Internal Category Management UI & server actions for Platform Admins (taxonomy management) and Buzl Members (read-only reference), URL normalization fix, security credential hardening, pgTAP tests, and Playwright smoke tests. Zero DB migrations.
+- **Category Taxonomy Management UI (`CategoryManagementView.tsx`, `/admin/categories`)**:
+  - Top summary cards: Total Categories, Active Categories, Inactive Categories, Top-Level Categories, and Categories In Use.
+  - Live search input matching category name, slug, or parent name.
+  - Filters for Status (`All`, `Active Only`, `Inactive Only`) and Hierarchy (`All Levels`, `Top-Level Only`, `Subcategories Only`).
+  - Desktop table view with subcategory tree indentation indicators, monospace slug tags, hierarchy badges, sort order, listings usage counters (`X pub / Y tot`), active/inactive status badges, and action controls.
+  - Mobile stacked card view for viewports `< md` with zero horizontal scroll overflow.
+  - Role-adaptive interface: Platform Admins have full management controls (`Add Category`, `Edit`, `Deactivate`/`Activate`); Listing Managers and Onboarding Members have a read-only reference view with "Read-Only Reference" badge and "View only" row labels. Business Owners and unauthenticated users are strictly denied.
+- **Accessible Modals & Guard Rails**:
+  - Accessible Create & Edit Category modal with auto-slug generation from name, parent selector (filtering out self and descendants to prevent circular hierarchies), sort order, and active toggle.
+  - Deactivation safety dialog: blocks deactivation if any published listings reference the category with clear guidance, and safely allows deactivation if only 0 published listings exist.
+- **Server Actions & Database Integrity (`category-actions.ts`)**:
+  - `listCategories()`: aggregated listing counts, hierarchy parent mapping, summary metrics calculation.
+  - `createCategory()`: server-side name length (1–100), slug regex, duplicate slug uniqueness check, parent category active verification, path revalidation.
+  - `updateCategory()`: name/slug validation, self-parent and circular descendant traversal detection, published listing deactivation guard with user-friendly error catching PostgreSQL trigger exception.
+  - `toggleCategoryActive()`: toggles category state with identical published listing safety guard.
+- **URL Normalization Fix (`BusinessForm.tsx`, `business-actions.ts`)**:
+  - Auto-normalizes inputs for `website_url`, `google_business_profile_url`, and social URLs (`facebook_url`, `instagram_url`, `linkedin_url`, `youtube_url`) by prepending `https://` on blur and form transition.
+  - Converted inputs from `type="url"` to `type="text"` to eliminate browser native validation blocks on plain domains (e.g. `google.com`).
+  - Server-side normalization in `business-actions.ts` before database writes.
+- **Security & Staging Credential Hygiene**:
+  - Rotated staging test credentials on VPS database container using bcrypt.
+  - Restricted `/api/internal/demo-credentials` to development only (returns HTTP 404 on staging and production).
+  - Stripped fallback plaintext password literals across all test scripts.
+- **Automated Verification**:
+  - `supabase/tests/category_management_runtime.sql`: 5 pgTAP tests verifying RLS policies, slug uniqueness, and `categories_prevent_published_deactivation` trigger pass 100%.
+  - `scripts/browser-smoke-test-category-management.mjs`: 13 comprehensive Playwright suites covering Admin management, Listing Manager read-only, Onboarding Member read-only, Business Owner denial, search/filter, category creation, duplicate slug rejection, editing, deactivation safety guard, unreferenced deactivation/reactivation, and mobile viewports (375px, 390px, 430px) pass 100%.
+- **Database Migrations**: None (0 schema changes).
+
 ### Internal Dashboard Phase A: Navigation & Moderation Queue Discoverability — 2026-09-18
 
 - **Feature Branch**: `feature/internal-dashboard-navigation` merged into `main` (`3a4c7a2`).

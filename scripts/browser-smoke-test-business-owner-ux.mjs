@@ -20,26 +20,13 @@ async function main() {
   console.log(`Base URL: ${BASE_URL}`);
   console.log('==================================================\n');
 
-  let ownerEmail = process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
-  let ownerPassword = process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
-  let adminEmail = process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
-  let adminPassword = process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!';
+  const ownerEmail = process.env.STAGING_OWNER_EMAIL || process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
+  const ownerPassword = process.env.STAGING_OWNER_PASSWORD || process.env.LOCAL_FIXTURE_OWNER_PASSWORD;
+  const adminEmail = process.env.STAGING_ADMIN_EMAIL || process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
+  const adminPassword = process.env.STAGING_ADMIN_PASSWORD || process.env.LOCAL_FIXTURE_ADMIN_PASSWORD;
 
-  try {
-    const credRes = await fetch(`${BASE_URL}/api/internal/demo-credentials`);
-    if (credRes.ok) {
-      const credData = await credRes.json();
-      if (credData.accounts?.owner?.password) {
-        ownerEmail = credData.accounts.owner.email;
-        ownerPassword = credData.accounts.owner.password;
-      }
-      if (credData.accounts?.admin?.password) {
-        adminEmail = credData.accounts.admin.email;
-        adminPassword = credData.accounts.admin.password;
-      }
-    }
-  } catch {
-    // fallback to fixture defaults
+  if (!ownerPassword || !adminPassword) {
+    throw new Error('Test credentials missing. Please set credentials in environment or .env.fixtures.local');
   }
 
   const browser = await chromium.launch({
@@ -232,8 +219,10 @@ async function main() {
     assert(await gbpLabel.isVisible(), 'Google Business Profile Link label is visible');
 
     await page.fill('#primary_phone', '+91 98765 43210');
-    await page.fill('#google_business_profile_url', 'https://maps.app.goo.gl/example123');
+    await page.fill('#google_business_profile_url', 'maps.app.goo.gl/example123');
+    await page.fill('#website_url', 'google.com');
     await page.click('button:has-text("Next Step →")');
+    assert(await page.locator('text=Action Required').count() === 0, 'No error banner when entering plain domain URL (auto-normalized)');
 
     // 3.4 Step 4: Category & Services
     const step4Label = page.locator('label:has-text("What services does your business offer?")');

@@ -63,6 +63,14 @@ const STEPS = [
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+export function normalizeUrlInput(raw: string | null | undefined): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  if (!trimmed) return '';
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export default function BusinessForm({
   categories,
   initialData,
@@ -562,15 +570,15 @@ export default function BusinessForm({
         return false;
       }
       if (formData.google_business_profile_url?.trim()) {
-        if (!/^https?:\/\//i.test(formData.google_business_profile_url.trim())) {
-          setErrorMsg('Google Business Profile URL must start with http:// or https://');
-          return false;
+        const normalized = normalizeUrlInput(formData.google_business_profile_url);
+        if (normalized !== formData.google_business_profile_url) {
+          updateField('google_business_profile_url', normalized);
         }
       }
       if (formData.website_url?.trim()) {
-        if (!/^https?:\/\//i.test(formData.website_url.trim())) {
-          setErrorMsg('Website URL must start with http:// or https://');
-          return false;
+        const normalized = normalizeUrlInput(formData.website_url);
+        if (normalized !== formData.website_url) {
+          updateField('website_url', normalized);
         }
       }
     }
@@ -590,6 +598,25 @@ export default function BusinessForm({
       if ((formData.products || []).length > 20) {
         setErrorMsg('A business cannot have more than 20 products.');
         return false;
+      }
+    }
+
+    if (activeStep === 7) {
+      if (formData.facebook_url?.trim()) {
+        const norm = normalizeUrlInput(formData.facebook_url);
+        if (norm !== formData.facebook_url) updateField('facebook_url', norm);
+      }
+      if (formData.instagram_url?.trim()) {
+        const norm = normalizeUrlInput(formData.instagram_url);
+        if (norm !== formData.instagram_url) updateField('instagram_url', norm);
+      }
+      if (formData.linkedin_url?.trim()) {
+        const norm = normalizeUrlInput(formData.linkedin_url);
+        if (norm !== formData.linkedin_url) updateField('linkedin_url', norm);
+      }
+      if (formData.youtube_url?.trim()) {
+        const norm = normalizeUrlInput(formData.youtube_url);
+        if (norm !== formData.youtube_url) updateField('youtube_url', norm);
       }
     }
 
@@ -616,15 +643,25 @@ export default function BusinessForm({
     setSuccessMsg(null);
 
     startTransition(async () => {
+      const cleanFormData: BusinessFormData = {
+        ...formData,
+        website_url: normalizeUrlInput(formData.website_url),
+        google_business_profile_url: normalizeUrlInput(formData.google_business_profile_url),
+        facebook_url: normalizeUrlInput(formData.facebook_url),
+        instagram_url: normalizeUrlInput(formData.instagram_url),
+        linkedin_url: normalizeUrlInput(formData.linkedin_url),
+        youtube_url: normalizeUrlInput(formData.youtube_url),
+      };
+
       if (businessId) {
-        const result = await updateBusiness(businessId, formData);
+        const result = await updateBusiness(businessId, cleanFormData);
         if (result.success) {
           setSuccessMsg('Business listing updated successfully!');
         } else {
           setErrorMsg(result.error || 'Failed to update business');
         }
       } else {
-        const result = await createBusiness(formData);
+        const result = await createBusiness(cleanFormData);
         if (result.success && result.businessId) {
           setSuccessMsg('Business listing created successfully!');
           router.push(`/dashboard/businesses/${result.businessId}/edit`);
@@ -1244,10 +1281,16 @@ export default function BusinessForm({
                 <input
                   id="website_url"
                   name="website_url"
-                  type="url"
+                  type="text"
                   value={formData.website_url}
                   onChange={(e) => updateField('website_url', e.target.value)}
-                  placeholder="https://example.com"
+                  onBlur={(e) => {
+                    const norm = normalizeUrlInput(e.target.value);
+                    if (norm !== formData.website_url) {
+                      updateField('website_url', norm);
+                    }
+                  }}
+                  placeholder="https://example.com or example.com"
                   className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD]"
                 />
               </div>
@@ -1261,9 +1304,15 @@ export default function BusinessForm({
                   <input
                     id="google_business_profile_url"
                     name="google_business_profile_url"
-                    type="url"
+                    type="text"
                     value={formData.google_business_profile_url}
                     onChange={(e) => updateField('google_business_profile_url', e.target.value)}
+                    onBlur={(e) => {
+                      const norm = normalizeUrlInput(e.target.value);
+                      if (norm !== formData.google_business_profile_url) {
+                        updateField('google_business_profile_url', norm);
+                      }
+                    }}
                     placeholder="https://maps.app.goo.gl/... or https://google.com/maps/place/..."
                     className="w-full pl-9 pr-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
                   />
@@ -1958,10 +2007,14 @@ export default function BusinessForm({
                     Facebook URL
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     value={formData.facebook_url}
                     onChange={(e) => updateField('facebook_url', e.target.value)}
-                    placeholder="https://facebook.com/yourbusiness"
+                    onBlur={(e) => {
+                      const norm = normalizeUrlInput(e.target.value);
+                      if (norm !== formData.facebook_url) updateField('facebook_url', norm);
+                    }}
+                    placeholder="https://facebook.com/yourbusiness or facebook.com/yourbusiness"
                     className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
                   />
                 </div>
@@ -1971,10 +2024,14 @@ export default function BusinessForm({
                     Instagram URL
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     value={formData.instagram_url}
                     onChange={(e) => updateField('instagram_url', e.target.value)}
-                    placeholder="https://instagram.com/yourbusiness"
+                    onBlur={(e) => {
+                      const norm = normalizeUrlInput(e.target.value);
+                      if (norm !== formData.instagram_url) updateField('instagram_url', norm);
+                    }}
+                    placeholder="https://instagram.com/yourbusiness or instagram.com/yourbusiness"
                     className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
                   />
                 </div>
@@ -1984,10 +2041,14 @@ export default function BusinessForm({
                     LinkedIn URL
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     value={formData.linkedin_url}
                     onChange={(e) => updateField('linkedin_url', e.target.value)}
-                    placeholder="https://linkedin.com/company/yourbusiness"
+                    onBlur={(e) => {
+                      const norm = normalizeUrlInput(e.target.value);
+                      if (norm !== formData.linkedin_url) updateField('linkedin_url', norm);
+                    }}
+                    placeholder="https://linkedin.com/company/yourbusiness or linkedin.com/company/yourbusiness"
                     className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
                   />
                 </div>
@@ -1997,10 +2058,14 @@ export default function BusinessForm({
                     YouTube URL
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     value={formData.youtube_url}
                     onChange={(e) => updateField('youtube_url', e.target.value)}
-                    placeholder="https://youtube.com/@yourbusiness"
+                    onBlur={(e) => {
+                      const norm = normalizeUrlInput(e.target.value);
+                      if (norm !== formData.youtube_url) updateField('youtube_url', norm);
+                    }}
+                    placeholder="https://youtube.com/@yourbusiness or youtube.com/@yourbusiness"
                     className="w-full px-3.5 py-2 rounded-[8px] border border-[#DCE2E8] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD]"
                   />
                 </div>

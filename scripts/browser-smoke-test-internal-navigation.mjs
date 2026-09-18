@@ -36,37 +36,17 @@ async function main() {
   console.log(`Base URL: ${BASE_URL}`);
   console.log('================================================================\n');
 
-  let adminEmail = process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
-  let adminPassword = process.env.LOCAL_FIXTURE_ADMIN_PASSWORD || 'AdminPassword123!';
-  let managerEmail = process.env.LOCAL_FIXTURE_MANAGER_EMAIL || 'manager@buzl.test';
-  let managerPassword = process.env.LOCAL_FIXTURE_MANAGER_PASSWORD || 'ManagerPassword123!';
-  let memberEmail = process.env.LOCAL_FIXTURE_MEMBER_EMAIL || 'member@buzl.test';
-  let memberPassword = process.env.LOCAL_FIXTURE_MEMBER_PASSWORD || 'MemberPassword123!';
-  let ownerEmail = process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
-  let ownerPassword = process.env.LOCAL_FIXTURE_OWNER_PASSWORD || 'OwnerPassword123!';
+  const adminEmail = process.env.STAGING_ADMIN_EMAIL || process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
+  const adminPassword = process.env.STAGING_ADMIN_PASSWORD || process.env.LOCAL_FIXTURE_ADMIN_PASSWORD;
+  const managerEmail = process.env.STAGING_MANAGER_EMAIL || process.env.LOCAL_FIXTURE_MANAGER_EMAIL || 'manager@buzl.test';
+  const managerPassword = process.env.STAGING_MANAGER_PASSWORD || process.env.LOCAL_FIXTURE_MANAGER_PASSWORD;
+  const memberEmail = process.env.STAGING_MEMBER_EMAIL || process.env.LOCAL_FIXTURE_MEMBER_EMAIL || 'member@buzl.test';
+  const memberPassword = process.env.STAGING_MEMBER_PASSWORD || process.env.LOCAL_FIXTURE_MEMBER_PASSWORD;
+  const ownerEmail = process.env.STAGING_OWNER_EMAIL || process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
+  const ownerPassword = process.env.STAGING_OWNER_PASSWORD || process.env.LOCAL_FIXTURE_OWNER_PASSWORD;
 
-  if (BASE_URL.includes('listing.rclk.in')) {
-    try {
-      const credRes = await fetch(`${BASE_URL}/api/internal/demo-credentials`);
-      if (credRes.ok) {
-        const credData = await credRes.json();
-        if (credData.accounts?.admin?.password) {
-          adminEmail = credData.accounts.admin.email;
-          adminPassword = credData.accounts.admin.password;
-        }
-        if (credData.accounts?.member?.password) {
-          memberEmail = credData.accounts.member.email;
-          memberPassword = credData.accounts.member.password;
-        }
-        if (credData.accounts?.owner?.password) {
-          ownerEmail = credData.accounts.owner.email;
-          ownerPassword = credData.accounts.owner.password;
-        }
-        console.log('  ✓ Loaded live staging demo credentials');
-      }
-    } catch {
-      // fallback to fixtures
-    }
+  if (!adminPassword || !managerPassword || !memberPassword || !ownerPassword) {
+    throw new Error('Test credentials missing. Please set credentials in environment or .env.fixtures.local');
   }
 
   const supabase =

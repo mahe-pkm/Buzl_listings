@@ -1,4 +1,7 @@
 import { chromium } from 'playwright';
+import { loadLocalFixtureEnvironment } from './lib/local-fixture-env.mjs';
+
+loadLocalFixtureEnvironment({ optional: true });
 
 const BASE_URL = process.env.TEST_BASE_URL || 'https://listing.rclk.in';
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
@@ -36,35 +39,15 @@ async function run() {
   log(`Base URL: ${BASE_URL}`);
   log('==================================================\n');
 
-  // Fetch credentials dynamically from staging
-  let ownerEmail = 'owner@buzl.test';
-  let ownerPassword = 'OwnerPassword123!';
-  let adminEmail = 'admin@buzl.test';
-  let adminPassword = 'AdminPassword123!';
-  let memberEmail = 'member@buzl.test';
-  let memberPassword = 'MemberPassword123!';
+  // Load credentials from environment / local fixtures
+  const ownerEmail = process.env.STAGING_OWNER_EMAIL || process.env.LOCAL_FIXTURE_OWNER_EMAIL || 'owner@buzl.test';
+  const ownerPassword = process.env.STAGING_OWNER_PASSWORD || process.env.LOCAL_FIXTURE_OWNER_PASSWORD;
+  const adminEmail = process.env.STAGING_ADMIN_EMAIL || process.env.LOCAL_FIXTURE_ADMIN_EMAIL || 'admin@buzl.test';
+  const adminPassword = process.env.STAGING_ADMIN_PASSWORD || process.env.LOCAL_FIXTURE_ADMIN_PASSWORD;
+  const memberEmail = process.env.STAGING_MEMBER_EMAIL || process.env.LOCAL_FIXTURE_MEMBER_EMAIL || 'member@buzl.test';
+  const memberPassword = process.env.STAGING_MEMBER_PASSWORD || process.env.LOCAL_FIXTURE_MEMBER_PASSWORD;
 
-  try {
-    const credRes = await fetch(`${BASE_URL}/api/internal/demo-credentials`);
-    if (credRes.ok) {
-      const credData = await credRes.json();
-      if (credData.accounts?.owner?.password) {
-        ownerEmail = credData.accounts.owner.email;
-        ownerPassword = credData.accounts.owner.password;
-      }
-      if (credData.accounts?.admin?.password) {
-        adminEmail = credData.accounts.admin.email;
-        adminPassword = credData.accounts.admin.password;
-      }
-      if (credData.accounts?.member?.password) {
-        memberEmail = credData.accounts.member.email;
-        memberPassword = credData.accounts.member.password;
-      }
-      log('✓ Fetched live staging demo credentials');
-    }
-  } catch {
-    log('Notice: Could not fetch demo credentials, using fixture defaults');
-  }
+  log('✓ Loaded staging demo credentials');
 
   // ----------------------------------------------------
   // 1. HEALTH & INDEXING GUARDS

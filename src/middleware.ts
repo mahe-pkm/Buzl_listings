@@ -71,11 +71,16 @@ export async function middleware(request: NextRequest) {
     // Importer routes: /admin/businesses/import and /internal/*
     const isImportRoute = pathname === "/admin/businesses/import" || pathname.startsWith("/internal");
     const isReviewRoute = pathname.startsWith('/review/businesses');
+    const isCategoriesRoute = pathname === "/admin/categories" || pathname.startsWith("/admin/categories/");
 
     if (isReviewRoute) {
       const { data: reviewProfile } = await supabase.from('profiles').select('permission_preset').eq('id', user.id).maybeSingle();
       const canReview = role === 'admin' || (role === 'buzl_member' && reviewProfile?.permission_preset === 'listing_manager');
       if (!canReview) return NextResponse.redirect(new URL('/dashboard', request.url));
+    } else if (isCategoriesRoute) {
+      if (!isInternalUser) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
     } else if (isImportRoute) {
       if (!isInternalUser) {
         return NextResponse.redirect(new URL("/dashboard", request.url));

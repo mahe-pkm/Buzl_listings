@@ -5,9 +5,10 @@ import path from "node:path";
  * Load credentials exclusively from the ignored local fixture file for local
  * test tooling. Next.js does not read this file and no value is logged.
  */
-export function loadLocalFixtureEnvironment() {
+export function loadLocalFixtureEnvironment({ optional = false } = {}) {
   const fixturePath = path.resolve(".env.fixtures.local");
   if (!fs.existsSync(fixturePath)) {
+    if (optional) return;
     throw new Error(".env.fixtures.local is required for local fixture tooling");
   }
 

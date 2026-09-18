@@ -679,4 +679,47 @@ Status: Fully implemented, verified locally, merged to main, deployed to staging
   - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass, 100%)
   - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass, 100%)
 - **Database Migrations**: NONE (0 database schema changes required).
-- **Next Task**: `CATEGORY-MANAGEMENT` (Phase B per `docs/INTERNAL_DASHBOARD_CAPABILITY_AUDIT.md`).
+
+## Internal Dashboard Phase B: Category Management (2026-09-18): IMPLEMENTED & LOCALLY VERIFIED
+
+- **Task**: `CATEGORY-MANAGEMENT`
+- **Branch**: `feature/category-management`
+- **Status**: `REVIEW_READY` (Local implementation & automated test verification complete; ready for staging review and merge)
+- **Scope**: Internal Category Management UI & server actions for Platform Admins (taxonomy management) and Buzl Members (read-only reference), URL normalization bugfix, security credential hardening, pgTAP tests, and Playwright smoke tests. Zero DB migrations.
+- **Key Deliverables**:
+  - **URL Normalization Fix (`BusinessForm.tsx`, `business-actions.ts`)**:
+    - Converted website and social URL inputs from `type="url"` to `type="text"` to eliminate browser native validation blocks on plain domains (e.g. `google.com`).
+    - Added automatic `https://` prefixing on blur, step transition, and before saving.
+    - Server-side normalization in `business-actions.ts` before inserting or updating listings in PostgreSQL.
+  - **Staging Credential Hygiene & Security Gate 0 (PASS)**:
+    - Rotated fixture passwords on staging VPS container using bcrypt.
+    - Disabled `/api/internal/demo-credentials` on staging and production (returns HTTP 404).
+    - Removed fallback plaintext passwords across all test scripts in `scripts/`.
+  - **Category Taxonomy Management UI (`/admin/categories`, `CategoryManagementView.tsx`)**:
+    - Summary metrics cards: Total, Active, Inactive, Top-Level, and In Use.
+    - Live search by category name, slug, or parent name.
+    - Status (`All`, `Active`, `Inactive`) and Hierarchy (`All`, `Top-Level`, `Subcategories`) filters.
+    - Desktop table with tree indentation indicators, monospace slug tags, hierarchy badges, sort order, listings usage badges (`X pub / Y tot`), active/inactive status badges, and action controls.
+    - Responsive mobile stacked cards for screens `< md` with zero horizontal overflow (tested across 375px, 390px, 430px).
+    - Role-adaptive interface: Platform Admins have full management controls (`Add Category`, `Edit`, `Deactivate`/`Activate`); Listing Managers and Onboarding Members have a read-only reference view with "Read-Only Reference" badge and "View only" row labels. Business Owners and unauthenticated users are strictly denied.
+  - **Accessible Modals & Safety Guards**:
+    - Accessible Create/Edit Modal with auto-slug generation, parent dropdown (excluding self and descendants to prevent circular hierarchies), sort order, and active toggle.
+    - Deactivation confirmation modal: blocks deactivating any category currently referenced by published listings, providing clear guidance and disabling the confirm button.
+  - **Server Actions & Database Integrity (`src/lib/category-actions.ts`)**:
+    - `listCategories()`: aggregated listing counts, hierarchy parent mapping, summary metrics calculation.
+    - `createCategory()`: server-side name length (1–100), slug regex, duplicate slug uniqueness check, parent category active verification, path revalidation.
+    - `updateCategory()`: name/slug validation, self-parent and circular descendant traversal detection, published listing deactivation guard with user-friendly error catching PostgreSQL trigger exception.
+    - `toggleCategoryActive()`: toggles category state with identical published listing safety guard.
+  - **Automated Verification**:
+    - `supabase/tests/category_management_runtime.sql`: 5 pgTAP tests verifying RLS policies, slug uniqueness, and `categories_prevent_published_deactivation` trigger pass 100%.
+    - `scripts/browser-smoke-test-category-management.mjs`: 13 comprehensive Playwright suites covering Admin management, Listing Manager read-only, Onboarding Member read-only, Business Owner denial, search/filter, category creation, duplicate slug rejection, editing, deactivation safety guard, unreferenced deactivation/reactivation, and mobile viewports (375px, 390px, 430px) pass 100%.
+- **Verification Results**:
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS (all 33 routes compiled cleanly with Turbopack)
+  - `npx supabase test db`: PASS (6 suites, 43 tests pass)
+  - `node scripts/browser-smoke-test-category-management.mjs`: PASS (13/13 suites pass, 100%)
+  - `node scripts/browser-smoke-test-internal-navigation.mjs`: PASS (12/12 suites pass, 100%)
+  - `node scripts/browser-smoke-test-admin-users.mjs`: PASS (9/9 suites pass, 100%)
+  - `node scripts/browser-smoke-test-business-owner-ux.mjs`: PASS (5/5 suites pass, 100%)
+- **Database Migrations**: NONE (0 database schema changes required).
+- **Next Step**: When resuming, perform staging deployment review and verification of `CATEGORY-MANAGEMENT`.
