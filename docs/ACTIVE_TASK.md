@@ -12,10 +12,10 @@
 | Status | **PAUSED_HANDOFF** |
 | Current Agent | `codex` |
 | Started From Commit | `fe13135314e24e547cf148c2b0b80952d1628c42` |
-| Latest Commit | `0ea91faa9c349d176fe739b3e3b7c737aca60768` |
+| Latest Commit | `1517c71f0df2271793baadc0ee8a89705d7078e6` |
 | Branch | `feature/whatsapp-otp-meta-live` |
 | Started At | 2026-09-19T19:40:22+05:30 |
-| Last Updated | 2026-09-19T20:08:26+05:30 |
+| Last Updated | 2026-09-19T20:11:36+05:30 |
 
 ## Objective
 
@@ -27,28 +27,35 @@ Implement the server-only Supabase-generated phone OTP delivery path through a v
 
 ## Completed Work
 
-- Checkpointed the @next/env live-test loader at 0ea91fa and executed exactly one controlled direct Meta provider request. All eight required variable names were READY. Offline provider, template mapping, Standard Webhooks verification, lint, build, and diff checks passed.
+- Performed read-only Meta Graph metadata queries only. The configured WABA returned one exact buzl_listing_otp record: ID 1068025066202313, APPROVED, language en, category AUTHENTICATION. The configured phone number ID is listed under the same WABA.
 
 ## Remaining Work
 
-- Resolve the Meta template delivery rejection before any further send. After operator validates the configured WhatsApp Business Account, phone number ID, exact active template name buzl_listing_otp, and en_US language, explicitly authorize one new controlled send. Only after direct delivery passes may the Supabase phone OTP flow begin.
+- Operator must manually change META_WHATSAPP_TEMPLATE_LANGUAGE in ignored .env.local from en_US to en. After manual confirmation and explicit authorization, run at most one new controlled direct provider send. Do not begin Supabase OTP until direct delivery and operator receipt confirmation pass.
 
 ## Checks / Tests
 
-- Working tree was clean before the single send. One live request only. Meta returned HTTP 404, error code 132001, no error subcode. No token, recipient, OTP, or request payload was printed. No Supabase OTP, UI enablement, deployment, staging change, or production change occurred.
+- Template metadata query HTTP 200
+- exact template found
+- status APPROVED
+- category AUTHENTICATION
+- configured WABA match PASS
+- phone number/template WABA relationship PASS
+- no message send executed
+- no secrets or phone numbers printed
+- no environment file modified.
 
 ## Known Issues
 
-- Meta provider rejected the Authentication template request. Safe diagnosis is a configured-template availability or identity mismatch
-- exact correction requires operator review in Meta Business/WhatsApp Manager.
+- Language mismatch only: configured en_US, Meta API record en. Automatic environment modification and automatic resend are prohibited.
 
 ## Next Exact Action
 
-Operator checks the template is active and available as buzl_listing_otp in en_US for the configured WABA/phone number, then explicitly requests a second controlled provider test if corrected.
+Operator manually edits `.env.local` so META_WHATSAPP_TEMPLATE_LANGUAGE=en, confirms it is saved, and explicitly requests one controlled retry.
 
 ## Handoff Notes
 
-Direct Meta delivery gate failed: HTTP 404, Meta error code 132001. Automatic retry is prohibited.
+Paused for operator configuration correction. Meta API reports template language en while local configuration requires en_US, explaining the 132001 template-not-found rejection.
 
 ## Agent Handoff Rule
 
