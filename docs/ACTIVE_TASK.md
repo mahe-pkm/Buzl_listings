@@ -7,27 +7,27 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `ADMIN-AND-MEMBER-DASHBOARD-P1` |
-| Task Name | Admin and Member Operational Dashboard Phase 1 |
-| Status | **COMPLETE** |
-| Current Agent | `antigravity` |
-| Started From Commit | `58be4debe97dc415095c3222fe5d02a28e62415a` |
-| Latest Commit | `3e450cfbb1dda4b462f50b1c542c68e7f4d9d541` |
-| Branch | `main` |
-| Started At | 2026-09-18T14:29:38+05:30 |
-| Last Updated | 2026-09-18T15:53:13+05:30 |
+| Task ID | `WHATSAPP-OTP-META-LIVE` |
+| Task Name | WhatsApp OTP Meta Live Integration |
+| Status | **IN_PROGRESS** |
+| Current Agent | `codex` |
+| Started From Commit | `fe13135314e24e547cf148c2b0b80952d1628c42` |
+| Latest Commit | `fe13135314e24e547cf148c2b0b80952d1628c42` |
+| Branch | `feature/whatsapp-otp-meta-live` |
+| Started At | 2026-09-19T19:40:22+05:30 |
+| Last Updated | 2026-09-19T19:40:22+05:30 |
 
 ## Objective
 
-Implement the first useful operational dashboard experience for Platform Admin, Buzl Listing Manager, and Buzl Onboarding Member while preserving current Business Owner experience using existing schema.
+Implement the server-only Supabase-generated phone OTP delivery path through a verified Send SMS Auth Hook and Meta WhatsApp Cloud API, preserving Supabase as the sole OTP, identity, verification, and session authority. Do not deploy production or enable staging UI until a controlled live end-to-end test passes.
 
 ## Allowed Files
 
-- src/app/dashboard/*, src/components/dashboard/*, src/lib/*, scripts/*, docs/*
+- src/lib/whatsapp/*, src/app/api/internal/auth-hooks/*, src/app/login/page.tsx, src/app/signup/page.tsx, scripts/browser-smoke-test-whatsapp-otp.mjs, scripts/verify-whatsapp-meta-provider.mjs, supabase/config.toml, compose*.yml, docker*.yml, .env.example, docs/ACTIVE_TASK.md, docs/CURRENT_STATE.md, CHANGELOG.md
 
 ## Completed Work
 
-- Implemented, reviewed, merged to main, deployed to staging (https://listing.rclk.in), and fully verified live across all 4 personas (Admin, Listing Manager, Onboarding Member, Business Owner) and all regression test suites with 0 errors and zero schema changes.
+- —
 
 ## Remaining Work
 
@@ -35,15 +35,7 @@ Implement the first useful operational dashboard experience for Platform Admin, 
 
 ## Checks / Tests
 
-- npm run lint: PASS (0 errors)
-- npm run build: PASS (all 33 routes)
-- git diff --check: PASS
-- npx supabase test db: PASS (7 suites, 63 tests pass)
-- browser-smoke-test-dashboard-p1.mjs (Local & Live Staging): PASS (5 suites, 17 assertions)
-- 5 regression smoke test suites (Local & Live Staging): PASS (100%)
-- staging health HTTP 200
-- demo-credentials HTTP 200
-- indexing guards verified.
+- —
 
 ## Known Issues
 
@@ -51,7 +43,7 @@ Implement the first useful operational dashboard experience for Platform Admin, 
 
 ## Next Exact Action
 
-No further action — task complete.
+—
 
 ## Handoff Notes
 

@@ -1,5 +1,17 @@
 # Current Project State
 
+## WhatsApp OTP Meta live integration — paused at secure live-test gate (2026-09-19)
+
+- Active branch: `feature/whatsapp-otp-meta-live`, based on `fe13135`.
+- Implemented a server-only Meta WhatsApp Cloud delivery adapter for the locked `buzl_listing_otp` / `en_US` authentication template.
+- Implemented the self-hosted Supabase Send SMS Auth Hook endpoint with Standard Webhooks signature verification and fail-closed behavior.
+- Supabase remains the sole OTP generator, verifier, identity, session, role, and account-status authority; the application does not persist or log OTP values.
+- Added contract coverage for the Graph endpoint, template parameter mapping, signed-hook verification, and sanitized provider failures.
+- Local quality gates passed: provider contract, production build, lint with no errors, and all 63 database tests. Existing email-OTP and password browser flows passed; the older fixture script still assumes the pre-tab password form and requires separate maintenance.
+- Live Meta credentials and the approved test recipient are not installed in the local or isolated staging environment. Direct Meta delivery, Supabase hook triggering, OTP verification, session validation, and WhatsApp UI enablement remain untested and intentionally disabled.
+- Staging and production were not deployed or modified for this task.
+- Exact next action: securely install the required variables in an ignored local environment, run one controlled direct template send, obtain operator receipt confirmation, then run one real Supabase phone-OTP flow before enabling the WhatsApp UI.
+
 **Current phase:** Rapid MVP Prototype Build Contract ready / locked; prototype implementation is next
 **Application code:** Day 1 secure foundation complete; authenticated business workflow not implemented
 **Database migrations:** Secure Day 1 foundation applied and runtime-tested locally

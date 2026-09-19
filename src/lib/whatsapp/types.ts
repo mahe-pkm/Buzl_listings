@@ -19,14 +19,6 @@ export interface WhatsAppOtpSendResult {
   retryAfter?: number;
 }
 
-export interface WhatsAppOtpVerifyResult {
-  success: boolean;
-  phone?: string;
-  error?: string;
-  attemptsRemaining?: number;
-  lockedUntil?: number;
-}
-
 export interface WhatsAppOtpProviderContext {
   ip?: string;
   userAgent?: string;
@@ -49,5 +41,4 @@ export interface MetaWhatsAppConfig {
 export interface WhatsAppOtpProvider {
   name: string;
   sendOtp(phone: string, context?: WhatsAppOtpProviderContext): Promise<WhatsAppOtpSendResult>;
-  verifyOtp(phone: string, code: string, context?: WhatsAppOtpProviderContext): Promise<WhatsAppOtpVerifyResult>;
 }
