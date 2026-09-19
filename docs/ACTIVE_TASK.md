@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `WHATSAPP-OTP-META-LIVE` |
 | Task Name | WhatsApp OTP Meta Live Integration |
-| Status | **RESUMED** |
+| Status | **PAUSED_HANDOFF** |
 | Current Agent | `codex` |
 | Started From Commit | `fe13135314e24e547cf148c2b0b80952d1628c42` |
-| Latest Commit | `da12628402fae5e300967e685517858bd82c5447` |
+| Latest Commit | `0ea91faa9c349d176fe739b3e3b7c737aca60768` |
 | Branch | `feature/whatsapp-otp-meta-live` |
 | Started At | 2026-09-19T19:40:22+05:30 |
-| Last Updated | 2026-09-19T20:03:27+05:30 |
+| Last Updated | 2026-09-19T20:08:26+05:30 |
 
 ## Objective
 
@@ -27,42 +27,28 @@ Implement the server-only Supabase-generated phone OTP delivery path through a v
 
 ## Completed Work
 
-- Implemented and committed the server-only Meta WhatsApp Cloud API delivery adapter, locked Authentication template mapping, signed Supabase Send SMS Auth Hook endpoint, local/self-hosted hook configuration, server-only deployment variable wiring, and offline provider/signature contract tests.
+- Checkpointed the @next/env live-test loader at 0ea91fa and executed exactly one controlled direct Meta provider request. All eight required variable names were READY. Offline provider, template mapping, Standard Webhooks verification, lint, build, and diff checks passed.
 
 ## Remaining Work
 
-- Securely install the seven operator-owned Meta/test-recipient variables plus a generated Send SMS hook signing secret in an ignored local environment
-- run one controlled direct template send
-- obtain operator receipt confirmation
-- run one real Supabase phone OTP request and manual OTP verification
-- verify session, profile, account status, RBAC, new-user role, and existing-user reuse
-- only then enable and test the WhatsApp login UI and mobile/browser regressions. Staging deployment requires separate approval after local end-to-end PASS.
+- Resolve the Meta template delivery rejection before any further send. After operator validates the configured WhatsApp Business Account, phone number ID, exact active template name buzl_listing_otp, and en_US language, explicitly authorize one new controlled send. Only after direct delivery passes may the Supabase phone OTP flow begin.
 
 ## Checks / Tests
 
-- Provider contract PASS
-- Standard Webhooks verification PASS
-- sanitized provider failure PASS
-- npm run lint PASS with 0 errors and 15 pre-existing warnings
-- npm run build PASS
-- npx supabase test db PASS (7 files, 63 tests)
-- existing email OTP and password browser flow PASS
-- git diff --check PASS
-- changed-content credential scan found 0 candidates
-- staging and production untouched.
+- Working tree was clean before the single send. One live request only. Meta returned HTTP 404, error code 132001, no error subcode. No token, recipient, OTP, or request payload was printed. No Supabase OTP, UI enablement, deployment, staging change, or production change occurred.
 
 ## Known Issues
 
-- Legacy `npm run test:smoke:auth` assumes the old always-visible password form and times out on the tabbed login UI
-- the current email-OTP/password browser suite passes. The WhatsApp UI remains intentionally coming-soon pending live backend validation.
+- Meta provider rejected the Authentication template request. Safe diagnosis is a configured-template availability or identity mismatch
+- exact correction requires operator review in Meta Business/WhatsApp Manager.
 
 ## Next Exact Action
 
-Operator securely installs the required values in an ignored local environment (do not paste secrets into chat), then Codex runs `npm run test:whatsapp:provider -- --live` for exactly one direct Meta template delivery and waits for operator receipt confirmation.
+Operator checks the template is active and available as buzl_listing_otp in en_US for the configured WABA/phone number, then explicitly requests a second controlled provider test if corrected.
 
 ## Handoff Notes
 
-Secure live-test gate: required Meta credentials and the approved WhatsApp test recipient are not installed in local or isolated staging environment. No live send, hook trigger, OTP verification, or UI enablement can proceed safely without them.
+Direct Meta delivery gate failed: HTTP 404, Meta error code 132001. Automatic retry is prohibited.
 
 ## Agent Handoff Rule
 
