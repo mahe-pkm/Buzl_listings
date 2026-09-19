@@ -36,7 +36,7 @@ const testConfig = {
   phoneNumberId: "123456789",
   wabaId: "987654321",
   templateName: "buzl_listing_otp",
-  templateLanguage: "en_US",
+  templateLanguage: "en",
 };
 const testOtp = "654321";
 const testPhone = "+919876543210";
@@ -44,7 +44,7 @@ const testPhone = "+919876543210";
 const templatePayload = buildMetaAuthenticationTemplatePayload(testPhone, testOtp, testConfig);
 assert.equal(templatePayload.to, "919876543210");
 assert.equal(templatePayload.template.name, "buzl_listing_otp");
-assert.equal(templatePayload.template.language.code, "en_US");
+assert.equal(templatePayload.template.language.code, "en");
 assert.equal(templatePayload.template.components[0].parameters[0].text, testOtp);
 assert.equal(templatePayload.template.components[1].parameters[0].text, testOtp);
 

@@ -9,7 +9,7 @@ import type {
 } from "./types";
 
 const LOCKED_TEMPLATE_NAME = "buzl_listing_otp";
-const LOCKED_TEMPLATE_LANGUAGE = "en_US";
+const LOCKED_TEMPLATE_LANGUAGE = "en";
 const GRAPH_VERSION_PATTERN = /^v\d+\.\d+$/;
 const OTP_PATTERN = /^\d{4,10}$/;
 
