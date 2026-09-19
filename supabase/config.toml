@@ -292,9 +292,11 @@ secrets = "env(SEND_SMS_HOOK_SECRETS)"
 
 # Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
 [auth.sms.twilio]
-enabled = false
-account_sid = ""
-message_service_sid = ""
+enabled = true
+# Local CLI compatibility only. The Send SMS Auth Hook above replaces provider
+# delivery before these inert identifiers could be used.
+account_sid = "local-send-sms-hook"
+message_service_sid = "local-send-sms-hook"
 # DO NOT commit your Twilio auth token to git. Use environment variable substitution instead:
 auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 
