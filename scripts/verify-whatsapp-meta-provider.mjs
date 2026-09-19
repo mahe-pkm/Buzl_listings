@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { randomInt } from "node:crypto";
 
+import nextEnv from "@next/env";
 import { Webhook } from "standardwebhooks";
+
+const { loadEnvConfig } = nextEnv;
+loadEnvConfig(process.cwd());
 
 const requiredEnvironment = [
   "META_WHATSAPP_ACCESS_TOKEN",
@@ -11,9 +15,11 @@ const requiredEnvironment = [
   "META_WHATSAPP_TEMPLATE_LANGUAGE",
   "META_GRAPH_API_VERSION",
   "WHATSAPP_TEST_RECIPIENT",
+  "ALLOW_WHATSAPP_LIVE_SEND",
 ];
 
 const liveMode = process.argv.includes("--live");
+const checkEnvironmentMode = process.argv.includes("--check-env");
 const providerModule = await import("../src/lib/whatsapp/meta-provider.ts");
 const hookModule = await import("../src/lib/whatsapp/send-sms-hook.ts");
 
@@ -102,6 +108,13 @@ console.log("Meta provider contract: PASS");
 console.log("Authentication template mapping: PASS");
 console.log("Standard Webhooks verification: PASS");
 console.log("Provider error sanitization: PASS");
+
+if (checkEnvironmentMode) {
+  for (const name of requiredEnvironment) {
+    console.log(`${name}=${process.env[name]?.trim() ? "READY" : "MISSING"}`);
+  }
+  process.exit(0);
+}
 
 if (!liveMode) {
   console.log("Direct Template Send: NOT_TESTED (run with --live after secure environment setup)");
