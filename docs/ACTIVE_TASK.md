@@ -12,10 +12,10 @@
 | Status | **PAUSED_HANDOFF** |
 | Current Agent | `codex` |
 | Started From Commit | `fe13135314e24e547cf148c2b0b80952d1628c42` |
-| Latest Commit | `1517c71f0df2271793baadc0ee8a89705d7078e6` |
+| Latest Commit | `2520d79a3b9b911f18e51a44265c9330bb2b4f12` |
 | Branch | `feature/whatsapp-otp-meta-live` |
 | Started At | 2026-09-19T19:40:22+05:30 |
-| Last Updated | 2026-09-19T20:11:36+05:30 |
+| Last Updated | 2026-09-19T20:29:33+05:30 |
 
 ## Objective
 
@@ -27,35 +27,41 @@ Implement the server-only Supabase-generated phone OTP delivery path through a v
 
 ## Completed Work
 
-- Performed read-only Meta Graph metadata queries only. The configured WABA returned one exact buzl_listing_otp record: ID 1068025066202313, APPROVED, language en, category AUTHENTICATION. The configured phone number ID is listed under the same WABA.
+- Configured and verified the local Supabase Auth Send SMS Hook runtime. Phone Auth is enabled, SMS autoconfirm is disabled, hook URI matches the Next.js route, Auth/app Standard Webhooks secrets are configured and match, Supabase CLI loads ignored local env safely, the Auth container can reach the hook endpoint, and valid/missing/invalid signature behavior passed without provider delivery. Direct Meta delivery and operator receipt had already passed.
 
 ## Remaining Work
 
-- Operator must manually change META_WHATSAPP_TEMPLATE_LANGUAGE in ignored .env.local from en_US to en. After manual confirmation and explicit authorization, run at most one new controlled direct provider send. Do not begin Supabase OTP until direct delivery and operator receipt confirmation pass.
+- Request exactly one genuine Supabase-generated phone OTP through the supported Auth client, stop for operator WhatsApp receipt confirmation, then let the operator enter the OTP through the normal application flow. After that verify Supabase session, profile resolution, account status, RBAC, new-user business_owner default or existing-user reuse, and no identity/contact auto-merge. Do not enable the UI or deploy staging until the full flow passes.
 
 ## Checks / Tests
 
-- Template metadata query HTTP 200
-- exact template found
-- status APPROVED
-- category AUTHENTICATION
-- configured WABA match PASS
-- phone number/template WABA relationship PASS
-- no message send executed
-- no secrets or phone numbers printed
-- no environment file modified.
+- GoTrue v2.196.0
+- phone Auth PASS
+- Send SMS Hook enabled PASS
+- hook URI PASS
+- Auth signing secret READY
+- app verification secret READY
+- secret match PASS
+- SMS autoconfirm disabled PASS
+- Supabase CLI env resolution PASS
+- Auth-container hook reachability PASS
+- runtime signature validation PASS
+- provider delivery attempted during signature test NO
+- lint 0 errors (15 existing warnings)
+- 63/63 DB tests PASS
+- no OTP requested.
 
 ## Known Issues
 
-- Language mismatch only: configured en_US, Meta API record en. Automatic environment modification and automatic resend are prohibited.
+- Supabase CLI requires the existing local SMS provider compatibility block to be enabled for GOTRUE_EXTERNAL_PHONE_ENABLED=true even though the signed Send SMS Hook replaces provider delivery. Inert local-only provider identifiers and an ignored local token satisfy this runtime requirement.
 
 ## Next Exact Action
 
-Operator manually edits `.env.local` so META_WHATSAPP_TEMPLATE_LANGUAGE=en, confirms it is saved, and explicitly requests one controlled retry.
+Explicitly authorize and trigger one genuine Supabase phone OTP request using the configured test recipient, then stop at OPERATOR_CONFIRM_SUPABASE_OTP_RECEIPT.
 
 ## Handoff Notes
 
-Paused for operator configuration correction. Meta API reports template language en while local configuration requires en_US, explaining the 132001 template-not-found rejection.
+Runtime configuration gate is complete. Paused before the separately authorized one-OTP delivery gate.
 
 ## Agent Handoff Rule
 
