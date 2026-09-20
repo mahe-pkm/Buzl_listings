@@ -14,6 +14,7 @@
     "test:smoke": "node scripts/browser-smoke-test.mjs",
     "test:smoke:public": "node scripts/browser-smoke-test-public.mjs",
     "test:auth:v2": "tsx --conditions=react-server scripts/verify-auth-v2-phase2.mjs",
+    "test:get-started": "tsx --conditions=react-server scripts/verify-get-started-flow.mjs",
     "test:business-email": "tsx --conditions=react-server scripts/verify-business-email-phase3.mjs",
     "test:smoke:auth:v2": "node scripts/browser-smoke-auth-v2.mjs",
     "test:whatsapp:provider": "tsx --conditions=react-server scripts/verify-whatsapp-meta-provider.mjs",

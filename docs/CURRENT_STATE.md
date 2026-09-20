@@ -1,5 +1,31 @@
 # Current Project State
 
+## Auth V2 Get Started onboarding entry page — verified locally (2026-09-20)
+
+- Implemented `/get-started` route (`src/app/get-started/page.tsx`) as a dedicated, welcoming entry page between authentication and the 8-step wizard (`/onboarding`).
+- Dynamic CTA: renders "Register My Business →" for new business owners with 0 businesses, and "Continue Registration →" for returning incomplete business owners who already have a draft in progress.
+- Clean value propositions: Local Discovery, Verified Information, Better Visibility.
+- Transparent 5-step registration process preview (`01 Create profile` -> `02 Add details` -> `03 Verify email` -> `04 Submit for review` -> `05 Get published after approval`) with explicit moderation review note.
+- "What you'll need" checklist clarifying that Business Contact Email verification is mandatory prior to review submission, but draft saving is unrestricted.
+- Routing & Middleware:
+  - Incomplete Business Owners (`profiles.onboarding_completed_at IS NULL`) are routed to `/get-started` upon authentication.
+  - Direct access to `/onboarding` is preserved (e.g., clicking CTA or direct URL navigation).
+  - Completed Business Owners visiting `/get-started` or `/onboarding` are redirected to `/dashboard`.
+  - Internal roles (`admin`, `buzl_member`) bypass `/get-started` and route to their operational destinations (`/admin/businesses`, `/admin/businesses/import`).
+  - Unauthenticated visits to `/get-started` redirect to `/login?redirect=/get-started`.
+- Onboarding copy updated: eyebrow to "Business Registration", heading to "Register Your Business", subheading to "Complete your business information step by step."
+- Zero database mutations: confirmed zero schema changes, zero profile/business/manager row creations or updates on visiting `/get-started`.
+- Validation suite:
+  - `npm run test:get-started`: PASS (auth routing units, middleware guards, copy checks, live 307 redirect, mobile viewports 375/390/430px)
+  - `npm run test:auth:v2`: PASS
+  - `npm run test:business-email`: PASS
+  - `npx supabase test db`: PASS (9 files / 111 tests)
+  - `npm run lint`: PASS (0 errors, 15 pre-existing warnings)
+  - `npm run build`: PASS (Turbopack production build clean)
+  - `git diff --check`: PASS
+- Staging and production remain untouched.
+- Next gate: `OPERATOR_GET_STARTED_REVIEW`.
+
 ## Auth V2 Phase 3 returning WhatsApp login & demo regressions — verified (2026-09-20)
 
 - Completed real local returning WhatsApp login end-to-end flow with genuine Meta-delivered OTP.

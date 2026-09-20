@@ -6,6 +6,17 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Auth V2 Get Started onboarding entry page — local checkpoint 2026-09-20
+
+- Added a lightweight, welcoming entry page at `/get-started` between authentication and the 8-step onboarding wizard for newly authenticated or returning incomplete Business Owners.
+- Added dynamic CTA detection via `business_managers`: presents "Register My Business →" to first-time owners and "Continue Registration →" to returning owners with an active draft.
+- Added value proposition cards (Local Discovery, Verified Information, Better Visibility) and a 5-step registration process preview with an explicit moderation review note.
+- Added a "What you'll need" checklist clarifying that Business Contact Email verification is required before submission, but draft saves remain available before verification.
+- Updated authentication routing (`routeForAuthenticatedUser`) and middleware to route incomplete business owners to `/get-started`, allow direct access to `/onboarding`, redirect completed owners away from onboarding to `/dashboard`, route internal roles to internal paths, and redirect unauthenticated visits to `/login`.
+- Updated onboarding page copy to "Business Registration" and "Register Your Business".
+- Added automated test suite `scripts/verify-get-started-flow.mjs` and npm script `test:get-started` verifying routing units, middleware patterns, page copy, unauthenticated redirect, and mobile viewports (375px, 390px, 430px).
+- Zero database schema changes and zero database side effects on page load. All 111 pgTAP tests, lint, build, and diff checks pass. Staging and production remain untouched.
+
 ### Auth V2 Phase 3 Business Contact Email verification — local review 2026-09-20
 
 - Added protected Business Contact Email verification requests for active business managers with normalized-email validation, cryptographically random opaque tokens, SHA-256-only persistence, challenge replacement, resend throttling, and 30-minute expiry.

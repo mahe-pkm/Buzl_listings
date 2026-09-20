@@ -34,7 +34,8 @@ for (const source of [login, signup]) {
   assert.match(source, />\s*Password\s*</);
 }
 
-assert.equal(routeForAuthenticatedUser('business_owner', null), '/onboarding');
+assert.equal(routeForAuthenticatedUser('business_owner', null), '/get-started');
+assert.equal(routeForAuthenticatedUser('business_owner', null, '/onboarding'), '/onboarding');
 assert.equal(routeForAuthenticatedUser('business_owner', '2026-09-20T00:00:00Z'), '/dashboard');
 assert.equal(routeForAuthenticatedUser('admin', null), '/admin/businesses');
 assert.equal(routeForAuthenticatedUser('buzl_member', null), '/admin/businesses/import');

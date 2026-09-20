@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
-  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal") || pathname.startsWith("/review") || pathname === "/onboarding";
+  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal") || pathname.startsWith("/review") || pathname === "/onboarding" || pathname === "/get-started";
   const isAuthRoute = pathname === "/login" || pathname === "/signup";
 
   if (!isProtected && !isAuthRoute) {
@@ -69,14 +69,15 @@ export async function middleware(request: NextRequest) {
     const isInternalUser = role === "admin" || role === "buzl_member";
 
     if (role === 'business_owner') {
-      if (!profile.onboarding_completed_at && pathname !== '/onboarding' && !isAuthRoute) {
-        return NextResponse.redirect(new URL('/onboarding', request.url));
+      if (!profile.onboarding_completed_at && pathname !== '/get-started' && pathname !== '/onboarding' && !isAuthRoute) {
+        return NextResponse.redirect(new URL('/get-started', request.url));
       }
-      if (profile.onboarding_completed_at && pathname === '/onboarding') {
+      if (profile.onboarding_completed_at && (pathname === '/get-started' || pathname === '/onboarding')) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
       }
-    } else if (pathname === '/onboarding') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+    } else if (pathname === '/onboarding' || pathname === '/get-started') {
+      const dest = role === "admin" ? "/admin/businesses" : (role === "buzl_member" ? "/admin/businesses/import" : "/dashboard");
+      return NextResponse.redirect(new URL(dest, request.url));
     }
 
     // Importer routes: /admin/businesses/import and /internal/*
@@ -110,7 +111,7 @@ export async function middleware(request: NextRequest) {
       } else if (role === "buzl_member") {
         dest = "/admin/businesses/import";
       } else if (!profile.onboarding_completed_at) {
-        dest = "/onboarding";
+        dest = "/get-started";
       }
       return NextResponse.redirect(new URL(dest, request.url));
     }

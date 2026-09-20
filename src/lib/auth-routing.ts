@@ -13,19 +13,23 @@ export function routeForAuthenticatedUser(
   requestedPath = '/dashboard'
 ): string {
   if (role === 'admin') {
-    return requestedPath === '/dashboard' || requestedPath === '/onboarding'
+    return requestedPath === '/dashboard' || requestedPath === '/onboarding' || requestedPath === '/get-started'
       ? '/admin/businesses'
       : requestedPath;
   }
 
   if (role === 'buzl_member') {
-    return requestedPath === '/dashboard' || requestedPath === '/onboarding'
+    return requestedPath === '/dashboard' || requestedPath === '/onboarding' || requestedPath === '/get-started'
       ? '/admin/businesses/import'
       : requestedPath;
   }
 
-  if (!onboardingCompletedAt) return '/onboarding';
-  return requestedPath === '/onboarding' ? '/dashboard' : requestedPath;
+  if (!onboardingCompletedAt) {
+    if (requestedPath === '/onboarding') return '/onboarding';
+    return '/get-started';
+  }
+
+  return requestedPath === '/onboarding' || requestedPath === '/get-started' ? '/dashboard' : requestedPath;
 }
 
 export async function resolveAuthenticatedRoute(

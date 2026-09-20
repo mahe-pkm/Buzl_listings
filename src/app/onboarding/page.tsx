@@ -37,10 +37,10 @@ export default async function OnboardingPage() {
     <main className="min-h-screen bg-[#F2F5FA] px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 rounded-[12px] border border-[#DCE2E8] bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#087C3C]">Business Owner onboarding</p>
-          <h1 className="mt-2 text-2xl font-bold text-[#2A3547]">Create your first business profile</h1>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#087C3C]">Business Registration</p>
+          <h1 className="mt-2 text-2xl font-bold text-[#2A3547]">Register Your Business</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[#5D6776]">
-            Add your business basics, category, location or service area, contact details, services, products, and media. Your login phone stays private and is never copied into this listing.
+            Complete your business information step by step. Add your business basics, category, location or service area, contact details, services, products, and media. Your login phone stays private and is never copied into this listing.
           </p>
         </div>
         <BusinessForm categories={categories} onboardingMode />

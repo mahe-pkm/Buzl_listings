@@ -7,35 +7,49 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `AUTH-V2-PHASE-3-BUSINESS-EMAIL-VERIFICATION` |
-| Task Name | Auth V2 Phase 3 Business Email Verification |
-| Status | **PAUSED_HANDOFF** |
+| Task ID | `AUTH-V2-GET-STARTED-ONBOARDING-ENTRY` |
+| Task Name | Auth V2 Get Started Onboarding Entry Page |
+| Status | **REVIEW_READY** |
 | Current Agent | `antigravity` |
-| Started From Commit | `e812e9b54b6332386276cef3d1c6a37e8acb854d` |
-| Latest Commit | `d1d986863fb823d94d5a913d44353f8326556305` |
+| Started From Commit | `a5ffecac0126b40f57c1d289c03ef834615a7435` |
+| Latest Commit | `a5ffecac0126b40f57c1d289c03ef834615a7435` |
 | Branch | `codex/auth-v2-phase-3-business-email-verification` |
-| Started At | 2026-09-20T18:43:04+05:30 |
-| Last Updated | 2026-09-20T21:30:36+05:30 |
+| Started At | 2026-09-20T21:30:00+05:30 |
+| Last Updated | 2026-09-20T21:42:00+05:30 |
 
 ## Objective
 
-Implement Business Contact Email verification UX and secure server flow on the approved Auth V2 database foundation, preserving separation from Supabase Auth email and existing listing verification state.
+Add a lightweight welcome / business-registration entry page at `/get-started` between authentication and the 8-step onboarding wizard (`/onboarding`) for new and returning incomplete Business Owners.
 
 ## Allowed Files
 
-- src/components/business/*,src/lib/*,src/app/verify-business-email/*,src/app/api/*,supabase/migrations/*,supabase/tests/*,scripts/*,docs/CURRENT_STATE.md,docs/ACTIVE_TASK.md,CHANGELOG.md,package.json,package-lock.json
+- src/app/get-started/*,src/app/onboarding/*,src/lib/auth-routing.ts,src/middleware.ts,scripts/*,docs/CURRENT_STATE.md,docs/ACTIVE_TASK.md,CHANGELOG.md,package.json
 
 ## Completed Work
 
-- Deployed Auth V2 to staging (commit d1d9868): applied pending DB migrations, updated Gotrue phone signup config, mapped WhatsApp and Business Email SMTP environment variables, built and restarted buzl-listing-app-1. Verified health, SEO guards, demo credentials, and active WhatsApp login tabs. Confirmed staging DB has 0 phone users. Opened staging login page in browser.
+- Implemented `/get-started` route (`src/app/get-started/page.tsx`) with server-side auth/role/onboarding checks, dynamic CTA (`Register My Business →` for first-time owners vs `Continue Registration →` for returning owners with an incomplete draft), value propositions, 5-step registration process preview, moderation note, and what you'll need checklist with clear business contact email verification rule.
+- Updated `src/lib/auth-routing.ts` to route incomplete business owners to `/get-started` while preserving direct access to `/onboarding`, and redirecting completed owners away from both `/onboarding` and `/get-started` to `/dashboard`. Internal roles (`admin`, `buzl_member`) route to internal destinations.
+- Updated `src/middleware.ts` to protect `/get-started` and route incomplete owners appropriately without infinite loops.
+- Updated `src/app/onboarding/page.tsx` copy to align with the new entry flow ("Business Registration" / "Register Your Business").
+- Added comprehensive verification test suite in `scripts/verify-get-started-flow.mjs` and npm script `test:get-started`.
+- Ran full test suite: `test:get-started`, `test:auth:v2`, `test:business-email`, `supabase test db` (111 tests), `lint` (0 errors), `build` (clean), `git diff --check`.
+- Staging and production remain untouched.
 
 ## Remaining Work
 
-- Verify staging new user creation, onboarding flow, returning login same UID, business email verification, demo regressions, and responsive checks.
+- Operator review and approval.
+- Staging deployment when authorized.
 
 ## Checks / Tests
 
-- Staging migrations applied cleanly (20260920130000 and 20260920184500), schema verified. Auth V2 phone signup enabled, Gotrue restarted. Next.js app built and running on staging (commit d1d9868). Health check HTTP 200, SEO noindex verified, robots.txt and sitemap safe. Staging demo credentials API HTTP 200. Staging login UI active with WhatsApp as default method. 0 existing phone users on staging. Opened https://listing.rclk.in/login for operator.
+- `npm run test:get-started`: PASS
+- `npm run test:auth:v2`: PASS
+- `npm run test:business-email`: PASS
+- `npx supabase test db`: PASS (9 files / 111 tests)
+- `npm run lint`: PASS (0 errors, 15 pre-existing warnings)
+- `npm run build`: PASS (Turbopack production build clean)
+- `git diff --check`: PASS
+- Zero database mutations on visiting `/get-started`.
 
 ## Known Issues
 
@@ -43,11 +57,11 @@ Implement Business Contact Email verification UX and secure server flow on the a
 
 ## Next Exact Action
 
-Operator enters phone number on staging login page, receives WhatsApp OTP, and submits in browser.
+Await operator review of the `/get-started` onboarding entry page.
 
 ## Handoff Notes
 
-Awaiting operator live WhatsApp OTP entry on staging
+Local implementation of `/get-started` onboarding entry flow is complete, verified, and ready for operator review.
 
 ## Agent Handoff Rule
 
