@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `AUTH-V2-PHASE-3-BUSINESS-EMAIL-VERIFICATION` |
 | Task Name | Auth V2 Phase 3 Business Email Verification |
-| Status | **REVIEW** |
+| Status | **PAUSED_HANDOFF** |
 | Current Agent | `antigravity` |
 | Started From Commit | `e812e9b54b6332386276cef3d1c6a37e8acb854d` |
-| Latest Commit | `baab31d07c23784774794c9028ed208a94213f9d` |
+| Latest Commit | `d1d986863fb823d94d5a913d44353f8326556305` |
 | Branch | `codex/auth-v2-phase-3-business-email-verification` |
 | Started At | 2026-09-20T18:43:04+05:30 |
-| Last Updated | 2026-09-20T21:18:21+05:30 |
+| Last Updated | 2026-09-20T21:30:36+05:30 |
 
 ## Objective
 
@@ -27,16 +27,15 @@ Implement Business Contact Email verification UX and secure server flow on the a
 
 ## Completed Work
 
-- Audited onboarding completion semantics: confirmed onboarding_completed_at is only set on Step 8 after full validation of identity, contact, category, and location mode requirements
-- partial draft cannot mark complete. Captured identity baseline for UID 6daf8def-bf14-45f4-bf97-b2406ac6116a. Logged out session and redirected browser to http://localhost:3000/login for returning WhatsApp login test.
+- Deployed Auth V2 to staging (commit d1d9868): applied pending DB migrations, updated Gotrue phone signup config, mapped WhatsApp and Business Email SMTP environment variables, built and restarted buzl-listing-app-1. Verified health, SEO guards, demo credentials, and active WhatsApp login tabs. Confirmed staging DB has 0 phone users. Opened staging login page in browser.
 
 ## Remaining Work
 
-- Verify returning login uses SAME UID, SAME Profile, SAME Role, same businesses, and lands on /dashboard. Verify local and staging demo accounts baseline. Run full test suite.
+- Verify staging new user creation, onboarding flow, returning login same UID, business email verification, demo regressions, and responsive checks.
 
 ## Checks / Tests
 
-- All 111 pgTAP tests PASS, business email tests PASS (6/6), lint PASS (0 errors), build PASS, returning WhatsApp login SAME UID/profile/role verified, local and staging demo regressions PASS.
+- Staging migrations applied cleanly (20260920130000 and 20260920184500), schema verified. Auth V2 phone signup enabled, Gotrue restarted. Next.js app built and running on staging (commit d1d9868). Health check HTTP 200, SEO noindex verified, robots.txt and sitemap safe. Staging demo credentials API HTTP 200. Staging login UI active with WhatsApp as default method. 0 existing phone users on staging. Opened https://listing.rclk.in/login for operator.
 
 ## Known Issues
 
@@ -44,11 +43,11 @@ Implement Business Contact Email verification UX and secure server flow on the a
 
 ## Next Exact Action
 
-Operator enters same phone number on http://localhost:3000/login, receives 2nd OTP, and submits in browser.
+Operator enters phone number on staging login page, receives WhatsApp OTP, and submits in browser.
 
 ## Handoff Notes
 
-Awaiting operator 2nd WhatsApp OTP entry for returning login
+Awaiting operator live WhatsApp OTP entry on staging
 
 ## Agent Handoff Rule
 
