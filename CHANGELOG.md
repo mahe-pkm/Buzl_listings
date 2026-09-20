@@ -6,7 +6,7 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
-### Auth V2 Get Started onboarding entry page — local checkpoint 2026-09-20
+### Auth V2 Get Started onboarding entry page — staging deployment & verification 2026-09-20
 
 - Added a lightweight, welcoming entry page at `/get-started` between authentication and the 8-step onboarding wizard for newly authenticated or returning incomplete Business Owners.
 - Added dynamic CTA detection via `business_managers`: presents "Register My Business →" to first-time owners and "Continue Registration →" to returning owners with an active draft.

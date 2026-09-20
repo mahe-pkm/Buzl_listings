@@ -1,5 +1,40 @@
 # Current Project State
 
+## Auth V2 Get Started onboarding entry page — deployed & verified live on staging (2026-09-20)
+
+- Deployed the approved `/get-started` onboarding entry UX, auth routing, middleware, and copy updates to STAGING (`https://listing.rclk.in`).
+- Verified container rebuild and recreation: `buzl-listing-app-1` rebuilt and started cleanly without touching unrelated containers or database.
+- Recorded Staging pre-deploy SHA `d1d9868` and deployed HEAD SHA `c194b37` (with Linux-synchronized lockfile fix).
+- Health & Staging Guards:
+  - `/api/health`: HTTP 200 `{"status":"ok"}`
+  - `X-Robots-Tag`: `noindex, nofollow, noarchive`
+  - `robots.txt`: `Disallow: /`
+  - `sitemap.xml`: clean staging-safe empty urlset
+  - Demo helper `/api/internal/demo-credentials`: HTTP 200
+  - Production: UNTOUCHED
+- Live Staging Routing Verification (`node scripts/verify-staging-get-started.mjs`):
+  - **Unauthenticated**: Visiting `/get-started` immediately redirects (307) to `/login?redirect=%2Fget-started`.
+  - **Incomplete Business Owner**: Lands directly on `/get-started`. All value cards, 5-step journey, email verification notice, and moderation note verified without technical leakage. Clicking `"Register My Business →"` navigates cleanly to `/onboarding`.
+  - **Completed Business Owner (`owner@buzl.test`)**: Lands on `/dashboard`. Manual visits to `/get-started` or `/onboarding` are redirected to `/dashboard`.
+  - **Platform Admin (`admin@buzl.test`)**: Lands on `/admin/businesses`. Manual visits to `/get-started` or `/onboarding` redirect to `/admin/businesses`. Admin cannot enter owner onboarding.
+  - **Buzl Member (`member@buzl.test`)**: Lands on `/admin/businesses/import`. Manual visits to `/get-started` or `/onboarding` redirect to `/admin/businesses/import`. Member cannot enter owner onboarding.
+- Mobile Responsiveness on Live Staging:
+  - Tested 375px, 390px, and 430px viewports on `/get-started`. Zero horizontal overflow detected.
+- Zero Database Side Effects:
+  - Confirmed 0 database mutations (businesses count diff = 0, managers count diff = 0, completed profiles count diff = 0, email challenges count diff = 0).
+- WhatsApp Flow Smoke:
+  - Verified phone test identity `95d91e71-1229-4a43-9192-e2b3a89c42e3` (`918489166158`) with `onboarding_completed_at: null` resolves cleanly to `/get-started`. No unnecessary OTP was sent.
+- Full validation suite passed:
+  - `npm run test:get-started`: PASS
+  - `npm run test:staging:get-started`: PASS
+  - `npm run test:auth:v2`: PASS
+  - `npm run test:business-email`: PASS
+  - `npx supabase test db`: PASS (9 files / 111 tests)
+  - `npm run lint`: PASS (0 errors)
+  - `npm run build`: PASS
+  - `git diff --check`: PASS
+- AgentRelay Next Gate: `AUTH_V2_GET_STARTED_STAGING_REVIEW`.
+
 ## Auth V2 Get Started onboarding entry page — verified locally (2026-09-20)
 
 - Implemented `/get-started` route (`src/app/get-started/page.tsx`) as a dedicated, welcoming entry page between authentication and the 8-step wizard (`/onboarding`).
