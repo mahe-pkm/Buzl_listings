@@ -16,7 +16,8 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 - Kept draft saves available while disabling owner review submission until the contact email is verified; the PostgreSQL submission gate remains authoritative.
 - Added a clearly named, confirmation-gated Admin action to mark a Business Contact Email verified. Buzl Members receive no new authority.
 - Added 14 focused database assertions (111 total passing), a mail/token/URL contract check, mobile checks at 375/390/430, invalid-link browser verification, lint/build, and diff validation.
-- Local implementation only; staging and production remain unchanged. Real inbox delivery is the next local E2E gate after SMTP configuration.
+- Verified real local Business Email E2E flow end-to-end: opaque challenge creation, token consumption, `business_contact_email_verified_at` setting, verified UI presentation, submission gate passing, listing verification and auth identity immutability, replay/expired/changed-email/cross-business rejection, and independent public email visibility.
+- Staging and production remain unchanged. Next gate: `AUTH_V2_WHATSAPP_LOCAL_E2E_CONTINUE`.
 
 ### Auth V2 Phase 2 WhatsApp-first authentication — local checkpoint 2026-09-20
 

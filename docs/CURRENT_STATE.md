@@ -11,8 +11,8 @@
 - Environment-aware verification URL: Ensured canonical base URL resolution via `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL` with local development fallback to `http://localhost:3000` and staging host `https://listing.rclk.in`. Links contain only the opaque token and leak no private identifiers.
 - Public Email Visibility audit: Confirmed `OPTIONAL` (guarded by `show_email boolean default false` and omitted from public pages unless opted in).
 - Local Mail Viewer audit: Confirmed local Supabase provides Mailpit / Inbucket web UI at `http://127.0.0.1:54324`.
-- Automated test validation: pgTAP database test suite PASS (9 files, 111 tests), `npm run test:business-email` PASS (6 contract checks), `npm run lint` PASS (0 errors, 15 pre-existing warnings), `npm run build` PASS, `git diff --check` PASS, mobile responsive checks (375, 390, 430px) PASS without overflow.
-- Staging and production were untouched. Next gate: `AUTH_V2_PHASE_3_LOCAL_EMAIL_E2E_REVIEW`.
+- Real Local Email E2E verification completed: Verified real opaque-token challenge creation and consumption via `consume_business_email_verification_token`, setting `business_contact_email_verified_at` in `public.businesses`. Confirmed Business Contact UI renders `Verified` state, draft saving is preserved, review submission requirement passes, listing verification status is unchanged (`verified`), Auth user/email/phone/role/UID remain completely unchanged, replay/expired/changed-email/cross-business tokens are strictly blocked, and public email display remains independently controlled by `show_email`.
+- Staging and production were untouched. Next gate: `AUTH_V2_WHATSAPP_LOCAL_E2E_CONTINUE`.
 
 ## Auth V2 Phase 2 WhatsApp-first UI — locally implemented, E2E gated (2026-09-20)
 
