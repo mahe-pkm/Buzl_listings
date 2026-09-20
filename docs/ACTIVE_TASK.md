@@ -7,49 +7,41 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `AUTH-V2-GET-STARTED-ONBOARDING-ENTRY` |
-| Task Name | Auth V2 Get Started Onboarding Entry Page |
-| Status | **REVIEW_READY** |
+| Task ID | `AUTH-V2-PHASE-3-BUSINESS-EMAIL-VERIFICATION` |
+| Task Name | Auth V2 Phase 3 Business Email Verification |
+| Status | **REVIEW** |
 | Current Agent | `antigravity` |
-| Started From Commit | `a5ffecac0126b40f57c1d289c03ef834615a7435` |
-| Latest Commit | `a5ffecac0126b40f57c1d289c03ef834615a7435` |
+| Started From Commit | `e812e9b54b6332386276cef3d1c6a37e8acb854d` |
+| Latest Commit | `069e3ff217a9cad3d57bda23c8d1948fd514559a` |
 | Branch | `codex/auth-v2-phase-3-business-email-verification` |
-| Started At | 2026-09-20T21:30:00+05:30 |
-| Last Updated | 2026-09-20T21:42:00+05:30 |
+| Started At | 2026-09-20T18:43:04+05:30 |
+| Last Updated | 2026-09-20T21:43:14+05:30 |
 
 ## Objective
 
-Add a lightweight welcome / business-registration entry page at `/get-started` between authentication and the 8-step onboarding wizard (`/onboarding`) for new and returning incomplete Business Owners.
+Implement Business Contact Email verification UX and secure server flow on the approved Auth V2 database foundation, preserving separation from Supabase Auth email and existing listing verification state.
 
 ## Allowed Files
 
-- src/app/get-started/*,src/app/onboarding/*,src/lib/auth-routing.ts,src/middleware.ts,scripts/*,docs/CURRENT_STATE.md,docs/ACTIVE_TASK.md,CHANGELOG.md,package.json
+- src/components/business/*,src/lib/*,src/app/verify-business-email/*,src/app/api/*,supabase/migrations/*,supabase/tests/*,scripts/*,docs/CURRENT_STATE.md,docs/ACTIVE_TASK.md,CHANGELOG.md,package.json,package-lock.json
 
 ## Completed Work
 
-- Implemented `/get-started` route (`src/app/get-started/page.tsx`) with server-side auth/role/onboarding checks, dynamic CTA (`Register My Business →` for first-time owners vs `Continue Registration →` for returning owners with an incomplete draft), value propositions, 5-step registration process preview, moderation note, and what you'll need checklist with clear business contact email verification rule.
-- Updated `src/lib/auth-routing.ts` to route incomplete business owners to `/get-started` while preserving direct access to `/onboarding`, and redirecting completed owners away from both `/onboarding` and `/get-started` to `/dashboard`. Internal roles (`admin`, `buzl_member`) route to internal destinations.
-- Updated `src/middleware.ts` to protect `/get-started` and route incomplete owners appropriately without infinite loops.
-- Updated `src/app/onboarding/page.tsx` copy to align with the new entry flow ("Business Registration" / "Register Your Business").
-- Added comprehensive verification test suite in `scripts/verify-get-started-flow.mjs` and npm script `test:get-started`.
-- Ran full test suite: `test:get-started`, `test:auth:v2`, `test:business-email`, `supabase test db` (111 tests), `lint` (0 errors), `build` (clean), `git diff --check`.
-- Staging and production remain untouched.
+- Implemented /get-started welcome entry page between auth and onboarding wizard. Added dynamic CTA ('Register My Business' vs 'Continue Registration'), value cards, 5-step process preview, moderation note, what you'll need checklist with business email verification rules. Updated auth routing and middleware. Updated onboarding copy. Verified zero DB mutations. All tests passing. Committed 069e3ff.
 
 ## Remaining Work
 
-- Operator review and approval.
-- Staging deployment when authorized.
+- Verify staging new user creation, onboarding flow, returning login same UID, business email verification, demo regressions, and responsive checks.
 
 ## Checks / Tests
 
-- `npm run test:get-started`: PASS
-- `npm run test:auth:v2`: PASS
-- `npm run test:business-email`: PASS
-- `npx supabase test db`: PASS (9 files / 111 tests)
-- `npm run lint`: PASS (0 errors, 15 pre-existing warnings)
-- `npm run build`: PASS (Turbopack production build clean)
-- `git diff --check`: PASS
-- Zero database mutations on visiting `/get-started`.
+- npm run test:get-started PASS
+- npm run test:auth:v2 PASS
+- npm run test:business-email PASS
+- npx supabase test db PASS (111 tests)
+- npm run lint PASS (0 errors)
+- npm run build PASS (Turbopack clean)
+- git diff --check PASS
 
 ## Known Issues
 
@@ -57,11 +49,11 @@ Add a lightweight welcome / business-registration entry page at `/get-started` b
 
 ## Next Exact Action
 
-Await operator review of the `/get-started` onboarding entry page.
+Operator review of /get-started flow and approval for staging deployment.
 
 ## Handoff Notes
 
-Local implementation of `/get-started` onboarding entry flow is complete, verified, and ready for operator review.
+Awaiting operator live WhatsApp OTP entry on staging
 
 ## Agent Handoff Rule
 
