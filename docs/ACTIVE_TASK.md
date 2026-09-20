@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `AUTH-WHATSAPP-FIRST-V2` |
 | Task Name | Buzl Listing Authentication Architecture V2 |
-| Status | **RESUMED** |
+| Status | **PAUSED_HANDOFF** |
 | Current Agent | `codex` |
 | Started From Commit | `8a4f064d74a4b50aecaee6f6f63ee8e6fbd8c083` |
-| Latest Commit | `5d59d16388277b98f6d8f479033a6dd2a0a10039` |
+| Latest Commit | `3c8a40955580aab02b537bcef2afd7b23aacdc76` |
 | Branch | `codex/auth-v2-phase-2-whatsapp-first` |
 | Started At | 2026-09-20T12:31:56+05:30 |
-| Last Updated | 2026-09-20T13:17:21+05:30 |
+| Last Updated | 2026-09-20T18:23:18+05:30 |
 
 ## Objective
 
@@ -27,22 +27,22 @@ Replace the obsolete unknown-phone denial assumption with the approved WhatsApp-
 
 ## Completed Work
 
-- Implemented Auth V2 Phase 1 database foundation: onboarding state and self-only completion RPC
-- business-contact-email verification timestamp and normalized reset trigger
-- private hashed challenge table and service-role-only locked consumption
-- admin-only manual verification
-- verified-email submission gate with legacy published compatibility
-- focused and regression pgTAP coverage. No blind verification backfill.
+- Implemented the local WhatsApp-first public Business Owner flow, E.164 normalization, Supabase OTP request/verification, onboarding-state routing, protected onboarding reuse of the existing business editor, self-only onboarding completion, role guards, and focused automated coverage.
 
 ## Remaining Work
 
-- —
+- After operator approval, remove only the previously audited safe phone-only local artifact, then run one controlled real unknown-phone WhatsApp OTP E2E. Business-email delivery and optional Auth credential settings remain Phase 3.
 
 ## Checks / Tests
 
-- Architecture checkpoint 45d9c22
-- implementation checkpoint 05c72bd. Local migration applied in place without reset. pgTAP PASS: 8 files, 97 tests. Lint PASS with 0 errors/15 existing warnings. Build PASS. Mutation guards PASS. git diff --check PASS. Local artifact found unconfirmed with profile and no business relationship
-- not deleted. Staging and production untouched.
+- Auth V2 contract PASS
+- mocked/no-send browser smoke PASS at 375/390/430
+- Email Code and Password request paths preserved
+- lint PASS with 15 existing warnings
+- build PASS
+- mutation guards PASS
+- pgTAP PASS 8 files/97 tests
+- git diff check PASS. No live OTP, staging, or production change.
 
 ## Known Issues
 
@@ -50,11 +50,11 @@ Replace the obsolete unknown-phone denial assumption with the approved WhatsApp-
 
 ## Next Exact Action
 
-Independent database/security review of migration 20260920130000, RPC grants/RLS, legacy listing compatibility, and 97-test pgTAP evidence. Next gate AUTH_V2_PHASE_1_DB_REVIEW.
+Obtain LOCAL_TEST_ARTIFACT_CLEANUP_APPROVAL before deleting the audited unconfirmed phone-only local user/profile; do not delete or send OTP without approval.
 
 ## Handoff Notes
 
-—
+Implementation and automated validation are complete; controlled real E2E is intentionally gated on operator-approved cleanup.
 
 ## Agent Handoff Rule
 
