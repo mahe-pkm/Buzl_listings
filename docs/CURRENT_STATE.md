@@ -1,5 +1,35 @@
 # Current Project State
 
+## Auth V2 Phase 3 returning WhatsApp login & demo regressions — verified (2026-09-20)
+
+- Completed real local returning WhatsApp login end-to-end flow with genuine Meta-delivered OTP.
+- Audited onboarding completion semantics: confirmed `onboarding_completed_at` is only set on Step 8 after full step validation and creation of a valid business listing via `createBusiness()`. Steps 1-7 have no save button; partial draft cannot mark complete (`Onboarding Semantics: PASS`).
+- Returning login with the same phone resolves to the exact same Auth user (`6daf8def-bf14-45f4-bf97-b2406ac6116a`), same profile, same role (`business_owner`), same business managers, and lands directly on `/dashboard`.
+- Zero duplicate Auth users, zero duplicate profiles, and zero duplicate business records created.
+- Business phone, contact email, and listing verification states remain untouched.
+- Local demo accounts regression: verified `admin`, `member`, and `owner` accounts against `/api/internal/demo-credentials` and local Supabase Auth (`PASS`).
+- Staging demo baseline: verified `admin`, `member`, and `owner` credentials API status (200) and owner login reaches `/dashboard` (`PASS`).
+- Validation suite:
+  - `npm run test:business-email`: PASS (6/6 assertions)
+  - `npx supabase test db`: PASS (9 files / 111 tests)
+  - `npm run lint`: PASS (0 errors, 15 pre-existing warnings)
+  - `npm run build`: PASS (Next.js production build clean)
+  - `git diff --check`: PASS
+- Staging and production were not deployed with Auth V2 and remain untouched.
+- Next gate: `AUTH_V2_COMBINED_LOCAL_E2E_REVIEW`.
+
+## Auth V2 Phase 3 real WhatsApp signup and onboarding — verified (2026-09-20)
+
+- Completed real local WhatsApp signup and onboarding end-to-end flow with genuine Meta-delivered OTP.
+- Auth user created with phone provider, phone confirmed, and role `business_owner` set in `app_metadata`.
+- Profile automatically provisioned with matching UID, `account_status: 'active'`, `member_id: null`, and `permission_preset: null`. No administrative or member privileges created.
+- Initial route correctly targeted `/onboarding` with `profiles.onboarding_completed_at: null`.
+- Data separation verified: Auth phone/email are never copied into business listing contact fields; listing creation starts with unverified email and unverified listing status.
+- Onboarding completed via supported application path (`complete_user_onboarding()` RPC on draft save), setting `profiles.onboarding_completed_at` and redirecting to `/dashboard`.
+- RBAC verified: `/admin/users`, `/admin/categories`, and `/review` are strictly denied for `business_owner`. Database RLS/RPC rules strictly block self-publishing, self-verification, and direct privilege escalation on `public.profiles`.
+- Staging and production were untouched.
+- Next gate: `RETURNING_WHATSAPP_LOGIN_SAME_UID`.
+
 ## Auth V2 Phase 3 Business Contact Email verification — local review ready (2026-09-20)
 
 - Implementation branch: `codex/auth-v2-phase-3-business-email-verification`, based on checkpoint `e812e9b`.
