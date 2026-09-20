@@ -7,11 +7,12 @@
 - Challenge replacement is serialized on the business row, older active challenges are invalidated, failed SMTP delivery discards the unusable new challenge, and the existing row-locking consumption primitive remains authoritative for replay, expiry, and email-mismatch denial.
 - Added server-only SMTP delivery for the professional `Verify your business email — Buzl Listing` message. SMTP credentials remain server-side; no new mail vendor was selected. Local verification uses an isolated transport contract and requires configured SMTP for a real inbox E2E.
 - Added `/verify-business-email` confirmation/success/failure UX. Public links contain only the opaque token; successful verification removes the token from the URL and stores only a short-lived HTTP-only return-path cookie.
-- Business Contact Email status now supports no-email, not-verified, sent, changed-email, and verified states. Changed emails must be saved before verification; draft saving remains allowed.
-- Owner submission UI now requires verified Business Contact Email, while the existing database transition gate remains authoritative.
-- Internal lists and profile controls now label Listing Verification separately from Business Email verification. Admin manual contact-email verification has a distinct confirmed action; ordinary Buzl Members retain no authority.
-- Added 14 Phase 3 pgTAP assertions. Full database result: 9 files / 111 tests PASS. Transactional mail/token contract, lint (0 errors, 15 pre-existing warnings), production build, `git diff --check`, invalid-link UX, and 375/390/430 mobile overflow checks pass.
-- Staging and production were untouched. Next gate: `AUTH_V2_PHASE_3_LOCAL_EMAIL_E2E` with a configured local/test SMTP inbox.
+- Business Email UX alignment: Replaced ambiguous `(Optional)` label with `Business Contact Email (Required before submission)`. Added explicit explanatory helper clarifying draft saves are allowed without email verification while submission requires verification. Upgraded the status indicator box to cover all 4 states (`Required before submission`, `Verification required`, `Verification email sent`, `Verified`).
+- Environment-aware verification URL: Ensured canonical base URL resolution via `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL` with local development fallback to `http://localhost:3000` and staging host `https://listing.rclk.in`. Links contain only the opaque token and leak no private identifiers.
+- Public Email Visibility audit: Confirmed `OPTIONAL` (guarded by `show_email boolean default false` and omitted from public pages unless opted in).
+- Local Mail Viewer audit: Confirmed local Supabase provides Mailpit / Inbucket web UI at `http://127.0.0.1:54324`.
+- Automated test validation: pgTAP database test suite PASS (9 files, 111 tests), `npm run test:business-email` PASS (6 contract checks), `npm run lint` PASS (0 errors, 15 pre-existing warnings), `npm run build` PASS, `git diff --check` PASS, mobile responsive checks (375, 390, 430px) PASS without overflow.
+- Staging and production were untouched. Next gate: `AUTH_V2_PHASE_3_LOCAL_EMAIL_E2E_REVIEW`.
 
 ## Auth V2 Phase 2 WhatsApp-first UI — locally implemented, E2E gated (2026-09-20)
 

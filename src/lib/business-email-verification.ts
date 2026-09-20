@@ -21,10 +21,17 @@ export function toPostgresBytea(value: Buffer): string {
   return `\\x${value.toString("hex")}`;
 }
 
+export function getBusinessEmailBaseUrl(): string {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    'http://localhost:3000'
+  );
+}
+
 export function buildBusinessEmailVerificationUrl(token: string): string {
-  const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (!configuredOrigin) throw new Error("NEXT_PUBLIC_SITE_URL is required for business email verification.");
-  const url = new URL("/verify-business-email", configuredOrigin);
-  url.searchParams.set("token", token);
+  const base = getBusinessEmailBaseUrl().replace(/\/+$/, '');
+  const url = new URL('/verify-business-email', base);
+  url.searchParams.set('token', token);
   return url.toString();
 }
