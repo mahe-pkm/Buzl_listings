@@ -7,59 +7,47 @@
 
 | Field | Value |
 |---|---|
-| Task ID | `AUTH-WHATSAPP-FIRST-V2` |
-| Task Name | Buzl Listing Authentication Architecture V2 |
-| Status | **PAUSED_HANDOFF** |
+| Task ID | `AUTH-V2-PHASE-3-BUSINESS-EMAIL-VERIFICATION` |
+| Task Name | Auth V2 Phase 3 Business Email Verification |
+| Status | **REVIEW** |
 | Current Agent | `codex` |
-| Started From Commit | `8a4f064d74a4b50aecaee6f6f63ee8e6fbd8c083` |
-| Latest Commit | `0f48a6de5f205787a571576a33c64b7651252820` |
-| Branch | `codex/auth-v2-phase-2-whatsapp-first` |
-| Started At | 2026-09-20T12:31:56+05:30 |
-| Last Updated | 2026-09-20T18:35:07+05:30 |
+| Started From Commit | `e812e9b54b6332386276cef3d1c6a37e8acb854d` |
+| Latest Commit | `a93a53fc72d6b425616fc5081d46f477144b433a` |
+| Branch | `codex/auth-v2-phase-3-business-email-verification` |
+| Started At | 2026-09-20T18:43:04+05:30 |
+| Last Updated | 2026-09-20T18:58:00+05:30 |
 
 ## Objective
 
-Replace the obsolete unknown-phone denial assumption with the approved WhatsApp-first public Business Owner signup architecture; audit existing Supabase/RBAC/schema behavior and produce review-ready documentation only.
+Implement Business Contact Email verification UX and secure server flow on the approved Auth V2 database foundation, preserving separation from Supabase Auth email and existing listing verification state.
 
 ## Allowed Files
 
-- docs/AUTH_ARCHITECTURE_V2.md,docs/ACTIVE_TASK.md,docs/CURRENT_STATE.md,CHANGELOG.md
+- src/components/business/*,src/lib/*,src/app/verify-business-email/*,src/app/api/*,supabase/migrations/*,supabase/tests/*,scripts/*,docs/CURRENT_STATE.md,docs/ACTIVE_TASK.md,CHANGELOG.md,package.json,package-lock.json
 
 ## Completed Work
 
-- Re-audited and safely removed the one local unconfirmed phone-only Auth test artifact and cascading profile
-- confirmed no business, manager, listing, member, privileged-role, session, or other relevant dependencies. Verified database integrity with 97 pgTAP tests passing. Confirmed the configured test recipient was unknown locally, then requested exactly one genuine Supabase phone OTP through the local WhatsApp UI. The signed Send SMS Hook returned 200 and Meta accepted the message with a message ID.
+- Implemented Business Contact Email verification end to end on the approved Auth V2 foundation: owner-authorized hashed challenge issuance, 30-minute expiry, replacement/rate limiting, server-only SMTP delivery, opaque-token confirmation page, transactional consume/replay protection, authenticated resend, owner status/readiness/submission UX, distinct internal Listing Verification and Business Email statuses, and confirmed admin-only manual contact-email verification. Updated environment documentation, CURRENT_STATE, and CHANGELOG.
 
 ## Remaining Work
 
-- Operator must confirm WhatsApp receipt and enter the OTP only in the local browser. After successful verification, continue the specified new-account, onboarding, returning-login, identity, email/password regression, security, mobile, lint, and build checks. Do not request another OTP until the explicit returning-user test.
+- —
 
 ## Checks / Tests
 
-- Local Supabase Auth/database/app healthy
-- hook reachability and signed runtime configuration verified
-- Meta configuration ready
-- deleted Auth user/profile are not found
-- unrelated users and business data unchanged
-- pgTAP PASS (97 tests)
-- pre-request existing Auth user/profile both absent
-- one UI OTP request accepted
-- Send SMS Hook HTTP 200
-- Meta message ID returned
-- staging and production untouched.
+- Local migration applied without database reset. pgTAP PASS: 9 files / 111 tests. Business email token/mail transport contract PASS. Invalid-link browser UX PASS. Owner contact status UI PASS. Internal status separation and admin action visibility PASS. Mobile 375/390/430 PASS with no horizontal overflow. Lint PASS with 0 errors and 15 pre-existing warnings. Production build PASS. git diff --check PASS. Staging and production untouched.
 
 ## Known Issues
 
-- The first browser click was made from 127.0.0.1 and degraded to a plain GET because Next.js client assets were cross-origin blocked
-- it did not reach Supabase or Meta and created no Auth user. The one genuine request was then made from http://localhost:3000 and accepted. No retry occurred.
+- —
 
 ## Next Exact Action
 
-Operator confirms WhatsApp receipt and enters the received OTP only in the already-open local browser, without sharing, logging, or storing the OTP. Then Codex verifies session, UID/profile provisioning, business_owner role, active status, and onboarding redirect.
+Configure a local/test SMTP inbox using the documented BUSINESS_EMAIL_SMTP_* variables, then run AUTH_V2_PHASE_3_LOCAL_EMAIL_E2E: owner request, real inbox receipt, valid link, verified return state, replay/expiry/email-change checks, and submission confirmation. Do not deploy until that local E2E passes.
 
 ## Handoff Notes
 
-Paused at the mandatory operator OTP receipt and entry gate. No OTP may be exposed to Codex or verified automatically.
+—
 
 ## Agent Handoff Rule
 
