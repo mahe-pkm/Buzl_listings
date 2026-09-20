@@ -6,6 +6,17 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Authentication Architecture V2 — approved 2026-09-20
+
+- Locked WhatsApp OTP as the default public Business Owner signup and login method, with Supabase Auth remaining the OTP, identity, verification, and session authority and Meta remaining delivery-only through the signed Send SMS Hook.
+- Locked least-privilege public provisioning: an unknown verified phone may create only an active `business_owner`; admins, Buzl Members, and the Listing Manager permission preset remain invitation/admin-controlled.
+- Preserved separation between private Auth phone/email credentials and public business contact fields, and between account lifecycle, listing publication, and listing verification.
+- Designed mandatory business-contact-email verification before review submission, same-UID optional Auth email/password, explicit onboarding-state routing, anti-abuse controls, and phased implementation requirements.
+- Confirmed one user to many businesses is already supported and removed the need for a parallel phone-link registry for normal Business Owners.
+- Preserved the existing WhatsApp staging delivery checkpoint; this entry records architecture only and includes no runtime, schema, deployment, staging, or production change.
+- Full decision: `docs/AUTH_ARCHITECTURE_V2.md`.
+- Independent review approved the identity, public-signup, role-provisioning, privilege-escalation, RLS, and migration design. Phase 1 database work must preserve existing listings without falsely backfilling business-email verification.
+
 ### Admin & Member Operational Dashboard Phase 1 (ADMIN-AND-MEMBER-DASHBOARD-P1) — 2026-09-18
 
 - **Feature Branch**: `feature/admin-member-dashboard-p1` (Merged to `main` at `522cfe9`).

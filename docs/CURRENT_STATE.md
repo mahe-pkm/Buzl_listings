@@ -1,6 +1,30 @@
 # Current Project State
 
+## Authentication Architecture V2 — approved for Phase 1 database foundation (2026-09-20)
+
+- New locked product direction: WhatsApp OTP is the default public Business Owner signup and login method.
+- Unknown verified phone -> new Supabase Auth user -> active profile -> trusted `business_owner` role -> onboarding.
+- Existing verified phone -> same Supabase UID/profile/role -> dashboard or unfinished onboarding.
+- Public signup can never create `admin`, `buzl_member`, or the `listing_manager` permission preset; internal accounts remain invited/admin-created.
+- Supabase remains the OTP, identity, verification, and session authority. Meta remains delivery only through the existing signed Send SMS Hook and approved `buzl_listing_otp` / `en` template.
+- Account status, listing publication status, and listing verification status remain independent.
+- Auth phone and optional Auth email remain private credentials. They are never copied automatically to listing contact fields.
+- Business contact email verification is mandatory before `draft -> pending`; saving an unverified draft remains allowed.
+- One user to many businesses is already supported by `business_managers`; no phone-to-business uniqueness rule is approved.
+- Current profile provisioning correctly defaults a public Auth user to active `business_owner` through trusted database/app-metadata enforcement. Implementation must add regression tests proving public metadata cannot inject privilege.
+- Required future migrations: `profiles.onboarding_completed_at`, `businesses.business_contact_email_verified_at`, and a private hashed single-use business-email verification challenge table, plus a server-enforced submission gate.
+- The phone-link registry is not required for normal public Business Owners. Any future internal-account phone credential must be attached through an authenticated/admin-authorized same-UID flow.
+- Old “unknown phone must not create an account” and “no public signup” assumptions are superseded for Auth V2 but remain historical in locked prototype documents until a separately approved implementation update.
+- Possible local phone-only test artifact: `REVIEW_REQUIRED`; the isolated local Supabase Docker runtime was unavailable during the read-only audit, so nothing was inspected destructively or removed.
+- Architecture: `docs/AUTH_ARCHITECTURE_V2.md`.
+- Independent architecture review passed. The database foundation may proceed, but historical business contact emails must not be marked verified without actual verification evidence.
+- Active task: `AUTH-WHATSAPP-FIRST-V2`, AgentRelay status `REVIEW` pending implementation resume.
+- Next gate after Phase 1: `AUTH_V2_PHASE_1_DB_REVIEW`.
+- No runtime Auth code, database, Supabase configuration, staging environment, or production environment was changed by this architecture task.
+
 ## WhatsApp OTP Meta live integration — paused before genuine Supabase OTP request (2026-09-19)
+
+> Historical delivery checkpoint. Its former unknown-phone restriction is superseded by Authentication Architecture V2; the delivery implementation and evidence remain preserved.
 
 - Active branch: `feature/whatsapp-otp-meta-live`, based on `fe13135`.
 - Implemented a server-only Meta WhatsApp Cloud delivery adapter for the API-confirmed `buzl_listing_otp` / `en` authentication template.
