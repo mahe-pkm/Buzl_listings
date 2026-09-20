@@ -18,6 +18,7 @@ import { NormalizedPlaceDetails } from '@/lib/places/types';
 import StatusBadge from '@/components/ui/StatusBadge';
 import {
   createBusiness,
+  completeBusinessOwnerOnboarding,
   updateBusiness,
   checkDuplicates,
   transitionPublication,
@@ -39,6 +40,7 @@ interface BusinessFormProps {
   currentPublicationStatus?: PublicationStatus;
   currentVerificationStatus?: VerificationStatus;
   isAdmin?: boolean;
+  onboardingMode?: boolean;
 }
 
 const DEFAULT_HOURS = [
@@ -81,6 +83,7 @@ export default function BusinessForm({
   currentPublicationStatus = 'draft',
   currentVerificationStatus = 'unverified',
   isAdmin = false,
+  onboardingMode = false,
 }: BusinessFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -665,7 +668,14 @@ export default function BusinessForm({
       } else {
         const result = await createBusiness(cleanFormData);
         if (result.success && result.businessId) {
-          setSuccessMsg('Business listing created successfully!');
+          if (onboardingMode) {
+            const onboardingResult = await completeBusinessOwnerOnboarding();
+            if (!onboardingResult.success) {
+              setErrorMsg('Your draft was saved, but onboarding could not be completed. Please try again.');
+              return;
+            }
+          }
+          setSuccessMsg(onboardingMode ? 'Business profile created. Welcome to Buzl!' : 'Business listing created successfully!');
           router.push(`/dashboard/businesses/${result.businessId}/edit`);
         } else {
           setErrorMsg(result.error || 'Failed to create business');

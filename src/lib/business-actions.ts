@@ -570,6 +570,23 @@ export async function createBusiness(data: BusinessFormData) {
   return { success: true, businessId };
 }
 
+export async function completeBusinessOwnerOnboarding() {
+  const user = await getSessionUser();
+  if (!user || user.role !== 'business_owner' || user.accountStatus !== 'active') {
+    return { success: false, error: 'Active Business Owner account required' };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('complete_user_onboarding');
+  if (error || !data) {
+    return { success: false, error: 'Could not complete onboarding' };
+  }
+
+  revalidatePath('/onboarding');
+  revalidatePath('/dashboard');
+  return { success: true, completedAt: data as string };
+}
+
 export async function updateBusiness(businessId: string, data: BusinessFormData) {
   const user = await getSessionUser();
   if (!user) {

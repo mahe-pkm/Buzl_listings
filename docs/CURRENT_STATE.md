@@ -1,5 +1,25 @@
 # Current Project State
 
+## Auth V2 Phase 2 WhatsApp-first UI — locally implemented, E2E gated (2026-09-20)
+
+- Implementation branch: `codex/auth-v2-phase-2-whatsapp-first`, based on Phase 1 metadata checkpoint `5d59d16`.
+- WhatsApp is now the default public authentication method on both `/login` and `/signup`; Email Code and Password remain available as secondary methods.
+- The public flow normalizes India-first and international numbers to E.164, calls Supabase `signInWithOtp()` with `shouldCreateUser: true`, verifies with `verifyOtp({ type: 'sms' })`, masks the destination, enforces a resend cooldown, and returns non-enumerating errors.
+- Public requests contain no role, account-status, member ID, or permission-preset metadata. Trusted profile/role provisioning remains database-controlled.
+- Successful authentication resolves the active profile and routes Business Owners solely from `profiles.onboarding_completed_at`; internal role routes remain unchanged.
+- Added `/onboarding`, reusing the existing eight-step Business Form. Saving the first valid business draft calls the self-only `complete_user_onboarding()` RPC through an authenticated server action, then routes to the existing dashboard editor.
+- Business contact phone, WhatsApp phone, and email fields start blank. Auth phone/email are not copied into listing data.
+- Route guards now enforce incomplete-owner onboarding and continue denying Business Owners access to `/admin/*` and `/review/*`.
+- Automated Auth V2 contract checks pass. Local browser smoke passes at 375px, 390px, and 430px using an intercepted/mock OTP transport; this is UI/contract evidence only and is not claimed as real OTP E2E.
+- `npm run lint`: PASS with 15 pre-existing warnings and zero errors.
+- `npm run build`: PASS.
+- `npx supabase test db`: PASS — 8 files, 97 tests.
+- No live OTP was sent. Staging and production were not modified.
+- The previously audited unconfirmed phone-only local user/profile remains untouched. A clean real unknown-phone E2E requires operator approval before removing that artifact.
+- CAPTCHA remains required before public staging release; this phase preserves the Supabase `captchaToken` integration point but does not add an unapproved provider.
+- Business-contact-email delivery and optional Auth email/password settings remain Phase 3.
+- Next gate: `LOCAL_TEST_ARTIFACT_CLEANUP_APPROVAL`.
+
 ## Auth V2 Phase 1 database foundation — review ready (2026-09-20)
 
 - Architecture approval checkpoint: `45d9c22 docs(auth): approve WhatsApp-first auth architecture v2`.

@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
-  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal") || pathname.startsWith("/review");
+  const isProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/internal") || pathname.startsWith("/review") || pathname === "/onboarding";
   const isAuthRoute = pathname === "/login" || pathname === "/signup";
 
   if (!isProtected && !isAuthRoute) {
@@ -60,13 +60,24 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    const { data: profile } = await supabase.from('profiles').select('account_status').eq('id', user.id).maybeSingle();
+    const { data: profile } = await supabase.from('profiles').select('account_status, onboarding_completed_at, permission_preset').eq('id', user.id).maybeSingle();
     if (!profile || profile.account_status !== 'active') {
       await supabase.auth.signOut();
       return NextResponse.redirect(new URL('/login?error=account_inactive', request.url));
     }
-    const role = user.app_metadata?.role as string | undefined;
+    const role = (user.app_metadata?.role as string | undefined) ?? "business_owner";
     const isInternalUser = role === "admin" || role === "buzl_member";
+
+    if (role === 'business_owner') {
+      if (!profile.onboarding_completed_at && pathname !== '/onboarding' && !isAuthRoute) {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+      }
+      if (profile.onboarding_completed_at && pathname === '/onboarding') {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+    } else if (pathname === '/onboarding') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
 
     // Importer routes: /admin/businesses/import and /internal/*
     const isImportRoute = pathname === "/admin/businesses/import" || pathname.startsWith("/internal");
@@ -74,8 +85,7 @@ export async function middleware(request: NextRequest) {
     const isCategoriesRoute = pathname === "/admin/categories" || pathname.startsWith("/admin/categories/");
 
     if (isReviewRoute) {
-      const { data: reviewProfile } = await supabase.from('profiles').select('permission_preset').eq('id', user.id).maybeSingle();
-      const canReview = role === 'admin' || (role === 'buzl_member' && reviewProfile?.permission_preset === 'listing_manager');
+      const canReview = role === 'admin' || (role === 'buzl_member' && profile.permission_preset === 'listing_manager');
       if (!canReview) return NextResponse.redirect(new URL('/dashboard', request.url));
     } else if (isCategoriesRoute) {
       if (!isInternalUser) {
@@ -99,6 +109,8 @@ export async function middleware(request: NextRequest) {
         dest = "/admin/businesses";
       } else if (role === "buzl_member") {
         dest = "/admin/businesses/import";
+      } else if (!profile.onboarding_completed_at) {
+        dest = "/onboarding";
       }
       return NextResponse.redirect(new URL(dest, request.url));
     }

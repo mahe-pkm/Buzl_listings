@@ -57,6 +57,7 @@ async function signIn(context, fixture) {
   console.log(`Checking login for ${fixture.email}`);
   try {
     await page.goto(`${baseUrl}/login`, { waitUntil: "commit", timeout: 10000 });
+    await page.getByRole("tab", { name: "Password" }).click();
     await page.waitForSelector('input[type="email"]', { timeout: 10000 });
     // The inputs can render before the Client Component has hydrated. Wait
     // before entering credentials so React does not replace test input state.

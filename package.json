@@ -13,6 +13,8 @@
     "test:smoke:auth": "node scripts/verify-auth-fixtures.mjs",
     "test:smoke": "node scripts/browser-smoke-test.mjs",
     "test:smoke:public": "node scripts/browser-smoke-test-public.mjs",
+    "test:auth:v2": "tsx --conditions=react-server scripts/verify-auth-v2-phase2.mjs",
+    "test:smoke:auth:v2": "node scripts/browser-smoke-auth-v2.mjs",
     "test:whatsapp:provider": "tsx --conditions=react-server scripts/verify-whatsapp-meta-provider.mjs",
     "test:whatsapp:hook-runtime": "tsx --conditions=react-server scripts/verify-whatsapp-hook-runtime.mjs",
     "local:auth-hook:configure": "node scripts/configure-local-auth-hook-secret.mjs",

@@ -4,23 +4,11 @@ import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-
-import { normalizePhoneNumber } from "@/lib/whatsapp/phone";
+import WhatsAppAuthPanel from "@/components/auth/WhatsAppAuthPanel";
+import { resolveAuthenticatedRoute } from "@/lib/auth-routing";
 
 type AuthMethod = "otp" | "whatsapp" | "password";
 type OtpStep = "request" | "verify";
-
-const COUNTRY_CODES = [
-  { code: "+91", label: "🇮🇳 +91 (India)" },
-  { code: "+1", label: "🇺🇸 +1 (US/CA)" },
-  { code: "+44", label: "🇬🇧 +44 (UK)" },
-  { code: "+971", label: "🇦🇪 +971 (UAE)" },
-  { code: "+65", label: "🇸🇬 +65 (SG)" },
-  { code: "+60", label: "🇲🇾 +60 (MY)" },
-  { code: "+61", label: "🇦🇺 +61 (AU)" },
-  { code: "+966", label: "🇸🇦 +966 (SA)" },
-  { code: "+49", label: "🇩🇪 +49 (DE)" },
-];
 
 function getSafeRedirectUrl(raw: string | null): string {
   if (!raw) return "/dashboard";
@@ -38,13 +26,11 @@ function LoginForm() {
   const urlError = searchParams.get("error");
   const redirectPath = getSafeRedirectUrl(rawRedirect);
 
-  const [method, setMethod] = useState<AuthMethod>("otp");
+  const [method, setMethod] = useState<AuthMethod>("whatsapp");
   const [otpStep, setOtpStep] = useState<OtpStep>("request");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otpToken, setOtpToken] = useState("");
-  const [whatsappNumber, setWhatsappNumber] = useState("");
-  const [countryCode, setCountryCode] = useState("+91");
 
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState<string | null>(null);
@@ -159,16 +145,7 @@ function LoginForm() {
       }
 
       if (data.user) {
-        // Safe navigation based on verified role
-        const role = data.user.app_metadata?.role;
-        let target = redirectPath;
-        if (redirectPath === "/dashboard") {
-          if (role === "admin") {
-            target = "/admin/businesses";
-          } else if (role === "buzl_member") {
-            target = "/admin/businesses/import";
-          }
-        }
+        const target = await resolveAuthenticatedRoute(supabase, data.user, redirectPath);
         router.push(target);
         router.refresh();
       }
@@ -196,15 +173,7 @@ function LoginForm() {
       }
 
       if (data.user) {
-        const role = data.user.app_metadata?.role;
-        let target = redirectPath;
-        if (redirectPath === "/dashboard") {
-          if (role === "admin") {
-            target = "/admin/businesses";
-          } else if (role === "buzl_member") {
-            target = "/admin/businesses/import";
-          }
-        }
+        const target = await resolveAuthenticatedRoute(supabase, data.user, redirectPath);
         router.push(target);
         router.refresh();
       }
@@ -242,26 +211,10 @@ function LoginForm() {
     }
   };
 
-  const handleContinueWhatsApp = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    setInfoMessage(null);
-
-    const norm = normalizePhoneNumber(whatsappNumber, countryCode);
-    if (!norm.success || !norm.e164) {
-      setErrorMessage(norm.error || "Please enter a valid phone number.");
-      return;
-    }
-
-    setInfoMessage(
-      `WhatsApp verification for ${norm.formatted || norm.e164} is being activated. Please use Email Code (OTP) or Password to sign in for now.`
-    );
-  };
-
   return (
     <div className="bg-white p-6 sm:p-8 rounded-[12px] border border-[#DCE2E8] shadow-sm">
       <h2 className="text-xl font-bold text-[#2A3547] text-center mb-1">
-        Sign in to your account
+        Sign in or create your business account
       </h2>
       <p className="text-xs text-[#5D6776] text-center mb-5">
         Access your dashboard with Email OTP, WhatsApp, or your password
@@ -269,23 +222,6 @@ function LoginForm() {
 
       {/* Auth Method Selector Tabs */}
       <div role="tablist" aria-label="Sign in method" className="flex border-b border-[#DCE2E8] mb-5">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={method === "otp"}
-          onClick={() => {
-            setMethod("otp");
-            setErrorMessage(null);
-            setInfoMessage(null);
-          }}
-          className={`flex-1 pb-2.5 text-xs font-semibold text-center border-b-2 transition-colors ${
-            method === "otp"
-              ? "border-[#004AAD] text-[#004AAD]"
-              : "border-transparent text-[#7D8795] hover:text-[#2A3547]"
-          }`}
-        >
-          Email Code (OTP)
-        </button>
         <button
           type="button"
           role="tab"
@@ -301,7 +237,24 @@ function LoginForm() {
               : "border-transparent text-[#7D8795] hover:text-[#2A3547]"
           }`}
         >
-          WhatsApp OTP
+          WhatsApp
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={method === "otp"}
+          onClick={() => {
+            setMethod("otp");
+            setErrorMessage(null);
+            setInfoMessage(null);
+          }}
+          className={`flex-1 pb-2.5 text-xs font-semibold text-center border-b-2 transition-colors ${
+            method === "otp"
+              ? "border-[#004AAD] text-[#004AAD]"
+              : "border-transparent text-[#7D8795] hover:text-[#2A3547]"
+          }`}
+        >
+          Email Code
         </button>
         <button
           type="button"
@@ -437,75 +390,9 @@ function LoginForm() {
         </div>
       )}
 
-      {/* Mode 2: WHATSAPP OTP (Preview / Pending Provider Activation) */}
+      {/* Primary/default method: one WhatsApp signup + login flow. */}
       {method === "whatsapp" && (
-        <form onSubmit={handleContinueWhatsApp} className="space-y-4">
-          {/* User-Facing Explanatory Notice */}
-          <div className="p-3.5 bg-[#FFF8E6] border border-[#FEE5A5] rounded-[8px] flex items-start gap-2.5 text-xs text-[#7A5200]">
-            <span className="text-[#D99B18] shrink-0 text-base leading-none mt-0.5">ℹ</span>
-            <div className="space-y-1">
-              <div className="font-bold text-[#9A6700]">
-                WhatsApp verification is coming soon
-              </div>
-              <p className="text-[#7A5200] leading-relaxed">
-                WhatsApp OTP delivery is being activated. For now, use Email Code (OTP) or Password to continue.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setMethod("otp");
-                  setErrorMessage(null);
-                  setInfoMessage(null);
-                }}
-                className="inline-flex items-center text-xs font-semibold text-[#004AAD] hover:underline pt-0.5"
-              >
-                Use Email Code →
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-[#2A3547] mb-1.5" htmlFor="whatsapp-phone">
-              WhatsApp Phone Number
-            </label>
-            <div className="flex gap-2">
-              <select
-                id="whatsapp-country"
-                value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                className="w-36 px-2.5 py-2.5 bg-white border border-[#DCE2E8] rounded-[8px] text-xs font-medium text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD] transition-all min-w-0"
-              >
-                {COUNTRY_CODES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
-              <input
-                id="whatsapp-phone"
-                type="tel"
-                inputMode="tel"
-                required
-                value={whatsappNumber}
-                onChange={(e) => setWhatsappNumber(e.target.value)}
-                placeholder="98765 43210"
-                autoComplete="tel"
-                className="flex-1 px-3.5 py-2.5 bg-white border border-[#DCE2E8] rounded-[8px] text-sm text-[#2A3547] focus:outline-none focus:border-[#004AAD] focus:ring-1 focus:ring-[#004AAD] transition-all min-w-0"
-              />
-            </div>
-            <p className="text-[11px] text-[#7D8795] mt-1.5">
-              Enter your mobile number with country code.
-            </p>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full py-2.5 px-4 bg-[#004AAD] hover:bg-[#003882] text-white font-semibold rounded-[8px] text-sm focus:outline-none focus:ring-2 focus:ring-[#004AAD] focus:ring-offset-2 transition-all shadow-xs flex items-center justify-center gap-2"
-          >
-            <span>💬</span>
-            <span>Continue with WhatsApp</span>
-          </button>
-        </form>
+        <WhatsAppAuthPanel requestedPath={redirectPath} />
       )}
 
       {/* Mode 3: PASSWORD LOGIN */}

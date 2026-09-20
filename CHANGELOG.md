@@ -6,6 +6,17 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Auth V2 Phase 2 WhatsApp-first authentication — local checkpoint 2026-09-20
+
+- Made WhatsApp the default public login/signup method while preserving Email Code and Password as working secondary methods.
+- Added one Supabase-controlled phone flow for both new and existing Business Owners, including E.164 normalization, masked OTP destination, six-digit verification, safe errors, change-number support, and resend cooldown.
+- Added trusted post-auth profile resolution and explicit onboarding routing through `profiles.onboarding_completed_at`.
+- Added a protected `/onboarding` experience that reuses the existing business editor and completes onboarding only through `complete_user_onboarding()` after the first valid business draft is saved.
+- Preserved role safety and private-credential boundaries: public clients cannot choose privileged metadata, internal routes remain guarded, and Auth phone/email are not copied to business contacts.
+- Added contract tests and no-send browser smoke coverage at 375px, 390px, and 430px. Lint, production build, all 97 pgTAP tests, and diff checks pass.
+- No live OTP, staging deployment, or production change was performed. The existing local phone-only artifact remains untouched pending explicit cleanup approval and a controlled real E2E.
+- CAPTCHA is still required before public staging release. Business-email delivery and optional Auth credential settings remain deferred to Phase 3.
+
 ### Auth V2 Phase 1 database foundation — review ready 2026-09-20
 
 - Added the migration foundation for explicit onboarding completion and mandatory business-contact-email verification before review submission.

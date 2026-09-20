@@ -9,13 +9,13 @@
 |---|---|
 | Task ID | `AUTH-WHATSAPP-FIRST-V2` |
 | Task Name | Buzl Listing Authentication Architecture V2 |
-| Status | **REVIEW** |
+| Status | **RESUMED** |
 | Current Agent | `codex` |
 | Started From Commit | `8a4f064d74a4b50aecaee6f6f63ee8e6fbd8c083` |
-| Latest Commit | `05c72bdb9248deacabf8d47c415999752115b4ff` |
-| Branch | `codex/auth-v2-phase-1-db` |
+| Latest Commit | `5d59d16388277b98f6d8f479033a6dd2a0a10039` |
+| Branch | `codex/auth-v2-phase-2-whatsapp-first` |
 | Started At | 2026-09-20T12:31:56+05:30 |
-| Last Updated | 2026-09-20T13:11:21+05:30 |
+| Last Updated | 2026-09-20T13:17:21+05:30 |
 
 ## Objective
 
