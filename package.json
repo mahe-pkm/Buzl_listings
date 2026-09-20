@@ -14,6 +14,7 @@
     "test:smoke": "node scripts/browser-smoke-test.mjs",
     "test:smoke:public": "node scripts/browser-smoke-test-public.mjs",
     "test:auth:v2": "tsx --conditions=react-server scripts/verify-auth-v2-phase2.mjs",
+    "test:business-email": "tsx --conditions=react-server scripts/verify-business-email-phase3.mjs",
     "test:smoke:auth:v2": "node scripts/browser-smoke-auth-v2.mjs",
     "test:whatsapp:provider": "tsx --conditions=react-server scripts/verify-whatsapp-meta-provider.mjs",
     "test:whatsapp:hook-runtime": "tsx --conditions=react-server scripts/verify-whatsapp-hook-runtime.mjs",
@@ -25,6 +26,7 @@
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "next": "16.3.5",
+    "nodemailer": "^10.0.10",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "server-only": "^0.0.1",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

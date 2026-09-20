@@ -834,6 +834,26 @@ export async function setVerification(businessId: string, nextStatus: Verificati
   return { success: true };
 }
 
+export async function markBusinessContactEmailVerified(businessId: string) {
+  const user = await getSessionUser();
+  if (!user || !user.isAdmin || user.accountStatus !== 'active') {
+    return { success: false, error: 'Active administrator account required' };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('admin_verify_business_contact_email', {
+    target_business_id: businessId,
+  });
+  if (error || !data) {
+    return { success: false, error: 'Could not mark the business contact email verified' };
+  }
+
+  revalidatePath(`/dashboard/businesses/${businessId}/edit`);
+  revalidatePath('/admin/businesses');
+  revalidatePath('/review/businesses');
+  return { success: true, verifiedAt: data as string };
+}
+
 export async function deleteBusiness(businessId: string) {
   const user = await getSessionUser();
   if (!user || !user.isAdmin) {

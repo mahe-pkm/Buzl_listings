@@ -6,6 +6,17 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Auth V2 Phase 3 Business Contact Email verification — local review 2026-09-20
+
+- Added protected Business Contact Email verification requests for active business managers with normalized-email validation, cryptographically random opaque tokens, SHA-256-only persistence, challenge replacement, resend throttling, and 30-minute expiry.
+- Added server-only SMTP delivery without selecting a vendor; credentials stay in server environment variables and failed sends remove the unusable challenge.
+- Added the `/verify-business-email` confirmation route with transactional single-use consumption, replay/expiry/email-change denial, generic failure responses, and an authenticated resend path.
+- Added explicit Business Email verification UI to owner editing/readiness and internal moderation views without conflating it with Listing Verification.
+- Kept draft saves available while disabling owner review submission until the contact email is verified; the PostgreSQL submission gate remains authoritative.
+- Added a clearly named, confirmation-gated Admin action to mark a Business Contact Email verified. Buzl Members receive no new authority.
+- Added 14 focused database assertions (111 total passing), a mail/token contract check, mobile checks at 375/390/430, invalid-link browser verification, lint/build, and diff validation.
+- Local implementation only; staging and production remain unchanged. Real inbox delivery is the next local E2E gate after SMTP configuration.
+
 ### Auth V2 Phase 2 WhatsApp-first authentication — local checkpoint 2026-09-20
 
 - Made WhatsApp the default public login/signup method while preserving Email Code and Password as working secondary methods.

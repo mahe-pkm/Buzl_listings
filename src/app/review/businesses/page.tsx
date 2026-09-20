@@ -11,7 +11,7 @@ export default async function ReviewBusinessesPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from('businesses')
-    .select('id, listing_code, canonical_name, slug, location_mode, city, state, publication_status, verification_status, updated_at, primary_category_id, categories(name)')
+    .select('id, listing_code, canonical_name, slug, location_mode, city, state, publication_status, verification_status, business_contact_email_verified_at, updated_at, primary_category_id, categories(name)')
     .in('publication_status', ['pending', 'published', 'suspended'])
     .order('updated_at', { ascending: false });
   const rows: BusinessTableRow[] = (data ?? []).map((business) => ({
@@ -24,6 +24,7 @@ export default async function ReviewBusinessesPage() {
     state: business.state,
     publication_status: business.publication_status,
     verification_status: business.verification_status,
+    business_contact_email_verified_at: business.business_contact_email_verified_at,
     updated_at: business.updated_at,
     primary_category_id: business.primary_category_id,
     categoryName: Array.isArray(business.categories) ? (business.categories[0] as { name?: string } | undefined)?.name : (business.categories as { name?: string } | null)?.name,

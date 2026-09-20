@@ -23,7 +23,9 @@ import {
   checkDuplicates,
   transitionPublication,
   setVerification,
+  markBusinessContactEmailVerified,
 } from '@/lib/business-actions';
+import { requestBusinessEmailVerification } from '@/lib/business-email-verification-actions';
 import {
   uploadBusinessMedia,
   deleteBusinessMedia,
@@ -41,6 +43,8 @@ interface BusinessFormProps {
   currentVerificationStatus?: VerificationStatus;
   isAdmin?: boolean;
   onboardingMode?: boolean;
+  businessContactEmailVerifiedAt?: string | null;
+  businessEmailVerificationPending?: boolean;
 }
 
 const DEFAULT_HOURS = [
@@ -84,6 +88,8 @@ export default function BusinessForm({
   currentVerificationStatus = 'unverified',
   isAdmin = false,
   onboardingMode = false,
+  businessContactEmailVerifiedAt = null,
+  businessEmailVerificationPending = false,
 }: BusinessFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -99,6 +105,10 @@ export default function BusinessForm({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [duplicateNotice, setDuplicateNotice] = useState<string | null>(null);
+  const [savedContactEmail, setSavedContactEmail] = useState(initialData?.business_contact_email || '');
+  const [emailVerificationState, setEmailVerificationState] = useState<'unverified' | 'sent' | 'verified'>(
+    businessContactEmailVerifiedAt ? 'verified' : businessEmailVerificationPending ? 'sent' : 'unverified'
+  );
 
   // New service input scratch states
   const [newServiceName, setNewServiceName] = useState('');
@@ -179,7 +189,18 @@ export default function BusinessForm({
 
   const updateField = <K extends keyof BusinessFormData>(key: K, value: BusinessFormData[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+    if (key === 'business_contact_email') setEmailVerificationState('unverified');
   };
+
+  const normalizedCurrentContactEmail = formData.business_contact_email.trim().toLowerCase();
+  const normalizedSavedContactEmail = savedContactEmail.trim().toLowerCase();
+  const contactEmailSaved = normalizedCurrentContactEmail === normalizedSavedContactEmail;
+  const isContactEmailVerified = Boolean(
+    normalizedCurrentContactEmail && contactEmailSaved && emailVerificationState === 'verified'
+  );
+  const isContactEmailVerificationSent = Boolean(
+    normalizedCurrentContactEmail && contactEmailSaved && emailVerificationState === 'sent'
+  );
 
   const handlePlaceSelect = (details: NormalizedPlaceDetails) => {
     setFormData((prev) => ({
@@ -659,9 +680,13 @@ export default function BusinessForm({
       };
 
       if (businessId) {
+        const emailChanged = normalizedCurrentContactEmail !== normalizedSavedContactEmail;
         const result = await updateBusiness(businessId, cleanFormData);
         if (result.success) {
+          setSavedContactEmail(cleanFormData.business_contact_email);
+          if (emailChanged) setEmailVerificationState('unverified');
           setSuccessMsg('Business listing updated successfully!');
+          router.refresh();
         } else {
           setErrorMsg(result.error || 'Failed to update business');
         }
@@ -690,6 +715,11 @@ export default function BusinessForm({
       setErrorMsg('Please save the business listing before submitting or publishing.');
       return;
     }
+    if (nextStatus === 'pending' && !isContactEmailVerified) {
+      setErrorMsg('Verify the Business Contact Email before submitting for review.');
+      setActiveStep(3);
+      return;
+    }
 
     setErrorMsg(null);
     setSuccessMsg(null);
@@ -712,6 +742,40 @@ export default function BusinessForm({
         router.refresh();
       } else {
         setErrorMsg(transRes.error || `Failed to transition status to ${nextStatus}.`);
+      }
+    });
+  };
+
+  const handleRequestEmailVerification = () => {
+    if (!businessId || !normalizedCurrentContactEmail) return;
+    if (!contactEmailSaved) {
+      setErrorMsg('Save the changed Business Contact Email before requesting verification.');
+      return;
+    }
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    startTransition(async () => {
+      const result = await requestBusinessEmailVerification(businessId);
+      if (result.success) {
+        setEmailVerificationState('sent');
+        setSuccessMsg('Verification email sent. Check the Business Contact Email inbox.');
+      } else {
+        setErrorMsg(result.error || 'Unable to send a verification email.');
+      }
+    });
+  };
+
+  const handleAdminContactEmailVerification = () => {
+    if (!businessId || !window.confirm('Mark this Business Contact Email as verified?')) return;
+    setErrorMsg(null);
+    startTransition(async () => {
+      const result = await markBusinessContactEmailVerified(businessId);
+      if (result.success) {
+        setEmailVerificationState('verified');
+        setSuccessMsg('Business Contact Email marked verified by administrator.');
+        router.refresh();
+      } else {
+        setErrorMsg(result.error || 'Unable to verify the Business Contact Email.');
       }
     });
   };
@@ -1387,6 +1451,42 @@ export default function BusinessForm({
                   <p className="text-[11px] text-[#7D8795] mt-1">
                     Strict privacy rule: Account login email is never exposed. Only enter an email intended for public communication.
                   </p>
+                  {normalizedCurrentContactEmail && (
+                    <div className="mt-3 rounded-[8px] border border-[#DCE2E8] bg-white p-3" data-testid="business-email-verification-status">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                            isContactEmailVerified
+                              ? 'bg-[#DCFCE7] text-[#166534]'
+                              : isContactEmailVerificationSent
+                                ? 'bg-[#DBEAFE] text-[#1D4ED8]'
+                                : 'bg-[#FEF3C7] text-[#92400E]'
+                          }`}>
+                            {isContactEmailVerified ? 'Email verified' : isContactEmailVerificationSent ? 'Verification sent' : 'Not verified'}
+                          </span>
+                          <p className="mt-1 text-[11px] text-[#5D6776]">
+                            {isContactEmailVerified
+                              ? 'This Business Contact Email is verified.'
+                              : isContactEmailVerificationSent
+                                ? 'Use the secure link sent to this address. The link expires after 30 minutes.'
+                                : contactEmailSaved
+                                  ? 'Verification is required before submitting this listing for review.'
+                                  : 'Save this changed email before requesting verification.'}
+                          </p>
+                        </div>
+                        {!isContactEmailVerified && businessId && (
+                          <button
+                            type="button"
+                            disabled={isPending || !contactEmailSaved}
+                            onClick={handleRequestEmailVerification}
+                            className="rounded-[6px] border border-[#004AAD] px-3 py-1.5 text-xs font-semibold text-[#004AAD] hover:bg-[#ECF4FF] disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {isContactEmailVerificationSent ? 'Resend' : 'Verify Email'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 pt-1">
@@ -2148,7 +2248,7 @@ export default function BusinessForm({
               const hasLogo = (formData.media || []).some((m) => m.kind === 'logo');
               const hasGbp = Boolean(formData.google_business_profile_url?.trim());
 
-              const isReadyToSubmit = hasName && hasPhone && hasCategory && hasLocation;
+              const isReadyToSubmit = hasName && hasPhone && hasCategory && hasLocation && isContactEmailVerified;
 
               return (
                 <div className="p-4 rounded-[8px] bg-[#F8FAFC] border border-[#DCE2E8] space-y-3">
@@ -2191,6 +2291,12 @@ export default function BusinessForm({
                         {hasLocation ? '✓' : '✗'}
                       </span>
                       <span className="text-[#2A3547]">Location Details</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
+                      <span className={isContactEmailVerified ? 'text-[#16A34A] font-bold' : 'text-[#D99B18] font-bold'}>
+                        {isContactEmailVerified ? '✓' : '⚠'}
+                      </span>
+                      <span className="text-[#2A3547]">Business email {isContactEmailVerified ? 'Verified' : 'Verification required'}</span>
                     </div>
                     <div className="flex items-center gap-2 p-2 rounded bg-white border border-[#E2E8F0]">
                       <span className={hasServices ? 'text-[#16A34A] font-bold' : 'text-[#94A3B8] font-bold'}>
@@ -2265,6 +2371,16 @@ export default function BusinessForm({
                     >
                       {currentVerificationStatus === 'verified' ? 'Mark Unverified' : 'Verify Listing'}
                     </button>
+                    {!isContactEmailVerified && normalizedCurrentContactEmail && contactEmailSaved && (
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        onClick={handleAdminContactEmailVerification}
+                        className="px-3 py-1.5 rounded-[6px] text-xs font-semibold bg-white border border-[#16A34A] text-[#166534] hover:bg-[#F0FDF4]"
+                      >
+                        Mark Contact Email Verified
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -2295,9 +2411,9 @@ export default function BusinessForm({
                 {businessId && pubStatus === 'draft' && (
                   <button
                     type="button"
-                    disabled={isPending}
+                    disabled={isPending || !isContactEmailVerified}
                     onClick={() => handleTransition('pending')}
-                    className="px-4 py-2 rounded-[8px] bg-[#D99B18] text-white text-xs font-semibold hover:bg-[#B37E0F] transition-colors"
+                    className="px-4 py-2 rounded-[8px] bg-[#D99B18] text-white text-xs font-semibold hover:bg-[#B37E0F] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Submit for Review
                   </button>

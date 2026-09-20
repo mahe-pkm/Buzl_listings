@@ -4,6 +4,7 @@ import BusinessForm from '@/components/business/BusinessForm';
 import { notFound, redirect } from 'next/navigation';
 import { parseEwkbPoint } from '@/lib/geo';
 import { BusinessFormData, Category, LocationMode } from '@/types/business';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 interface EditPageProps {
   params: Promise<{ id: string }>;
@@ -122,6 +123,19 @@ export default async function EditBusinessPage({ params }: EditPageProps) {
 
   // Parse geo coordinates
   const coords = parseEwkbPoint(business.geo_point as string | null);
+  const normalizedBusinessEmail = business.business_contact_email?.trim().toLowerCase() || null;
+  let businessEmailVerificationPending = false;
+  if (normalizedBusinessEmail && !business.business_contact_email_verified_at) {
+    const admin = createAdminClient();
+    const { count } = await admin
+      .from('business_email_verification_challenges')
+      .select('id', { count: 'exact', head: true })
+      .eq('business_id', id)
+      .eq('normalized_email', normalizedBusinessEmail)
+      .is('consumed_at', null)
+      .gt('expires_at', new Date().toISOString());
+    businessEmailVerificationPending = Boolean(count);
+  }
 
   const initialData: BusinessFormData = {
     canonical_name: business.canonical_name,
@@ -175,6 +189,8 @@ export default async function EditBusinessPage({ params }: EditPageProps) {
           listingCode={business.listing_code}
           currentPublicationStatus={business.publication_status}
           currentVerificationStatus={business.verification_status}
+          businessContactEmailVerifiedAt={business.business_contact_email_verified_at}
+          businessEmailVerificationPending={businessEmailVerificationPending}
           isAdmin={user.isAdmin}
         />
       </main>

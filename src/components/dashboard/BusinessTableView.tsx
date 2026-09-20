@@ -17,6 +17,7 @@ export interface BusinessTableRow {
   state: string;
   publication_status: PublicationStatus;
   verification_status: VerificationStatus;
+  business_contact_email_verified_at?: string | null;
   updated_at: string;
   primary_category_id: string;
   categoryName?: string;
@@ -90,7 +91,8 @@ export default function BusinessTableView({ businesses, isAdmin = false, moderat
                 <th className="py-3 px-4">Mode</th>
                 <th className="py-3 px-4">Location</th>
                 <th className="py-3 px-4">Listing Status</th>
-                <th className="py-3 px-4">Verification</th>
+                <th className="py-3 px-4">Listing Verification</th>
+                <th className="py-3 px-4">Business Email</th>
                 <th className="py-3 px-4">Updated</th>
                 <th className="py-3 px-6 text-right">{isAdmin ? 'Moderation Actions' : 'Actions'}</th>
               </tr>
@@ -132,6 +134,11 @@ export default function BusinessTableView({ businesses, isAdmin = false, moderat
                     </td>
                     <td className="py-3.5 px-4">
                       <StatusBadge status={b.verification_status} type="verification" />
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-flex rounded-full px-2 py-1 text-[10px] font-semibold ${b.business_contact_email_verified_at ? 'bg-[#DCFCE7] text-[#166534]' : 'bg-[#FEF3C7] text-[#92400E]'}`}>
+                        {b.business_contact_email_verified_at ? 'Verified' : 'Not Verified'}
+                      </span>
                     </td>
                     <td className="py-3.5 px-4 text-[#7D8795]">{updatedDate}</td>
                     <td className="py-3.5 px-6 text-right">

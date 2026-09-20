@@ -1,5 +1,18 @@
 # Current Project State
 
+## Auth V2 Phase 3 Business Contact Email verification — local review ready (2026-09-20)
+
+- Implementation branch: `codex/auth-v2-phase-3-business-email-verification`, based on checkpoint `e812e9b`.
+- Added owner-authorized, rate-limited challenge issuance with a 30-minute expiry. The app generates a cryptographically random opaque token and PostgreSQL stores only its SHA-256 digest.
+- Challenge replacement is serialized on the business row, older active challenges are invalidated, failed SMTP delivery discards the unusable new challenge, and the existing row-locking consumption primitive remains authoritative for replay, expiry, and email-mismatch denial.
+- Added server-only SMTP delivery for the professional `Verify your business email — Buzl Listing` message. SMTP credentials remain server-side; no new mail vendor was selected. Local verification uses an isolated transport contract and requires configured SMTP for a real inbox E2E.
+- Added `/verify-business-email` confirmation/success/failure UX. Public links contain only the opaque token; successful verification removes the token from the URL and stores only a short-lived HTTP-only return-path cookie.
+- Business Contact Email status now supports no-email, not-verified, sent, changed-email, and verified states. Changed emails must be saved before verification; draft saving remains allowed.
+- Owner submission UI now requires verified Business Contact Email, while the existing database transition gate remains authoritative.
+- Internal lists and profile controls now label Listing Verification separately from Business Email verification. Admin manual contact-email verification has a distinct confirmed action; ordinary Buzl Members retain no authority.
+- Added 14 Phase 3 pgTAP assertions. Full database result: 9 files / 111 tests PASS. Transactional mail/token contract, lint (0 errors, 15 pre-existing warnings), production build, `git diff --check`, invalid-link UX, and 375/390/430 mobile overflow checks pass.
+- Staging and production were untouched. Next gate: `AUTH_V2_PHASE_3_LOCAL_EMAIL_E2E` with a configured local/test SMTP inbox.
+
 ## Auth V2 Phase 2 WhatsApp-first UI — locally implemented, E2E gated (2026-09-20)
 
 - Implementation branch: `codex/auth-v2-phase-2-whatsapp-first`, based on Phase 1 metadata checkpoint `5d59d16`.
