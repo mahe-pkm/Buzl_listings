@@ -185,9 +185,19 @@ select is(
   'Anonymous reader returns null for draft business'
 );
 
--- Owner transitions to pending
-select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000001","role":"authenticated","app_metadata":{"role":"business_owner"}}', true);
+-- Admin records a trusted business-contact-email verification for this fixture.
+reset role;
 set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000003","role":"authenticated","app_metadata":{"role":"admin"}}', true);
+update public.businesses
+set business_contact_email = 'expansion-store@local.test'
+where canonical_name = 'Expansion Store';
+select public.admin_verify_business_contact_email(id)
+from public.businesses
+where canonical_name = 'Expansion Store';
+
+-- Owner transitions to pending.
+select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000001","role":"authenticated","app_metadata":{"role":"business_owner"}}', true);
 do $$
 declare v_biz_id uuid;
 begin

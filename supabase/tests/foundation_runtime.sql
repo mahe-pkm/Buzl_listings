@@ -47,6 +47,17 @@ select public.create_business_for_current_user('Invalid Storefront', '+91 98765 
 select public.create_business_for_current_user('Invalid Service Area', '+91 98765 43212', '10000000-0000-0000-0000-000000000001', 'service_area', 'Bengaluru', 'Karnataka', 'India');
 select public.create_business_for_current_user('Invalid Hybrid', '+91 98765 43213', '10000000-0000-0000-0000-000000000001', 'hybrid', 'Bengaluru', 'Karnataka', 'India', 'IN', '1 Test Street', null, 'Indiranagar', '560038', true, 12.9716, 77.5946);
 select public.create_business_for_current_user('Valid Storefront', '+91 98765 43214', '10000000-0000-0000-0000-000000000001', 'storefront', 'Bengaluru', 'Karnataka', 'India', 'IN', '2 Test Street', null, 'Indiranagar', '560038', true, 12.9716, 77.5946);
+
+update public.businesses
+set business_contact_email = lower(replace(canonical_name, ' ', '-')) || '@local.test'
+where canonical_name in ('Invalid Storefront', 'Invalid Service Area', 'Invalid Hybrid', 'Valid Storefront');
+reset role;
+update public.businesses
+set business_contact_email_verified_at = now()
+where canonical_name in ('Invalid Hybrid', 'Valid Storefront');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"20000000-0000-0000-0000-000000000001","role":"authenticated","app_metadata":{"role":"business_owner"}}', true);
+
 do $$
 declare invalid_storefront uuid; invalid_service_area uuid; invalid_hybrid uuid; valid_storefront uuid;
 begin
@@ -66,6 +77,15 @@ insert into public.business_service_areas (business_id, name, city, state, count
 select id, 'Bengaluru', 'Bengaluru', 'Karnataka', 'India'
 from public.businesses where canonical_name = 'Owner A Service';
 
+update public.businesses
+set business_contact_email = 'owner-a-service@local.test'
+where canonical_name = 'Owner A Service';
+reset role;
+update public.businesses
+set business_contact_email_verified_at = now()
+where canonical_name = 'Owner A Service';
+
+set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"20000000-0000-0000-0000-000000000002","role":"authenticated","app_metadata":{"role":"business_owner"}}', true);
 do $$
 begin

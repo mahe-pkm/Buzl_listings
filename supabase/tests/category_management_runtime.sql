@@ -79,6 +79,10 @@ begin
   ) into test_biz_id;
 
   insert into public.business_service_areas (business_id, name) values (test_biz_id, 'Chennai');
+  update public.businesses
+  set business_contact_email = 'taxonomy-guard@local.test'
+  where id = test_biz_id;
+  perform public.admin_verify_business_contact_email(test_biz_id);
   perform public.transition_business_publication(test_biz_id, 'pending');
   perform public.transition_business_publication(test_biz_id, 'published');
 

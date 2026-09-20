@@ -6,6 +6,17 @@ This project uses semantic versioning. Version `0.1.0` is the first complete loc
 
 ## [Unreleased]
 
+### Auth V2 Phase 1 database foundation — review ready 2026-09-20
+
+- Added the migration foundation for explicit onboarding completion and mandatory business-contact-email verification before review submission.
+- Added a private, RLS-protected verification-challenge table using unique SHA-256 token hashes, expiry/single-use constraints, and a service-role-only transactional consumption function.
+- Added admin-only manual contact-email verification and protected both onboarding and verification timestamps from direct client updates.
+- Preserved legacy published listings without falsely backfilling verification: structural integrity remains enforced for existing published rows while new pending/published transitions require verified contact email.
+- Added a focused 34-assertion pgTAP suite and updated affected existing fixtures.
+- The migration was applied to the existing local Supabase database without reset. All 8 pgTAP files / 97 tests, lint, production build, mutation guards, and diff checks pass.
+- Audited the preserved local data: 12 published and 1 pending listing have no trusted business-email verification evidence, so no verification timestamp was backfilled. Existing published rows remain operational; future transitions use the stricter gate.
+- Confirmed the earlier phone-only local artifact has an unconfirmed Auth user and profile but no business relationship. It remains undeleted for review before V2 E2E testing.
+
 ### Authentication Architecture V2 — approved 2026-09-20
 
 - Locked WhatsApp OTP as the default public Business Owner signup and login method, with Supabase Auth remaining the OTP, identity, verification, and session authority and Meta remaining delivery-only through the signed Send SMS Hook.

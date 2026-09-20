@@ -12,10 +12,10 @@
 | Status | **REVIEW** |
 | Current Agent | `codex` |
 | Started From Commit | `8a4f064d74a4b50aecaee6f6f63ee8e6fbd8c083` |
-| Latest Commit | `8a4f064d74a4b50aecaee6f6f63ee8e6fbd8c083` |
-| Branch | `feature/whatsapp-otp-meta-live` |
+| Latest Commit | `45d9c2230233dafedf820a1dbfca13a44f1ef87a` |
+| Branch | `codex/auth-v2-phase-1-db` |
 | Started At | 2026-09-20T12:31:56+05:30 |
-| Last Updated | 2026-09-20T12:32:09+05:30 |
+| Last Updated | 2026-09-20T13:10:30+05:30 |
 
 ## Objective
 
@@ -27,7 +27,12 @@ Replace the obsolete unknown-phone denial assumption with the approved WhatsApp-
 
 ## Completed Work
 
-- Audited current Supabase phone Auth configuration, signed Send SMS Hook, trusted profile/role provisioning, ownership, moderation, and contact-data separation. Documented the approved WhatsApp-first public Business Owner architecture, mandatory business-email verification, same-UID optional Auth email/password, anti-abuse controls, migrations, obsolete assumptions, and implementation phases.
+- Implemented Auth V2 Phase 1 database foundation: onboarding state and self-only completion RPC
+- business-contact-email verification timestamp and normalized reset trigger
+- private hashed challenge table and service-role-only locked consumption
+- admin-only manual verification
+- verified-email submission gate with legacy published compatibility
+- focused and regression pgTAP coverage. No blind verification backfill.
 
 ## Remaining Work
 
@@ -35,8 +40,8 @@ Replace the obsolete unknown-phone denial assumption with the approved WhatsApp-
 
 ## Checks / Tests
 
-- Documentation-only audit. Runtime Auth code, schema, Supabase configuration, staging, and production unchanged. git diff --check passed. Possible local phone-only artifact remains REVIEW_REQUIRED because local Supabase runtime was unavailable
-- nothing deleted.
+- Architecture checkpoint 45d9c22. Local migration applied in place without reset. pgTAP PASS: 8 files, 97 tests. Lint PASS with 0 errors/15 existing warnings. Build PASS. Mutation guards PASS. git diff --check PASS. Local artifact found unconfirmed with profile and no business relationship
+- not deleted. Staging and production untouched.
 
 ## Known Issues
 
@@ -44,7 +49,7 @@ Replace the obsolete unknown-phone denial assumption with the approved WhatsApp-
 
 ## Next Exact Action
 
-Independent architecture review passed. Create the architecture checkpoint, then resume this task for the Phase 1 database foundation on a dedicated implementation branch.
+Independent database/security review of migration 20260920130000, RPC grants/RLS, legacy listing compatibility, and 97-test pgTAP evidence. Next gate AUTH_V2_PHASE_1_DB_REVIEW.
 
 ## Handoff Notes
 

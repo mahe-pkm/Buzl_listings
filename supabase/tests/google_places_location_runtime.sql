@@ -181,6 +181,11 @@ begin
   insert into public.business_service_areas (business_id, name, city, state, country)
   values (v_bid, 'Central Chennai', 'Chennai', 'Tamil Nadu', 'India');
 
+  update public.businesses
+  set business_contact_email = 'service-area-privacy@local.test'
+  where id = v_bid;
+  perform public.admin_verify_business_contact_email(v_bid);
+
   -- Transition to published as admin
   perform public.transition_business_publication(v_bid, 'published');
 end;

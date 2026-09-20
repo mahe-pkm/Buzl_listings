@@ -1,5 +1,31 @@
 # Current Project State
 
+## Auth V2 Phase 1 database foundation — review ready (2026-09-20)
+
+- Architecture approval checkpoint: `45d9c22 docs(auth): approve WhatsApp-first auth architecture v2`.
+- Implementation branch: `codex/auth-v2-phase-1-db`.
+- Added migration `20260920130000_auth_v2_database_foundation.sql`.
+- Added `profiles.onboarding_completed_at`; new Auth users remain null. Backfill marks only existing internal (`admin`/`buzl_member`) profiles or profiles with an existing `business_managers` relationship as complete.
+- Added self-only, active-profile, idempotent `complete_user_onboarding()` and removed direct authenticated profile insertion/onboarding-column update privileges.
+- Added `businesses.business_contact_email_verified_at` without any blind verification backfill.
+- Added normalized-email change detection that preserves verification for case-only changes and clears it for an effective email change.
+- Added private `business_email_verification_challenges` storage with a unique 32-byte token hash, expiry/single-use constraints, RLS, no anon/authenticated table access, and a service-role-only row-locking consumption RPC.
+- Added admin-only manual business-contact-email verification. Business Owners and ordinary Buzl Members receive no verification authority.
+- Split structural publishability from the new verified-email submission gate. Existing published rows remain operational without fabricated verification history; every future pending/published transition requires an actual verification timestamp.
+- Added focused `auth_v2_business_email_runtime.sql` coverage with 34 assertions and updated existing test fixtures to satisfy the new email gate without weakening their original RBAC/category/location checks.
+- `npm run lint`: PASS with 15 pre-existing warnings and zero errors.
+- `npm run build`: PASS.
+- `npm run test:guards`: PASS.
+- `git diff --check`: PASS.
+- Applied the pending migration to the existing local Supabase database with `npx supabase migration up --local`; no database reset or data deletion was performed.
+- `npx supabase test db`: PASS — 8 files, 97 tests, including all 34 focused Auth V2 assertions.
+- Existing local listing audit before/after migration: 12 published, 1 pending, and 0 with trusted business-email verification evidence. No timestamp was backfilled. Existing published rows remain operational; the pending row requires real/manual verification before publication. No explicit grandfathering flag or product decision is required.
+- Local phone-only artifact audit: one Auth user found, profile found, phone unconfirmed, no business relationship. It is safe to remove before controlled V2 E2E testing, but Phase 1 did not delete it.
+- Onboarding backfill result: 5 established/internal profiles marked complete and 2 profiles left incomplete under the documented evidence-based rule.
+- Docker Desktop 4.78's management process still has a generated Unix-socket startup issue, but the existing isolated local Supabase database remained reachable for migration and the complete pgTAP suite. Timestamped runtime-directory backups contain generated sockets only; no Docker images or volumes were altered.
+- Staging and production remain untouched. No OTP, Auth UI, or Meta-provider behavior changed.
+- Next exact action: independent database/security review of the migration, RPC privileges, legacy compatibility behavior, and pgTAP evidence.
+
 ## Authentication Architecture V2 — approved for Phase 1 database foundation (2026-09-20)
 
 - New locked product direction: WhatsApp OTP is the default public Business Owner signup and login method.
