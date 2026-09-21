@@ -40,7 +40,7 @@ services:
       BUSINESS_EMAIL_SMTP_USER: ${BUSINESS_EMAIL_SMTP_USER:-${SMTP_USER}}
       BUSINESS_EMAIL_SMTP_PASSWORD: ${BUSINESS_EMAIL_SMTP_PASSWORD:-${SMTP_PASS}}
       BUSINESS_EMAIL_SMTP_SECURE: "true"
-      BUSINESS_EMAIL_FROM: ${BUSINESS_EMAIL_FROM:-"Buzl Listing <listing@rclk.in>"}
+      BUSINESS_EMAIL_FROM: ${BUSINESS_EMAIL_FROM:-${SMTP_USER}}
     depends_on:
       kong:
         condition: service_healthy
