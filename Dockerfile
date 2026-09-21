@@ -42,6 +42,7 @@ RUN addgroup --system --gid 1001 nodejs \
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=dependencies --chown=nextjs:nodejs /app/node_modules/nodemailer ./node_modules/nodemailer
 
 USER nextjs
 EXPOSE 3000
